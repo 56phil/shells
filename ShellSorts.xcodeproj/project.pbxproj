@@ -8,6 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		31DF99A227726B8500C98BA8 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 31DF99A127726B8500C98BA8 /* main.cpp */; };
+		31DF99AA27726CBC00C98BA8 /* core.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 31DF99A827726CBC00C98BA8 /* core.cpp */; };
+		31DF99AD277272F000C98BA8 /* shell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 31DF99AC277272F000C98BA8 /* shell.cpp */; };
+		31DF99B4277273C700C98BA8 /* formattime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 31DF99AE277273C700C98BA8 /* formattime.cpp */; };
+		31DF99B5277273C700C98BA8 /* verifyarray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 31DF99AF277273C700C98BA8 /* verifyarray.cpp */; };
+		31DF99B6277273C700C98BA8 /* writeout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 31DF99B3277273C700C98BA8 /* writeout.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +30,16 @@
 /* Begin PBXFileReference section */
 		31DF999E27726B8500C98BA8 /* ShellSorts */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ShellSorts; sourceTree = BUILT_PRODUCTS_DIR; };
 		31DF99A127726B8500C98BA8 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		31DF99A827726CBC00C98BA8 /* core.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = core.cpp; sourceTree = "<group>"; };
+		31DF99A927726CBC00C98BA8 /* core.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = core.hpp; sourceTree = "<group>"; };
+		31DF99AB277272F000C98BA8 /* shell.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = shell.hpp; sourceTree = "<group>"; };
+		31DF99AC277272F000C98BA8 /* shell.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = shell.cpp; sourceTree = "<group>"; };
+		31DF99AE277273C700C98BA8 /* formattime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = formattime.cpp; sourceTree = "<group>"; };
+		31DF99AF277273C700C98BA8 /* verifyarray.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = verifyarray.cpp; sourceTree = "<group>"; };
+		31DF99B0277273C700C98BA8 /* verifyarray.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = verifyarray.hpp; sourceTree = "<group>"; };
+		31DF99B1277273C700C98BA8 /* writeout.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = writeout.hpp; sourceTree = "<group>"; };
+		31DF99B2277273C700C98BA8 /* formattime.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = formattime.hpp; sourceTree = "<group>"; };
+		31DF99B3277273C700C98BA8 /* writeout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = writeout.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,7 +72,17 @@
 		31DF99A027726B8500C98BA8 /* ShellSorts */ = {
 			isa = PBXGroup;
 			children = (
+				31DF99AE277273C700C98BA8 /* formattime.cpp */,
+				31DF99B2277273C700C98BA8 /* formattime.hpp */,
+				31DF99AF277273C700C98BA8 /* verifyarray.cpp */,
+				31DF99B0277273C700C98BA8 /* verifyarray.hpp */,
+				31DF99B3277273C700C98BA8 /* writeout.cpp */,
+				31DF99B1277273C700C98BA8 /* writeout.hpp */,
+				31DF99AC277272F000C98BA8 /* shell.cpp */,
+				31DF99AB277272F000C98BA8 /* shell.hpp */,
 				31DF99A127726B8500C98BA8 /* main.cpp */,
+				31DF99A827726CBC00C98BA8 /* core.cpp */,
+				31DF99A927726CBC00C98BA8 /* core.hpp */,
 			);
 			path = ShellSorts;
 			sourceTree = "<group>";
@@ -119,7 +144,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				31DF99B5277273C700C98BA8 /* verifyarray.cpp in Sources */,
+				31DF99AA27726CBC00C98BA8 /* core.cpp in Sources */,
+				31DF99AD277272F000C98BA8 /* shell.cpp in Sources */,
 				31DF99A227726B8500C98BA8 /* main.cpp in Sources */,
+				31DF99B6277273C700C98BA8 /* writeout.cpp in Sources */,
+				31DF99B4277273C700C98BA8 /* formattime.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
