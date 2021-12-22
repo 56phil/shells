@@ -7,8 +7,11 @@
 
 #include "shell.hpp"
 
-void shell(lv &v) {
-    for (long gap(v.size() / 3 | 1); gap; gap >>= 1) {
+void shellsort(vi &v, const vi gaps) {
+    long lim(v.size() / 3);
+    for (auto gap : gaps) {
+        if (gap > lim)
+            continue;
         for (auto iti(v.begin() + gap); iti != v.end(); iti++) {
             int tmp = *iti;
             auto itj(iti);

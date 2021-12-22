@@ -8,7 +8,7 @@
 #ifndef formattime_hpp
 #define formattime_hpp
 
-#include "driver.hpp"
+#include "core.hpp"
 
 std::string formatTime (bool, bool);
 

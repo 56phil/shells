@@ -8,9 +8,9 @@
 #ifndef writeout_hpp
 #define writeout_hpp
 
-#include <iostream>
-#include <fstream>
-#include <random>
+#include "core.hpp"
+
 void randomWrite(const std::string, const long);
+void randomFill(int, vi &);
 
 #endif /* writeout_hpp */

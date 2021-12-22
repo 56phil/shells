@@ -6,3 +6,11 @@
 //
 
 #include "verifyarray.hpp"
+
+bool verify(vi wc, vi cc) {
+    auto itw(wc.begin()), itc(cc.begin());
+    while (itw != wc.end() && itc != cc.end())
+        if (*itw++ != *itc++)
+            return false;
+    return true;
+}

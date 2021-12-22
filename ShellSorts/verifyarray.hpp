@@ -8,6 +8,8 @@
 #ifndef verifyarray_hpp
 #define verifyarray_hpp
 
-bool verify(long *, long *);
+#include "core.hpp"
+
+bool verify(vi, vi);
 
 #endif /* verifyarray_hpp */

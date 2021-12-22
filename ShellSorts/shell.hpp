@@ -8,7 +8,7 @@
 #ifndef shell_hpp
 #define shell_hpp
 
-#include "driver.hpp"
+#include "core.hpp"
 
-void shell(lv &);
+void shellsort(vi &, const vi);
 #endif /* shell_hpp */
