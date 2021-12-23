@@ -59,6 +59,7 @@ void hibbard1963(vi &, int);
 void papernov1965(vi &, int);
 void pratt1971(vi &, int);
 void kunth1973(vi &, int);
+void sedgewick1982(vi &, int);
 
 
 #endif /* core_hpp */

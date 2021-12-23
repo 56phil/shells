@@ -7,48 +7,56 @@
 
 #include "core.hpp"
 
-void setup() {
-    std::vector<gapStruct> algorithms;
+static void makeAlgorithmElements(std::vector<gapStruct> &algorithms) {
     algorithms.clear();
     
     gapStruct shell;
-    shell.name = "Shell, 1959";
+    shell.name = "Shell 1959";
     shell.gapFn = shell1959;
     shell.runData.clear();
     algorithms.emplace_back(shell);
     
     gapStruct frank;
-    frank.name = "Frank & Lazarus, 1960";
+    frank.name = "Frank & Lazarus 1960";
     frank.gapFn = frank1960;
     frank.runData.clear();
     algorithms.emplace_back(frank);
     
     gapStruct hibbard;
-    hibbard.name = "Hibbard, 1963";
+    hibbard.name = "Hibbard 1963";
     hibbard.gapFn = hibbard1963;
     algorithms.emplace_back(hibbard);
     
     gapStruct papernov;
-    papernov.name = "Papernov & Stasevich, 1965";
+    papernov.name = "Papernov & Stasevich 1965";
     papernov.gapFn = papernov1965;
     algorithms.emplace_back(papernov);
     
     gapStruct pratt;
-    pratt.name = "Pratt, 1971";
+    pratt.name = "Pratt 1971";
     pratt.gapFn = pratt1971;
     algorithms.emplace_back(pratt);
     
     gapStruct kunth;
-    kunth.name = "Kunth, 1973";
+    kunth.name = "Kunth 1973";
     kunth.gapFn = kunth1973;
     algorithms.emplace_back(kunth);
     
-    int ssMin(8192), ssMax(8192 << 7), wdth(21);
+    gapStruct sedgewick;
+    sedgewick.name = "Sedgewick 1982";
+    sedgewick.gapFn = sedgewick1982;
+    algorithms.emplace_back(sedgewick);
+}
+
+void setup() {
+    std::vector<gapStruct> algorithms;
+    makeAlgorithmElements(algorithms);
+    
+    int ssMin(8192), ssMax(8192 << 12), wdth(21);
     std::cout << "\nStart: " << ssMin << "  Max: " << ssMax << '\n';
     
-    for (auto &a : algorithms) {
+    for (auto &a : algorithms)
         a.gapFn(a.gaps, ssMax);
-    }
     
     vi orginalCopy, workCopy, checkCopy;
     
@@ -71,12 +79,8 @@ void setup() {
             tm.status = verify(workCopy, checkCopy) ? tm.ok : tm.outOfOrder;
             tm.time = duration;
             tm.sampleSize = sampleSize;
-            if (tm.status == tm.outOfOrder) {
-                for (auto n : a.gaps)
-                    std::cerr << n << "  ";
-                std::cerr << '\n';
+            if (tm.status == tm.outOfOrder)
                 errorFunction(workCopy, checkCopy);
-            }
             a.runData.emplace_back(tm);
         } // function loop
         makeFile(algorithms);
@@ -84,7 +88,7 @@ void setup() {
     
     for (auto a : algorithms) {
         std::cout << '\n' << a.name;
-        int n(13);
+        long n(a.gaps.size());
         for (auto itr(a.gaps.rbegin()); n--; itr++)
             std::cout << "  " << *itr;
         std::cout << '\n';
@@ -162,21 +166,18 @@ void papernov1965(vi &gaps, int vSize) {
     int n(1);
     gaps.clear();
     gaps.push_back(1);
-    while (gaps.back() < vSize) {
+    while (gaps.back() < vSize)
         gaps.push_back((2 << n++) + 1);
-    }
     gaps.pop_back();
     std::reverse(gaps.begin(), gaps.end());
 }
 
 bool is3smooth(int n) {
     int f(n);
-    while (f % 2 == 0) {
+    while (f % 2 == 0)
         f /= 2;
-    }
-    while (f % 3 == 0) {
+    while (f % 3 == 0)
         f /= 3;
-    }
     return f == 1;
 }
 
@@ -214,8 +215,28 @@ void kunth1973(vi &gaps, int vSize) {
         k *= 3;
         gaps.push_back((k - 1) >> 1);
     } while (gaps.back() < lim);
+    gaps.pop_back();
     std::reverse(gaps.begin(), gaps.end());
-    
 }
 
+bool mySeq(int a, int b) {return a < b;}
+
+void sedgewick1982(vi &gaps, int vSize) {
+    int k4(4), k2(1), k(1), lim(vSize >> 1);
+    gaps.push_back(1);
+    do {
+        gaps.push_back(k4 + 3 * k2 + 1);
+        k++;
+        k4 *= 4;
+        k2 *= 2;
+    } while (gaps.back() < lim);
+    gaps.pop_back();
+    std::reverse(gaps.begin(), gaps.end());
+    for (auto it(gaps.begin() + 1); it != gaps.end(); it++) {
+        if (*it > *(it - 1)) {
+            std::sort(gaps.begin(), gaps.end(), mySeq);
+            break;
+        }
+    }
+}
 
