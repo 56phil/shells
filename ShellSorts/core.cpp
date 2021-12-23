@@ -64,7 +64,7 @@ void setup() {
         randomFill(sampleSize, orginalCopy);
         checkCopy = orginalCopy;
         std::sort(checkCopy.begin(), checkCopy.end());
-        std::cout << '\n' << formatTime(true, true) << " n: " << std::right
+        std::cout << '\n' << formatTime(true, true) << "    n: " << std::right
         << std::setw(24) << sampleSize << " ----------" << std::endl;
         for (auto &a : algorithms) {
             workCopy = orginalCopy;
@@ -121,7 +121,7 @@ void makeFile(std::vector<gapStruct> v) {
     fst.open("/Users/prh/Keepers/code/cpp/sorts/ShellSorts/list.csv", std::ios::out);
     fst << "Algorithm";
     for (auto rd : v[0].runData) {
-        fst << ','<< '\"' << rd.sampleSize << '\"';
+        fst << ',' << rd.sampleSize;
     }
     fst << '\n';
     for (auto s : v) {
