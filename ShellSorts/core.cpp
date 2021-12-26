@@ -284,6 +284,5 @@ void empirical2001(vi &gaps, int vSize) {
         gaps.insert(gaps.begin(), nextGap);
         nextGap = (nextGap << 3) | 1;
         nextGap = nextGap % 5 ? nextGap : nextGap - 4;
-        nextGap = nextGap % 2 ? nextGap : nextGap + 5;
     }
 }
