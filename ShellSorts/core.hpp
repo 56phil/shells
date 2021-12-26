@@ -62,6 +62,7 @@ void kunth1973(vi &, int);
 void sedgewick1982(vi &, int);
 void sedgewick1985(vi &, int);
 void gonnet1991(vi &, int);
+void tokuda1992(vi &, int);
 void empirical2001(vi &, int);
 
 

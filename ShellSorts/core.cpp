@@ -14,13 +14,13 @@ static void makeAlgorithmElements(std::vector<gapStruct> &algorithms) {
     shell.name = "Shell 1959";
     shell.gapFn = shell1959;
     shell.runData.clear();
-//    algorithms.emplace_back(shell);
+    algorithms.emplace_back(shell);
     
     gapStruct frank;
     frank.name = "Frank & Lazarus 1960";
     frank.gapFn = frank1960;
     frank.runData.clear();
-//    algorithms.emplace_back(frank);
+    algorithms.emplace_back(frank);
     
     gapStruct hibbard;
     hibbard.name = "Hibbard 1963";
@@ -57,6 +57,11 @@ static void makeAlgorithmElements(std::vector<gapStruct> &algorithms) {
     gonnet.gapFn = gonnet1991;
     algorithms.emplace_back(gonnet);
     
+    gapStruct tokuda;
+    tokuda.name = "Tokuda 1992";
+    tokuda.gapFn = tokuda1992;
+    algorithms.emplace_back(tokuda);
+    
     gapStruct empirical;
     empirical.name = "empirical 2001";
     empirical.gapFn = empirical2001;
@@ -67,7 +72,7 @@ void setup() {
     std::vector<gapStruct> algorithms;
     makeAlgorithmElements(algorithms);
     
-    int ssMin(8192), ssMax(8192 << 16), wdth(21);
+    int ssMin(8192), ssMax(1028 << 14), wdth(17);
     std::cout << "\nStart: " << ssMin << "  Max: " << ssMax << '\n';
     
     vi orginalCopy, workCopy, checkCopy;
@@ -76,8 +81,8 @@ void setup() {
         randomFill(sampleSize, orginalCopy);
         checkCopy = orginalCopy;
         std::sort(checkCopy.begin(), checkCopy.end());
-        std::cout << '\n' << formatTime(true, true) << "    n: " << std::right
-        << std::setw(24) << sampleSize << " ----------" << std::endl;
+        std::cout << '\n' << formatTime(true, true) << "        n: " << std::right
+        << std::setw(20) << sampleSize << " ----------" << std::endl;
         for (auto &a : algorithms) {
             a.gaps.clear();
             a.gapFn(a.gaps, sampleSize);
@@ -258,7 +263,27 @@ void gonnet1991(vi &gaps, int vSize) {
     }
 }
 
+void tokuda1992(vi &gaps, int vSize) {
+    gaps.push_back(1);
+    for (int i(1); gaps.back() < vSize; i++) {
+        double a(pow(2.25, static_cast<double>(i)));
+        a *= 9.0;
+        a -= 4.0;
+        a /= 5.0;
+        int j(a);
+        gaps.push_back(j + 1);
+    }
+    std::reverse(gaps.begin(), gaps.end());
+}
+
 void empirical2001(vi &gaps, int vSize) {
-    vi t {4307, 3101, 2101, 1301, 701, 301, 132, 57, 23, 10, 4, 1};
+    vi t {701, 301, 132, 57, 23, 10, 4, 1};
     gaps = t;
+    int nextGap((gaps.front() << 2) | 1);
+    while (nextGap < vSize) {
+        gaps.insert(gaps.begin(), nextGap);
+        nextGap = (nextGap << 3) | 1;
+        nextGap = nextGap % 5 ? nextGap : nextGap - 4;
+        nextGap = nextGap % 2 ? nextGap : nextGap + 5;
+    }
 }

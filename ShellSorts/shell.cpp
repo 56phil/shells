@@ -8,7 +8,7 @@
 #include "shell.hpp"
 
 void shellsort(vi &v, const vi gaps) {
-    long lim((v.size() - (v.size() >> 3)));
+    int lim(static_cast<int>(v.size() - (v.size() >> 3)));
     for (auto gap : gaps) {
         if (gap >= lim)
             continue;
