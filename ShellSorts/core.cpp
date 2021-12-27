@@ -68,16 +68,29 @@ static void makeAlgorithmElements(std::vector<gapStruct> &algorithms) {
     algorithms.emplace_back(empirical);
 }
 
-void setup() {
-    std::vector<gapStruct> algorithms;
-    makeAlgorithmElements(algorithms);
-    
-    int ssMin(8192), ssMax(1028 << 14), wdth(17);
+static void summerize(std::vector<gapStruct> &algorithms) {
+    for (auto a : algorithms) {
+        std::cout << '\n' << a.name;
+        long n(a.gaps.size());
+        for (auto itr(a.gaps.rbegin()); n--; itr++)
+            std::cout << "  " << *itr;
+        std::cout << '\n';
+        for (auto d : a.runData)
+            std::cout << std::right << std::setw(12) << d.sampleSize
+            << std::right << std::setw(14) << d.time
+            << std::setw(18)<< convertMicroSeconds(d.time) << '\n';
+        std::cout << '\n';
+    }
+    std::cout << std::endl;
+}
+
+static void work(std::vector<gapStruct> &algorithms) {
+    int ssMin(512), ssMax(1028 << 16), wdth(17);
     std::cout << "\nStart: " << ssMin << "  Max: " << ssMax << '\n';
     
     vi orginalCopy, workCopy, checkCopy;
     
-    for (int sampleSize(ssMin - 1); sampleSize < ssMax; (sampleSize <<= 2) |= 3) {
+    for (int sampleSize(ssMin - 1); sampleSize < ssMax; (sampleSize <<= 1) |= 1) {
         randomFill(sampleSize, orginalCopy);
         checkCopy = orginalCopy;
         std::sort(checkCopy.begin(), checkCopy.end());
@@ -105,19 +118,14 @@ void setup() {
         makeFile(algorithms);
     } // sample size loop
     
-    for (auto a : algorithms) {
-        std::cout << '\n' << a.name;
-        long n(a.gaps.size());
-        for (auto itr(a.gaps.rbegin()); n--; itr++)
-            std::cout << "  " << *itr;
-        std::cout << '\n';
-        for (auto d : a.runData)
-            std::cout << std::right << std::setw(12) << d.sampleSize
-            << std::right << std::setw(14) << d.time 
-            << std::setw(18)<< convertMicroSeconds(d.time) << '\n';
-        std::cout << '\n';
-    }
-    std::cout << std::endl;
+    summerize(algorithms);
+}
+
+void setup() {
+    std::vector<gapStruct> algorithms;
+    makeAlgorithmElements(algorithms);
+    
+    work(algorithms);
 }
 
 void errorFunction(vi wc, vi cc) {
@@ -169,7 +177,6 @@ void frank1960(vi &gaps, int vSize) {
 }
 
 void hibbard1963(vi &gaps, int vSize) {
-    gaps.clear();
     int wSize(1);
     while (wSize  < vSize) {
         gaps.push_back(wSize);
@@ -181,8 +188,7 @@ void hibbard1963(vi &gaps, int vSize) {
 
 void papernov1965(vi &gaps, int vSize) {
     int n(1);
-    gaps.clear();
-    gaps.push_back(1);
+    gaps.push_back(n);
     while (gaps.back() < vSize)
         gaps.push_back((2 << n++) + 1);
     gaps.pop_back();
@@ -205,7 +211,6 @@ void pratt1971(vi &gaps, int vSize) {
         if (is3smooth(n))
             smooths.insert(n);
     
-    gaps.clear();
     auto its(smooths.begin());
     while (its != smooths.end()) {
             gaps.push_back(*its++);
@@ -267,11 +272,8 @@ void tokuda1992(vi &gaps, int vSize) {
     gaps.push_back(1);
     for (int i(1); gaps.back() < vSize; i++) {
         double a(pow(2.25, static_cast<double>(i)));
-        a *= 9.0;
-        a -= 4.0;
-        a /= 5.0;
-        int j(a);
-        gaps.push_back(j + 1);
+        int j((9.0 * a - 4.0) / 5.0);
+        gaps.push_back(j | 1);
     }
     std::reverse(gaps.begin(), gaps.end());
 }
