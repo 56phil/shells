@@ -145,7 +145,7 @@ void errorFunction(vi wc, vi cc) {
 
 void makeFile(std::vector<gapStruct> v) {
     std::fstream fst;
-    fst.open("/Users/prh/Keepers/code/cpp/sorts/ShellSorts/list.csv", std::ios::out);
+    fst.open("/Users/prh/Keepers/code/cpp/shells/shellData.csv", std::ios::out);
     fst << "Algorithm";
     for (auto rd : v[0].runData)
         fst << ',' << rd.sampleSize;
@@ -168,11 +168,10 @@ void shell1959(vi &gaps, int vSize) {
 }
 
 void frank1960(vi &gaps, int vSize) {
-    int wSize(static_cast<int>(vSize));
-    gaps.clear();
+    int wSize(static_cast<int>(vSize - (vSize >> 3)));
     while (wSize) {
+        gaps.push_back(wSize | 1);
         wSize >>= 1;
-        gaps.push_back(wSize + 1);
     }
 }
 
