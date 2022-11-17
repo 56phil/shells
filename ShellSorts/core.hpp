@@ -33,7 +33,7 @@ struct my_numpunct : std::numpunct<char> {
 };
 
 struct sortMetrics {
-    long time;
+    u_long time;
     long sampleSize;
     enum errorState {
         ok = 0,
@@ -47,9 +47,12 @@ struct gapStruct {
     std::string name;
     std::function<void(vi &, int)> gapFn;
     std::vector<sortMetrics> runData;
+    bool active;
 };
 
+void cullAlgorithms(vi &, u_long, u_long);
 void errorFunction(vi, vi);
+void getGaps(std::vector<gapStruct> &, u_long);
 void makeFile(std::vector<gapStruct>);
 void setup();
 
