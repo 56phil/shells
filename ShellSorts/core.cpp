@@ -66,6 +66,11 @@ static void makeAlgorithmElements(std::vector<gapStruct> &algorithms) {
     empirical.name = "empirical 2001";
     empirical.gapFn = empirical2001;
     algorithms.emplace_back(empirical);
+
+    gapStruct huffman;
+    huffman.name = "Huffman 2022";
+    huffman.gapFn = huffman2022;
+    algorithms.emplace_back(huffman);
 }
 
 static void summerize(std::vector<gapStruct> &algorithms) {
@@ -85,20 +90,27 @@ static void summerize(std::vector<gapStruct> &algorithms) {
 }
 
 static void work(std::vector<gapStruct> &algorithms) {
-    int ssMin(512), ssMax(1028 << 16), wdth(17);
+    int ssMin(1 << 13), ssMax(1 << 20), wdth(13);
     std::cout << "\nStart: " << ssMin << "  Max: " << ssMax << '\n';
     
     vi orginalCopy, workCopy, checkCopy;
     
-    for (int sampleSize(ssMin - 1); sampleSize < ssMax; (sampleSize <<= 1) |= 1) {
+    for (int sampleSize(ssMin); sampleSize < ssMax; (sampleSize <<= 1)) {
         randomFill(sampleSize, orginalCopy);
         checkCopy = orginalCopy;
         std::sort(checkCopy.begin(), checkCopy.end());
         std::cout << '\n' << formatTime(true, true) << "        n: " << std::right
-        << std::setw(20) << sampleSize << " ----------" << std::endl;
+        << std::setw(16) << sampleSize << " ----------" << std::endl;
         for (auto &a : algorithms) {
             a.gaps.clear();
             a.gapFn(a.gaps, sampleSize);
+            if (a.gaps.front() == 1) {
+                std::reverse(a.gaps.begin(), a.gaps.end());
+            }
+            while (a.gaps.back() > sampleSize) {
+                a.gaps.erase(a.gaps.end());
+            }
+            a.gaps.shrink_to_fit();
             workCopy = orginalCopy;
             auto start = high_resolution_clock::now();
             shellsort(workCopy, a.gaps);
@@ -115,10 +127,10 @@ static void work(std::vector<gapStruct> &algorithms) {
                 errorFunction(workCopy, checkCopy);
             a.runData.emplace_back(tm);
         } // function loop
-        makeFile(algorithms);
     } // sample size loop
     
     summerize(algorithms);
+    makeFile(algorithms);
 }
 
 void setup() {
@@ -145,7 +157,10 @@ void errorFunction(vi wc, vi cc) {
 
 void makeFile(std::vector<gapStruct> v) {
     std::fstream fst;
-    fst.open("/Users/prh/Keepers/code/cpp/shells/shellData.csv", std::ios::out);
+    std::string fName("/Users/prh/Keepers/code/xCode/shells/");
+    fName += formatTime(true, true);
+    fName += "shellSortResults.csv";
+    fst.open(fName, std::ios::out);
     fst << "Algorithm";
     for (auto rd : v[0].runData)
         fst << ',' << rd.sampleSize;
@@ -182,7 +197,6 @@ void hibbard1963(vi &gaps, int vSize) {
         wSize <<= 1;
         wSize |= 1;
     }
-    std::reverse(gaps.begin(), gaps.end());
 }
 
 void papernov1965(vi &gaps, int vSize) {
@@ -191,7 +205,6 @@ void papernov1965(vi &gaps, int vSize) {
     while (gaps.back() < vSize)
         gaps.push_back((2 << n++) + 1);
     gaps.pop_back();
-    std::reverse(gaps.begin(), gaps.end());
 }
 
 bool is3smooth(int n) {
@@ -203,17 +216,11 @@ bool is3smooth(int n) {
 }
 
 void pratt1971(vi &gaps, int vSize) {
-    std::set<int, std::greater<>>smooths;
-    smooths.clear();
-    smooths.insert(1);
-    for (int n(1); n < vSize/3; n++)
+    gaps.clear();
+    for (int n(1); n < vSize; n++)
         if (is3smooth(n))
-            smooths.insert(n);
+            gaps.push_back(n);
     
-    auto its(smooths.begin());
-    while (its != smooths.end()) {
-            gaps.push_back(*its++);
-    }
 }
 
 void kunth1973(vi &gaps, int vSize) {
@@ -223,7 +230,6 @@ void kunth1973(vi &gaps, int vSize) {
         gaps.push_back((k - 1) >> 1);
     } while (gaps.back() < lim);
     gaps.pop_back();
-    std::reverse(gaps.begin(), gaps.end());
 }
 
 bool mySeq(int a, int b) {return a > b;}
@@ -256,7 +262,6 @@ void sedgewick1985(vi &gaps, int vSize) {
         }
     } while ( gaps.back() < vSize);
     gaps.pop_back();
-    std::reverse(gaps.begin(), gaps.end());
 }
 
 void gonnet1991(vi &gaps, int vSize) {
@@ -274,7 +279,6 @@ void tokuda1992(vi &gaps, int vSize) {
         int j((9.0 * a - 4.0) / 5.0);
         gaps.push_back(j | 1);
     }
-    std::reverse(gaps.begin(), gaps.end());
 }
 
 void empirical2001(vi &gaps, int vSize) {
@@ -286,4 +290,12 @@ void empirical2001(vi &gaps, int vSize) {
         nextGap = (nextGap << 3) | 1;
         nextGap = nextGap % 5 ? nextGap : nextGap - 4;
     }
+}
+
+void huffman2022(vi &gaps, int vSize) {
+    gaps.push_back(1);
+    int lim(vSize / 3 + (vSize >> 1));
+    do {
+        gaps.push_back((gaps.back() << 1) + (gaps.back() >> 3));
+    } while (gaps.back() < lim);
 }
