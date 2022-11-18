@@ -18,8 +18,9 @@
 #include <sstream>
 #include <vector>
 
+typedef unsigned long long ull;
 typedef std::vector<int> vi;
-typedef std::vector<u_long> vul;
+typedef std::vector<ull> vul;
 
 #include "formattime.hpp"
 #include "formatMicroSeconds.hpp"
@@ -34,8 +35,8 @@ struct my_numpunct : std::numpunct<char> {
 };
 
 struct sortMetrics {
-    u_long time;
-    u_long sampleSize;
+    ull time;
+    ull sampleSize;
 };
 typedef std::vector<sortMetrics> vsm;
 
@@ -48,30 +49,26 @@ struct gapStruct {
         deactivated = 1 << 1,
         unknown = 1 << 31,
     } status;
-    std::function<void(vul &, u_long)> gapFn;
+    std::function<void(vul &, ull)> gapFn;
     vsm runData;
 };
 typedef std::vector<gapStruct> vgs;
 
-static void getGaps(vgs &, u_long);
-static void cullAlgorithms(vgs &, u_long, u_long);
-static void cullAlgorithms(vgs &, u_long, u_long);
-static void errorFunction(vi, vi);
-static void makeFile(vgs &);
 void setup();
 
-void shell1959(vul &, u_long);
-void frank1960(vul &, u_long);
-void hibbard1963(vul &, u_long);
-void papernov1965(vul &, u_long);
-void pratt1971(vul &, u_long);
-void kunth1973(vul &, u_long);
-void sedgewick1982(vul &, u_long);
-void sedgewick1986(vul &, u_long);
-void gonnet1991(vul &, u_long);
-void tokuda1992(vul &, u_long);
-void empirical2001(vul &, u_long);
-void huffman2022(vul &, u_long);
+void shell1959(vul &, ull);
+void frank1960(vul &, ull);
+void hibbard1963(vul &, ull);
+void papernov1965(vul &, ull);
+void pratt1971(vul &, ull);
+void kunth1973(vul &, ull);
+void sedgewick1982(vul &, ull);
+void sedgewick1985(vul &, ull);
+void sedgewick1986(vul &, ull);
+void gonnet1991(vul &, ull);
+void tokuda1992(vul &, ull);
+void empirical2001(vul &, ull);
+void huffman2022(vul &, ull);
 
 
 #endif /* core_hpp */
