@@ -26,7 +26,7 @@ void randomWrite(const std::string fn, const long nExperiments ) {
     ofs.close();
 }
 
-void randomFill(int n, vi &v) {
+void randomFill(u_long n, vi &v) {
     std::default_random_engine generator;
     std::uniform_int_distribution<int> distribution(std::numeric_limits<int>::min(),
                                                     std::numeric_limits<int>::max());

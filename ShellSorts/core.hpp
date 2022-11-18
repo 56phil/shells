@@ -19,6 +19,7 @@
 #include <vector>
 
 typedef std::vector<int> vi;
+typedef std::vector<u_long> vul;
 
 #include "formattime.hpp"
 #include "formatMicroSeconds.hpp"
@@ -34,40 +35,43 @@ struct my_numpunct : std::numpunct<char> {
 
 struct sortMetrics {
     u_long time;
-    long sampleSize;
-    enum errorState {
-        ok = 0,
-        outOfOrder = 0x00000001,
-        unknown = 0x80000000,
-    } status;
+    u_long sampleSize;
 };
+typedef std::vector<sortMetrics> vsm;
 
 struct gapStruct {
-    vi gaps;
+    vul gaps;
     std::string name;
-    std::function<void(vi &, int)> gapFn;
-    std::vector<sortMetrics> runData;
-    bool active;
+    enum errorState {
+        ok = 0,
+        outOfOrder = 1,
+        deactivated = 1 << 1,
+        unknown = 1 << 31,
+    } status;
+    std::function<void(vul &, u_long)> gapFn;
+    vsm runData;
 };
+typedef std::vector<gapStruct> vgs;
 
-void cullAlgorithms(vi &, u_long, u_long);
-void errorFunction(vi, vi);
-void getGaps(std::vector<gapStruct> &, u_long);
-void makeFile(std::vector<gapStruct>);
+static void getGaps(vgs &, u_long);
+static void cullAlgorithms(vgs &, u_long, u_long);
+static void cullAlgorithms(vgs &, u_long, u_long);
+static void errorFunction(vi, vi);
+static void makeFile(vgs &);
 void setup();
 
-void shell1959(vi &, int);
-void frank1960(vi &, int);
-void hibbard1963(vi &, int);
-void papernov1965(vi &, int);
-void pratt1971(vi &, int);
-void kunth1973(vi &, int);
-void sedgewick1982(vi &, int);
-void sedgewick1985(vi &, int);
-void gonnet1991(vi &, int);
-void tokuda1992(vi &, int);
-void empirical2001(vi &, int);
-void huffman2022(vi &, int);
+void shell1959(vul &, u_long);
+void frank1960(vul &, u_long);
+void hibbard1963(vul &, u_long);
+void papernov1965(vul &, u_long);
+void pratt1971(vul &, u_long);
+void kunth1973(vul &, u_long);
+void sedgewick1982(vul &, u_long);
+void sedgewick1985(vul &, u_long);
+void gonnet1991(vul &, u_long);
+void tokuda1992(vul &, u_long);
+void empirical2001(vul &, u_long);
+void huffman2022(vul &, u_long);
 
 
 #endif /* core_hpp */
