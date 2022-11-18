@@ -10,12 +10,6 @@
 static void makeAlgorithmElements(vgs &algorithms) {
     algorithms.clear();
     
-    gapStruct huffman;
-    huffman.name = "Huffman 2022";
-    huffman.gapFn = huffman2022;
-    huffman.status = gapStruct::ok;
-    algorithms.emplace_back(huffman);
-    
     gapStruct shell;
     shell.name = "Shell 1959";
     shell.gapFn = shell1959;
@@ -60,11 +54,11 @@ static void makeAlgorithmElements(vgs &algorithms) {
     sedgewick82.status = gapStruct::ok;
     algorithms.emplace_back(sedgewick82);
     
-    gapStruct sedgewick85;
-    sedgewick85.name = "Sedgewick 1985";
-    sedgewick85.gapFn = sedgewick1985;
-    sedgewick85.status = gapStruct::ok;
-    algorithms.emplace_back(sedgewick85);
+    gapStruct sedgewick86;
+    sedgewick86.name = "Sedgewick 1986";
+    sedgewick86.gapFn = sedgewick1986;
+    sedgewick86.status = gapStruct::ok;
+    algorithms.emplace_back(sedgewick86);
     
     gapStruct gonnet;
     gonnet.name = "Gonnet & Baeza-Yates 1991";
@@ -83,6 +77,12 @@ static void makeAlgorithmElements(vgs &algorithms) {
     empirical.gapFn = empirical2001;
     empirical.status = gapStruct::ok;
     algorithms.emplace_back(empirical);
+    
+    gapStruct huffman;
+    huffman.name = "Huffman 2022";
+    huffman.gapFn = huffman2022;
+    huffman.status = gapStruct::ok;
+    algorithms.emplace_back(huffman);
 }
 
 static void summerize(vgs &algorithms) {
@@ -299,7 +299,7 @@ void sedgewick1982(vul &gaps, u_long vSize) {
         gaps.push_back(g);
 }
 
-void sedgewick1985(vul &gaps, u_long vSize) {
+void sedgewick1986(vul &gaps, u_long vSize) {
     u_long k(0);
     gaps.push_back(1);
     do {

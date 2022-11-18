@@ -67,7 +67,7 @@ void papernov1965(vul &, u_long);
 void pratt1971(vul &, u_long);
 void kunth1973(vul &, u_long);
 void sedgewick1982(vul &, u_long);
-void sedgewick1985(vul &, u_long);
+void sedgewick1986(vul &, u_long);
 void gonnet1991(vul &, u_long);
 void tokuda1992(vul &, u_long);
 void empirical2001(vul &, u_long);
