@@ -233,7 +233,7 @@ void setup() {
     work(algorithms);
 }
 
-void shell1959(vul &gaps, ull vSize) {
+void shell1959(vull &gaps, ull vSize) {
     ull gap(vSize);
     while (gap > 1) {
         gap >>= 1;
@@ -241,7 +241,7 @@ void shell1959(vul &gaps, ull vSize) {
     }
 }
 
-void frank1960(vul &gaps, ull vSize) {
+void frank1960(vull &gaps, ull vSize) {
     ull gap(vSize >> 1);
     while (gap) {
         gaps.push_back(gap | 1);
@@ -249,7 +249,7 @@ void frank1960(vul &gaps, ull vSize) {
     }
 }
 
-void hibbard1963(vul &gaps, ull vSize) {
+void hibbard1963(vull &gaps, ull vSize) {
     ull gap(1);
     while (gap  < vSize) {
         gaps.push_back(gap);
@@ -258,7 +258,7 @@ void hibbard1963(vul &gaps, ull vSize) {
     }
 }
 
-void papernov1965(vul &gaps, ull vSize) {
+void papernov1965(vull &gaps, ull vSize) {
     ull n(1);
     gaps.push_back(n);
     while (gaps.back() < vSize)
@@ -274,7 +274,7 @@ bool is3smooth(ull n) {
     return n == 1;
 }
 
-void pratt1971(vul &gaps, ull vSize) {
+void pratt1971(vull &gaps, ull vSize) {
     gaps.clear();
     for (ull n(1); n < vSize; n++)
         if (is3smooth(n))
@@ -282,7 +282,7 @@ void pratt1971(vul &gaps, ull vSize) {
     
 }
 
-void kunth1973(vul &gaps, ull vSize) {
+void kunth1973(vull &gaps, ull vSize) {
     ull k(1), lim(vSize / 3);
     do {
         k *= 3;
@@ -293,7 +293,7 @@ void kunth1973(vul &gaps, ull vSize) {
 
 bool mySeq(ull a, ull b) {return a > b;}
 
-void sedgewick1982(vul &gaps, ull vSize) {
+void sedgewick1982(vull &gaps, ull vSize) {
     ull k4(4), k2(1), gap(0), lim(vSize - (vSize / 8));
     std::set<ull, std::greater<>> gSet;
     gSet.insert(1);
@@ -316,7 +316,7 @@ ull powull(ull b, int e) {
     return j;
 }
 
-void sedgewick1985(vul &gaps, ull vSize) {
+void sedgewick1985(vull &gaps, ull vSize) {
     gaps.push_back(1);
     gaps.push_back(3);
     
@@ -325,7 +325,7 @@ void sedgewick1985(vul &gaps, ull vSize) {
     }
 }
 
-void sedgewick1986(vul &gaps, ull vSize) {
+void sedgewick1986(vull &gaps, ull vSize) {
      ull k(0);
     gaps.push_back(1);
     do {
@@ -338,7 +338,7 @@ void sedgewick1986(vul &gaps, ull vSize) {
     gaps.pop_back();
 }
 
-void gonnet1991(vul &gaps, ull vSize) {
+void gonnet1991(vull &gaps, ull vSize) {
     ull k(vSize);
     while (k > 1) {
         k = (5 * k - 1) / 11;
@@ -347,7 +347,7 @@ void gonnet1991(vul &gaps, ull vSize) {
     }
 }
 
-void tokuda1992(vul &gaps, ull vSize) {
+void tokuda1992(vull &gaps, ull vSize) {
     gaps.push_back(1);
     for (ull i(1); gaps.back() < vSize; i++) {
         double a(pow(2.25, static_cast<double>(i)));
@@ -356,8 +356,8 @@ void tokuda1992(vul &gaps, ull vSize) {
     }
 }
 
-void empirical2001(vul &gaps, ull vSize) {
-    vul t {701, 301, 132, 57, 23, 10, 4, 1};
+void empirical2001(vull &gaps, ull vSize) {
+    vull t {701, 301, 132, 57, 23, 10, 4, 1};
     gaps = t;
     ull nextGap((gaps.front() << 2) | 1);
     while (nextGap < vSize) {
@@ -367,7 +367,7 @@ void empirical2001(vul &gaps, ull vSize) {
     }
 }
 
-void huffman2022(vul &gaps, ull vSize) {
+void huffman2022(vull &gaps, ull vSize) {
     gaps.push_back(1);
     ull lim(vSize / 3 + (vSize >> 1));
     while (gaps.back() < lim) {

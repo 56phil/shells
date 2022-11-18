@@ -10,8 +10,8 @@
 		31DF99A227726B8500C98BA8 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 31DF99A127726B8500C98BA8 /* main.cpp */; };
 		31DF99AA27726CBC00C98BA8 /* core.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 31DF99A827726CBC00C98BA8 /* core.cpp */; };
 		31DF99AD277272F000C98BA8 /* shell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 31DF99AC277272F000C98BA8 /* shell.cpp */; };
-		31DF99B4277273C700C98BA8 /* formattime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 31DF99AE277273C700C98BA8 /* formattime.cpp */; };
-		31DF99B5277273C700C98BA8 /* verifyarray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 31DF99AF277273C700C98BA8 /* verifyarray.cpp */; };
+		31DF99B4277273C700C98BA8 /* formatTime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 31DF99AE277273C700C98BA8 /* formatTime.cpp */; };
+		31DF99B5277273C700C98BA8 /* verifyArray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 31DF99AF277273C700C98BA8 /* verifyArray.cpp */; };
 		31DF99B6277273C700C98BA8 /* writeout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 31DF99B3277273C700C98BA8 /* writeout.cpp */; };
 		31DF99B92772C2B200C98BA8 /* formatMicroSeconds.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 31DF99B72772C2B200C98BA8 /* formatMicroSeconds.cpp */; };
 /* End PBXBuildFile section */
@@ -35,11 +35,11 @@
 		31DF99A927726CBC00C98BA8 /* core.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = core.hpp; sourceTree = "<group>"; };
 		31DF99AB277272F000C98BA8 /* shell.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = shell.hpp; sourceTree = "<group>"; };
 		31DF99AC277272F000C98BA8 /* shell.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = shell.cpp; sourceTree = "<group>"; };
-		31DF99AE277273C700C98BA8 /* formattime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = formattime.cpp; sourceTree = "<group>"; };
-		31DF99AF277273C700C98BA8 /* verifyarray.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = verifyarray.cpp; sourceTree = "<group>"; };
-		31DF99B0277273C700C98BA8 /* verifyarray.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = verifyarray.hpp; sourceTree = "<group>"; };
+		31DF99AE277273C700C98BA8 /* formatTime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = formatTime.cpp; sourceTree = "<group>"; };
+		31DF99AF277273C700C98BA8 /* verifyArray.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = verifyArray.cpp; sourceTree = "<group>"; };
+		31DF99B0277273C700C98BA8 /* verifyArray.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = verifyArray.hpp; sourceTree = "<group>"; };
 		31DF99B1277273C700C98BA8 /* writeout.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = writeout.hpp; sourceTree = "<group>"; };
-		31DF99B2277273C700C98BA8 /* formattime.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = formattime.hpp; sourceTree = "<group>"; };
+		31DF99B2277273C700C98BA8 /* formatTime.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = formatTime.hpp; sourceTree = "<group>"; };
 		31DF99B3277273C700C98BA8 /* writeout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = writeout.cpp; sourceTree = "<group>"; };
 		31DF99B72772C2B200C98BA8 /* formatMicroSeconds.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = formatMicroSeconds.cpp; sourceTree = "<group>"; };
 		31DF99B82772C2B200C98BA8 /* formatMicroSeconds.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = formatMicroSeconds.hpp; sourceTree = "<group>"; };
@@ -79,13 +79,13 @@
 				31DF99A927726CBC00C98BA8 /* core.hpp */,
 				31DF99B72772C2B200C98BA8 /* formatMicroSeconds.cpp */,
 				31DF99B82772C2B200C98BA8 /* formatMicroSeconds.hpp */,
-				31DF99AE277273C700C98BA8 /* formattime.cpp */,
-				31DF99B2277273C700C98BA8 /* formattime.hpp */,
+				31DF99AE277273C700C98BA8 /* formatTime.cpp */,
+				31DF99B2277273C700C98BA8 /* formatTime.hpp */,
 				31DF99A127726B8500C98BA8 /* main.cpp */,
 				31DF99AC277272F000C98BA8 /* shell.cpp */,
 				31DF99AB277272F000C98BA8 /* shell.hpp */,
-				31DF99AF277273C700C98BA8 /* verifyarray.cpp */,
-				31DF99B0277273C700C98BA8 /* verifyarray.hpp */,
+				31DF99AF277273C700C98BA8 /* verifyArray.cpp */,
+				31DF99B0277273C700C98BA8 /* verifyArray.hpp */,
 				31DF99B3277273C700C98BA8 /* writeout.cpp */,
 				31DF99B1277273C700C98BA8 /* writeout.hpp */,
 			);
@@ -119,7 +119,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastUpgradeCheck = 1300;
+				LastUpgradeCheck = 1410;
 				TargetAttributes = {
 					31DF999D27726B8500C98BA8 = {
 						CreatedOnToolsVersion = 13.0;
@@ -150,12 +150,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				31DF99B92772C2B200C98BA8 /* formatMicroSeconds.cpp in Sources */,
-				31DF99B5277273C700C98BA8 /* verifyarray.cpp in Sources */,
+				31DF99B5277273C700C98BA8 /* verifyArray.cpp in Sources */,
 				31DF99AA27726CBC00C98BA8 /* core.cpp in Sources */,
 				31DF99AD277272F000C98BA8 /* shell.cpp in Sources */,
 				31DF99A227726B8500C98BA8 /* main.cpp in Sources */,
 				31DF99B6277273C700C98BA8 /* writeout.cpp in Sources */,
-				31DF99B4277273C700C98BA8 /* formattime.cpp in Sources */,
+				31DF99B4277273C700C98BA8 /* formatTime.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -196,6 +196,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -255,6 +256,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -276,7 +278,9 @@
 		31DF99A627726B8500C98BA8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = SD648P3Y6K;
 				ENABLE_HARDENED_RUNTIME = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -286,7 +290,9 @@
 		31DF99A727726B8500C98BA8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = SD648P3Y6K;
 				ENABLE_HARDENED_RUNTIME = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
