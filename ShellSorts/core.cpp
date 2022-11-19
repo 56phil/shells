@@ -150,12 +150,11 @@ static void summerize(vgs &algorithms) {
     std::cout << std::endl;
 }
 
-static void cullAlgorithms(vgs &algorithms, ull totalFuncTime, ull activeFunctionCount) {
+static void cullAlgorithms(vgs &algorithms, ull averageFuncTime) {
     /*
      Deactivates algorithms that had subpar sort times
      */
-    ull avgFuncTime(totalFuncTime / activeFunctionCount);
-    ull lim(avgFuncTime + (avgFuncTime >> 3));
+    ull lim(averageFuncTime + (averageFuncTime >> 3));
     
     for (auto &a : algorithms) {
         if (a.status == gapStruct::ok && a.runData.back().time > lim) {
@@ -183,7 +182,6 @@ static void getGaps(vgs &algorithms, ull sampleSize) {
 static void work(vgs &algorithms) {
     int wdth(11);
     ull  ssMin(1 << 20), ssMax(1 << 30), totalFuncTime(0), activeFunctionCount(0);
-    ssMax *= 16;
     ssMin -= 1;
     ssMax -= 1;
     std::cout << "\nStart: " << ssMin << "  Max: " << ssMax << '\n';
@@ -208,18 +206,18 @@ static void work(vgs &algorithms) {
                 std::cout << formatTime(false, true) << std::right << std::setw(31)
                 << a.name << ": " <<std::setw(wdth) <<std::right << duration << " µs"
                 << convertMicroSeconds(duration) << "\n";
-                sortMetrics tm;
+                sortMetrics srtMetrics;
                 a.status = verify(workCopy, checkCopy) ? gapStruct::ok : gapStruct::outOfOrder;
-                tm.time = duration;
-                tm.sampleSize = sampleSize;
+                srtMetrics.time = duration;
+                srtMetrics.sampleSize = sampleSize;
                 if (a.gapStruct::status == a.gapStruct::outOfOrder)
                     errorFunction(workCopy, checkCopy);
-                a.runData.emplace_back(tm);
+                a.runData.emplace_back(srtMetrics);
                 totalFuncTime += duration;
                 activeFunctionCount++;
             }
         } // function loop
-        cullAlgorithms(algorithms, totalFuncTime, activeFunctionCount);
+        cullAlgorithms(algorithms, totalFuncTime / activeFunctionCount);
         totalFuncTime = 0;
         activeFunctionCount = 0;
     } // sample size loop
