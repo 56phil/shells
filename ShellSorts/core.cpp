@@ -54,15 +54,9 @@ static void makeAlgorithmElements(vgs &algorithms) {
     sedgewick82.status = gapStruct::ok;
     algorithms.emplace_back(sedgewick82);
     
-    gapStruct sedgewick85;
-    sedgewick85.name = "Sedgewick 1985";
-    sedgewick85.gapFn = sedgewick1982;
-    sedgewick85.status = gapStruct::ok;
-    algorithms.emplace_back(sedgewick85);
-    
     gapStruct sedgewick86;
     sedgewick86.name = "Sedgewick 1986";
-    sedgewick86.gapFn = sedgewick1985;
+    sedgewick86.gapFn = sedgewick1986;
     sedgewick86.status = gapStruct::ok;
     algorithms.emplace_back(sedgewick86);
     
@@ -150,11 +144,11 @@ static void summerize(vgs &algorithms) {
     std::cout << std::endl;
 }
 
-static void cullAlgorithms(vgs &algorithms, ull averageFuncTime) {
+static void cullSlowerAlgorithms(vgs &algorithms, ull averageFuncTime) {
     /*
      Deactivates algorithms that had subpar sort times
      */
-    ull lim(averageFuncTime + (averageFuncTime >> 3));
+    ull lim(averageFuncTime + (averageFuncTime >> 1));
     
     for (auto &a : algorithms) {
         if (a.status == gapStruct::ok && a.runData.back().time > lim) {
@@ -179,56 +173,72 @@ static void getGaps(vgs &algorithms, ull sampleSize) {
     }
 }
 
+static void traverseAlgorithmVector(ull &activeFuncCount, vgs &algorithms, vi &checkCopy, const vi &orginalCopy, ull sampleSize, ull &totalFuncTime, int wdth, vi &workCopy) {
+    for (auto &a : algorithms) {
+        if (a.status == gapStruct::ok) {
+            workCopy = orginalCopy;
+            auto start = high_resolution_clock::now();
+            shellsort(workCopy, a.gaps);
+            auto stop = high_resolution_clock::now();
+            long duration = duration_cast<microseconds>(stop - start).count();
+            std::cout << formatTime(false, true) << std::right << std::setw(31)
+            << a.name << ": " <<std::setw(wdth) <<std::right << duration << " µs"
+            << convertMicroSeconds(duration) << "\n";
+            sortMetrics sortMetrics;
+            a.status = verify(workCopy, checkCopy) ? gapStruct::ok : gapStruct::outOfOrder;
+            sortMetrics.time = duration;
+            sortMetrics.sampleSize = sampleSize;
+            if (a.gapStruct::status == a.gapStruct::outOfOrder)
+                errorFunction(workCopy, checkCopy);
+            a.runData.emplace_back(sortMetrics);
+            totalFuncTime += duration;
+            activeFuncCount++;
+        }
+    }
+}
+
+static void runActiveAlgorithms(vgs &algorithms, vi &checkCopy, const vi &orginalCopy, ull sampleSize,  int wdth, vi &workCopy) {
+    ull totalFuncTime(0), activeFuncCount(0);
+    getGaps(algorithms, sampleSize);
+    traverseAlgorithmVector(activeFuncCount, algorithms, checkCopy, orginalCopy, sampleSize, totalFuncTime, wdth, workCopy);
+    cullSlowerAlgorithms(algorithms, totalFuncTime / activeFuncCount);
+    totalFuncTime = 0;
+    activeFuncCount = 0;
+}
+
+static void eoj(vgs &algorithms) {
+    summerize(algorithms);
+    makeFile(algorithms);
+}
+
+static void prep4size(vi &checkCopy, vi &orginalCopy, ull sampleSize) {
+    randomFill(sampleSize, orginalCopy);
+    orginalCopy.shrink_to_fit();
+    checkCopy = orginalCopy;
+    std::sort(checkCopy.begin(), checkCopy.end());
+    std::cout << '\n' << formatTime(true, true) << " n: " << sampleSize << std::endl;
+}
+
 static void work(vgs &algorithms) {
     int wdth(11);
-    ull  ssMin(1 << 20), ssMax(1 << 30), totalFuncTime(0), activeFunctionCount(0);
-    ssMin -= 1;
-    ssMax -= 1;
+    ull  ssMin(100000), ssMax(1000000000000);
     std::cout << "\nStart: " << ssMin << "  Max: " << ssMax << '\n';
     
     vi orginalCopy, workCopy, checkCopy;
     
-    for (ull sampleSize(ssMin); sampleSize < ssMax; sampleSize <<= 1) {
-        sampleSize -= 1;
-        randomFill(sampleSize, orginalCopy);
-        checkCopy = orginalCopy;
-        std::sort(checkCopy.begin(), checkCopy.end());
-        std::cout << '\n' << formatTime(true, true) << "        n: " << std::right
-        << std::setw(wdth + 3) << sampleSize << " ----------" << std::endl;
-        getGaps(algorithms, sampleSize);
-        for (auto &a : algorithms) {
-            if (a.status == gapStruct::ok) {
-                workCopy = orginalCopy;
-                auto start = high_resolution_clock::now();
-                shellsort(workCopy, a.gaps);
-                auto stop = high_resolution_clock::now();
-                long duration = duration_cast<microseconds>(stop - start).count();
-                std::cout << formatTime(false, true) << std::right << std::setw(31)
-                << a.name << ": " <<std::setw(wdth) <<std::right << duration << " µs"
-                << convertMicroSeconds(duration) << "\n";
-                sortMetrics srtMetrics;
-                a.status = verify(workCopy, checkCopy) ? gapStruct::ok : gapStruct::outOfOrder;
-                srtMetrics.time = duration;
-                srtMetrics.sampleSize = sampleSize;
-                if (a.gapStruct::status == a.gapStruct::outOfOrder)
-                    errorFunction(workCopy, checkCopy);
-                a.runData.emplace_back(srtMetrics);
-                totalFuncTime += duration;
-                activeFunctionCount++;
-            }
-        } // function loop
-        cullAlgorithms(algorithms, totalFuncTime / activeFunctionCount);
-        totalFuncTime = 0;
-        activeFunctionCount = 0;
-    } // sample size loop
-    summerize(algorithms);
-    makeFile(algorithms);
+    for (ull sampleSize(ssMin); sampleSize < ssMax; sampleSize *= 10) {
+        prep4size(checkCopy, orginalCopy, sampleSize);
+        runActiveAlgorithms(algorithms, checkCopy, orginalCopy, sampleSize, wdth, workCopy);
+    }
 }
 
 void setup() {
     vgs algorithms;
     makeAlgorithmElements(algorithms);
-    work(algorithms);
+    for (int i(0); i < 3; i++) {
+        work(algorithms);
+    }
+    eoj(algorithms);
 }
 
 void shell1959(vull &gaps, ull vSize) {
@@ -272,6 +282,12 @@ bool is3smooth(ull n) {
     return n == 1;
 }
 
+bool is5smooth(ull n) {
+    while (n % 5 == 0)
+        n /= 5;
+    return is3smooth(n);
+}
+
 void pratt1971(vull &gaps, ull vSize) {
     gaps.clear();
     for (ull n(1); n < vSize; n++)
@@ -304,23 +320,6 @@ void sedgewick1982(vull &gaps, ull vSize) {
     gaps.clear();
     for (ull g : gSet)
         gaps.push_back(g);
-}
-
-ull powull(ull b, int e) {
-    ull j(1);
-    for (int i(0); i < e; i++) {
-        j *= b;
-    }
-    return j;
-}
-
-void sedgewick1985(vull &gaps, ull vSize) {
-    gaps.push_back(1);
-    gaps.push_back(3);
-    
-    while (gaps.back() < vSize / 3) {
-        gaps.push_back(static_cast<ull>(sqrt(powull(gaps.back(), 3))) | 1);
-    }
 }
 
 void sedgewick1986(vull &gaps, ull vSize) {
@@ -369,11 +368,11 @@ void huffman2022(vull &gaps, ull vSize) {
     gaps.push_back(1);
     ull lim(vSize / 3 + (vSize >> 1));
     while (gaps.back() < lim) {
-        ull k(3), gap(gaps.back() << 1), t(gaps.back());
+        ull k(2), gap(gaps.back() << 1), t(gaps.back());
         while (t > 0) {
             t = gaps.back() >> k;
             gap += t;
-            k += 2;
+            k += 1;
         }
         gaps.push_back(gap);
     }
