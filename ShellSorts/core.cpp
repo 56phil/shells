@@ -148,7 +148,7 @@ static void cullSlowerAlgorithms(vgs &algorithms, ull averageFuncTime) {
     /*
      Deactivates algorithms that had subpar sort times
      */
-    ull lim(averageFuncTime + (averageFuncTime >> 1));
+    ull lim(averageFuncTime + (averageFuncTime >> 2));
     
     for (auto &a : algorithms) {
         if (a.status == gapStruct::ok && a.runData.back().time > lim) {
@@ -211,24 +211,26 @@ static void eoj(vgs &algorithms) {
     makeFile(algorithms);
 }
 
-static void prep4size(vi &checkCopy, vi &orginalCopy, ull sampleSize) {
-    randomFill(sampleSize, orginalCopy);
+static void prep4size(vi &checkCopy, vi &orginalCopy, ull sampleSize, int distro) {
+    randomFill(sampleSize, orginalCopy, distro);
     orginalCopy.shrink_to_fit();
     checkCopy = orginalCopy;
     std::sort(checkCopy.begin(), checkCopy.end());
-    std::cout << '\n' << formatTime(true, true) << " n: " << sampleSize << std::endl;
+    std::cout << '\n' << formatTime(true, true) << " n: " << sampleSize << " Distribution: " << (distro == 0 ? "Uniform" : "Normal") << std::endl;
 }
 
 static void work(vgs &algorithms) {
-    int wdth(11);
-    ull  ssMin(100000), ssMax(1000000000000);
+    int wdth(14);
+    ull  ssMin(100000), ssMax(1000000000);
     std::cout << "\nStart: " << ssMin << "  Max: " << ssMax << '\n';
     
     vi orginalCopy, workCopy, checkCopy;
     
     for (ull sampleSize(ssMin); sampleSize < ssMax; sampleSize *= 10) {
-        prep4size(checkCopy, orginalCopy, sampleSize);
-        runActiveAlgorithms(algorithms, checkCopy, orginalCopy, sampleSize, wdth, workCopy);
+        for (int distro(0); distro < 2; distro++) {
+            prep4size(checkCopy, orginalCopy, sampleSize, distro);
+            runActiveAlgorithms(algorithms, checkCopy, orginalCopy, sampleSize, wdth, workCopy);
+        }
     }
 }
 
@@ -366,6 +368,8 @@ void empirical2001(vull &gaps, ull vSize) {
 
 void huffman2022(vull &gaps, ull vSize) {
     gaps.push_back(1);
+    gaps.push_back(5);
+    gaps.push_back(11);
     ull lim(vSize / 3 + (vSize >> 1));
     while (gaps.back() < lim) {
         ull k(2), gap(gaps.back() << 1), t(gaps.back());

@@ -11,6 +11,6 @@
 #include "core.hpp"
 
 void randomWrite(const std::string, const long);
-void randomFill(u_long, vi &);
+void randomFill(u_long, vi &, const int);
 
 #endif /* writeout_hpp */
