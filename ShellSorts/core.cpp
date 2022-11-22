@@ -6,6 +6,11 @@
 //
 
 #include "core.hpp"
+static void fillDistros(std::vector<std::string> &distros) {
+    distros.push_back("Uniform");
+    distros.push_back("Berniulli");
+    distros.push_back("Normal");
+}
 
 static void makeAlgorithmElements(vgs &algorithms) {
     algorithms.clear();
@@ -211,23 +216,23 @@ static void eoj(vgs &algorithms) {
     makeFile(algorithms);
 }
 
-static void prep4size(vi &checkCopy, vi &orginalCopy, ul sampleSize, int distro) {
+static void prep4size(vi &checkCopy, vi &orginalCopy, ul sampleSize, std::string distro) {
     randomFill(sampleSize, orginalCopy, distro);
     orginalCopy.shrink_to_fit();
     checkCopy = orginalCopy;
     std::sort(checkCopy.begin(), checkCopy.end());
-    std::cout << '\n' << formatTime(true, true) << " n: " << sampleSize << " Distribution: " << (distro == 0 ? "Uniform" : "Normal") << std::endl;
+    std::cout << '\n' << formatTime(true, true) << " n: " << sampleSize << " Distribution: " << distro << std::endl;
 }
 
-static void work(vgs &algorithms) {
+static void work(vgs &algorithms, std::vector<std::string> &distros) {
     int wdth(14);
-    ul  ssMin(10), ssMax(101);
+    ul  ssMin(10000), ssMax(1000001);
     std::cout << "\nStart: " << ssMin << "  Max: " << ssMax << '\n';
     
     vi orginalCopy, workCopy, checkCopy;
     for (int i(0); i < 1; i++) {
         for (ul sampleSize(ssMin); sampleSize < ssMax; sampleSize *= 10) {
-            for (int distro(0); distro < 2; distro++) {
+            for (auto distro : distros) {
                 prep4size(checkCopy, orginalCopy, sampleSize, distro);
                 runActiveAlgorithms(algorithms, checkCopy, orginalCopy, sampleSize, wdth, workCopy);
             }
@@ -236,9 +241,11 @@ static void work(vgs &algorithms) {
 }
 
 void setup() {
+    std::vector<std::string> distros;
     vgs algorithms;
+    fillDistros(distros);
     makeAlgorithmElements(algorithms);
-    work(algorithms);
+    work(algorithms, distros);
     eoj(algorithms);
 }
 
