@@ -13,14 +13,15 @@
 #include <iomanip>
 #include <fstream>
 #include <locale>
+#include <map>
 #include <random>
 #include <set>
 #include <sstream>
 #include <vector>
 
-typedef unsigned long long ull;
+typedef unsigned long long ul;
 typedef std::vector<int> vi;
-typedef std::vector<ull> vull;
+typedef std::vector<ul> vul;
 
 #include "formatTime.hpp"
 #include "formatMicroSeconds.hpp"
@@ -35,13 +36,13 @@ struct my_numpunct : std::numpunct<char> {
 };
 
 struct sortMetrics {
-    ull time;
-    ull sampleSize;
+    ul time;
+    ul sampleSize;
 };
 typedef std::vector<sortMetrics> vsm;
 
 struct gapStruct {
-    vull gaps;
+    vul gaps;
     std::string name;
     enum errorState {
         ok = 0,
@@ -49,26 +50,26 @@ struct gapStruct {
         deactivated = 1 << 1,
         unknown = 1 << 31,
     } status;
-    std::function<void(vull &, ull)> gapFn;
+    std::function<void(vul &, ul)> gapFn;
     vsm runData;
 };
 typedef std::vector<gapStruct> vgs;
 
 void setup();
 
-void shell1959(vull &, ull);
-void frank1960(vull &, ull);
-void hibbard1963(vull &, ull);
-void papernov1965(vull &, ull);
-void pratt1971(vull &, ull);
-void kunth1973(vull &, ull);
-void sedgewick1982(vull &, ull);
-void sedgewick1985(vull &, ull);
-void sedgewick1986(vull &, ull);
-void gonnet1991(vull &, ull);
-void tokuda1992(vull &, ull);
-void empirical2001(vull &, ull);
-void huffman2022(vull &, ull);
+void shell1959(vul &, ul);
+void frank1960(vul &, ul);
+void hibbard1963(vul &, ul);
+void papernov1965(vul &, ul);
+void pratt1971(vul &, ul);
+void kunth1973(vul &, ul);
+void sedgewick1982(vul &, ul);
+void sedgewick1985(vul &, ul);
+void sedgewick1986(vul &, ul);
+void gonnet1991(vul &, ul);
+void tokuda1992(vul &, ul);
+void empirical2001(vul &, ul);
+void huffman2022(vul &, ul);
 
 
 #endif /* core_hpp */

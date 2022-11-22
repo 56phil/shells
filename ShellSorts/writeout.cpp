@@ -8,7 +8,7 @@
 #include "writeout.hpp"
 #include "core.hpp"
 
-void randomWrite(const std::string fn, const ull nExperiments ) {
+void randomWrite(const std::string fn, const ul nExperiments ) {
     
     std::default_random_engine generator;
     std::uniform_int_distribution<int> distribution(std::numeric_limits<int>::min(),

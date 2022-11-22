@@ -144,11 +144,11 @@ static void summerize(vgs &algorithms) {
     std::cout << std::endl;
 }
 
-static void cullSlowerAlgorithms(vgs &algorithms, ull averageFuncTime) {
+static void culSlowerAlgorithms(vgs &algorithms, ul averageFuncTime) {
     /*
      Deactivates algorithms that had subpar sort times
      */
-    ull lim(averageFuncTime + (averageFuncTime >> 2));
+    ul lim(averageFuncTime + (averageFuncTime >> 2));
     
     for (auto &a : algorithms) {
         if (a.status == gapStruct::ok && a.runData.back().time > lim) {
@@ -157,7 +157,7 @@ static void cullSlowerAlgorithms(vgs &algorithms, ull averageFuncTime) {
     }
 }
 
-static void getGaps(vgs &algorithms, ull sampleSize) {
+static void getGaps(vgs &algorithms, ul sampleSize) {
     for (auto &a : algorithms) {
         if (a.status == gapStruct::ok) {
             a.gaps.clear();
@@ -173,7 +173,7 @@ static void getGaps(vgs &algorithms, ull sampleSize) {
     }
 }
 
-static void traverseAlgorithmVector(ull &activeFuncCount, vgs &algorithms, vi &checkCopy, const vi &orginalCopy, ull sampleSize, ull &totalFuncTime, int wdth, vi &workCopy) {
+static void traverseAlgorithmVector(ul &activeFuncCount, vgs &algorithms, vi &checkCopy, const vi &orginalCopy, ul sampleSize, ul &totalFuncTime, int wdth, vi &workCopy) {
     for (auto &a : algorithms) {
         if (a.status == gapStruct::ok) {
             workCopy = orginalCopy;
@@ -197,11 +197,11 @@ static void traverseAlgorithmVector(ull &activeFuncCount, vgs &algorithms, vi &c
     }
 }
 
-static void runActiveAlgorithms(vgs &algorithms, vi &checkCopy, const vi &orginalCopy, ull sampleSize,  int wdth, vi &workCopy) {
-    ull totalFuncTime(0), activeFuncCount(0);
+static void runActiveAlgorithms(vgs &algorithms, vi &checkCopy, const vi &orginalCopy, ul sampleSize,  int wdth, vi &workCopy) {
+    ul totalFuncTime(0), activeFuncCount(0);
     getGaps(algorithms, sampleSize);
     traverseAlgorithmVector(activeFuncCount, algorithms, checkCopy, orginalCopy, sampleSize, totalFuncTime, wdth, workCopy);
-    cullSlowerAlgorithms(algorithms, totalFuncTime / activeFuncCount);
+    culSlowerAlgorithms(algorithms, totalFuncTime / activeFuncCount);
     totalFuncTime = 0;
     activeFuncCount = 0;
 }
@@ -211,7 +211,7 @@ static void eoj(vgs &algorithms) {
     makeFile(algorithms);
 }
 
-static void prep4size(vi &checkCopy, vi &orginalCopy, ull sampleSize, int distro) {
+static void prep4size(vi &checkCopy, vi &orginalCopy, ul sampleSize, int distro) {
     randomFill(sampleSize, orginalCopy, distro);
     orginalCopy.shrink_to_fit();
     checkCopy = orginalCopy;
@@ -221,15 +221,16 @@ static void prep4size(vi &checkCopy, vi &orginalCopy, ull sampleSize, int distro
 
 static void work(vgs &algorithms) {
     int wdth(14);
-    ull  ssMin(100000), ssMax(1000000000);
+    ul  ssMin(10), ssMax(101);
     std::cout << "\nStart: " << ssMin << "  Max: " << ssMax << '\n';
     
     vi orginalCopy, workCopy, checkCopy;
-    
-    for (ull sampleSize(ssMin); sampleSize < ssMax; sampleSize *= 10) {
-        for (int distro(0); distro < 2; distro++) {
-            prep4size(checkCopy, orginalCopy, sampleSize, distro);
-            runActiveAlgorithms(algorithms, checkCopy, orginalCopy, sampleSize, wdth, workCopy);
+    for (int i(0); i < 1; i++) {
+        for (ul sampleSize(ssMin); sampleSize < ssMax; sampleSize *= 10) {
+            for (int distro(0); distro < 2; distro++) {
+                prep4size(checkCopy, orginalCopy, sampleSize, distro);
+                runActiveAlgorithms(algorithms, checkCopy, orginalCopy, sampleSize, wdth, workCopy);
+            }
         }
     }
 }
@@ -237,30 +238,28 @@ static void work(vgs &algorithms) {
 void setup() {
     vgs algorithms;
     makeAlgorithmElements(algorithms);
-    for (int i(0); i < 3; i++) {
-        work(algorithms);
-    }
+    work(algorithms);
     eoj(algorithms);
 }
 
-void shell1959(vull &gaps, ull vSize) {
-    ull gap(vSize);
+void shell1959(vul &gaps, ul vSize) {
+    ul gap(vSize);
     while (gap > 1) {
         gap >>= 1;
         gaps.push_back(gap);
     }
 }
 
-void frank1960(vull &gaps, ull vSize) {
-    ull gap(vSize >> 1);
+void frank1960(vul &gaps, ul vSize) {
+    ul gap(vSize >> 1);
     while (gap) {
         gaps.push_back(gap | 1);
         gap >>= 1;
     }
 }
 
-void hibbard1963(vull &gaps, ull vSize) {
-    ull gap(1);
+void hibbard1963(vul &gaps, ul vSize) {
+    ul gap(1);
     while (gap  < vSize) {
         gaps.push_back(gap);
         gap <<= 1;
@@ -268,15 +267,15 @@ void hibbard1963(vull &gaps, ull vSize) {
     }
 }
 
-void papernov1965(vull &gaps, ull vSize) {
-    ull n(1);
+void papernov1965(vul &gaps, ul vSize) {
+    ul n(1);
     gaps.push_back(n);
     while (gaps.back() < vSize)
         gaps.push_back((2 << n++) + 1);
     gaps.pop_back();
 }
 
-bool is3smooth(ull n) {
+bool is3smooth(ul n) {
     while (n % 2 == 0)
         n /= 2;
     while (n % 3 == 0)
@@ -284,22 +283,22 @@ bool is3smooth(ull n) {
     return n == 1;
 }
 
-bool is5smooth(ull n) {
+bool is5smooth(ul n) {
     while (n % 5 == 0)
         n /= 5;
     return is3smooth(n);
 }
 
-void pratt1971(vull &gaps, ull vSize) {
+void pratt1971(vul &gaps, ul vSize) {
     gaps.clear();
-    for (ull n(1); n < vSize; n++)
+    for (ul n(1); n < vSize; n++)
         if (is3smooth(n))
             gaps.push_back(n);
     
 }
 
-void kunth1973(vull &gaps, ull vSize) {
-    ull k(1), lim(vSize / 3);
+void kunth1973(vul &gaps, ul vSize) {
+    ul k(1), lim(vSize / 3);
     do {
         k *= 3;
         gaps.push_back((k - 1) >> 1);
@@ -307,11 +306,11 @@ void kunth1973(vull &gaps, ull vSize) {
     gaps.pop_back();
 }
 
-bool mySeq(ull a, ull b) {return a > b;}
+bool mySeq(ul a, ul b) {return a > b;}
 
-void sedgewick1982(vull &gaps, ull vSize) {
-    ull k4(4), k2(1), gap(0), lim(vSize - (vSize / 8));
-    std::set<ull, std::greater<>> gSet;
+void sedgewick1982(vul &gaps, ul vSize) {
+    ul k4(4), k2(1), gap(0), lim(vSize - (vSize / 8));
+    std::set<ul, std::greater<>> gSet;
     gSet.insert(1);
     do {
         gap = k4 + 3 * k2 + 1;
@@ -320,12 +319,12 @@ void sedgewick1982(vull &gaps, ull vSize) {
         k2 *= 2;
     } while (gap < lim);
     gaps.clear();
-    for (ull g : gSet)
+    for (ul g : gSet)
         gaps.push_back(g);
 }
 
-void sedgewick1986(vull &gaps, ull vSize) {
-     ull k(0);
+void sedgewick1986(vul &gaps, ul vSize) {
+     ul k(0);
     gaps.push_back(1);
     do {
         if (++k & 1) {
@@ -337,8 +336,8 @@ void sedgewick1986(vull &gaps, ull vSize) {
     gaps.pop_back();
 }
 
-void gonnet1991(vull &gaps, ull vSize) {
-    ull k(vSize);
+void gonnet1991(vul &gaps, ul vSize) {
+    ul k(vSize);
     while (k > 1) {
         k = (5 * k - 1) / 11;
         k = k > 1 ? k : 1;
@@ -346,19 +345,19 @@ void gonnet1991(vull &gaps, ull vSize) {
     }
 }
 
-void tokuda1992(vull &gaps, ull vSize) {
+void tokuda1992(vul &gaps, ul vSize) {
     gaps.push_back(1);
-    for (ull i(1); gaps.back() < vSize; i++) {
+    for (ul i(1); gaps.back() < vSize; i++) {
         double a(pow(2.25, static_cast<double>(i)));
-        ull j((9.0 * a - 4.0) / 5.0);
+        ul j((9.0 * a - 4.0) / 5.0);
         gaps.push_back(j | 1);
     }
 }
 
-void empirical2001(vull &gaps, ull vSize) {
-    vull t {701, 301, 132, 57, 23, 10, 4, 1};
+void empirical2001(vul &gaps, ul vSize) {
+    vul t {701, 301, 132, 57, 23, 10, 4, 1};
     gaps = t;
-    ull nextGap((gaps.front() << 2) | 1);
+    ul nextGap((gaps.front() << 2) | 1);
     while (nextGap < vSize) {
         gaps.insert(gaps.begin(), nextGap);
         nextGap = (nextGap << 3) | 1;
@@ -366,13 +365,13 @@ void empirical2001(vull &gaps, ull vSize) {
     }
 }
 
-void huffman2022(vull &gaps, ull vSize) {
+void huffman2022(vul &gaps, ul vSize) {
     gaps.push_back(1);
     gaps.push_back(5);
     gaps.push_back(11);
-    ull lim(vSize / 3 + (vSize >> 1));
+    ul lim(vSize / 3 + (vSize >> 1));
     while (gaps.back() < lim) {
-        ull k(2), gap(gaps.back() << 1), t(gaps.back());
+        ul k(2), gap(gaps.back() << 1), t(gaps.back());
         while (t > 0) {
             t = gaps.back() >> k;
             gap += t;
