@@ -70,7 +70,10 @@ void sedgewick1986(vul &, ul);
 void gonnet1991(vul &, ul);
 void tokuda1992(vul &, ul);
 void empirical2001(vul &, ul);
-void huffman2022(vul &, ul);
+void huffman_A2022(vul &, ul);
+void huffman_B2022(vul &, ul);
+void huffman_C2022(vul &, ul);
+void huffman_D2022(vul &, ul);
 
 
 #endif /* core_hpp */
