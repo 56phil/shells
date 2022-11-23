@@ -32,6 +32,9 @@ void randomFill(ul n, vi &v, std::string distroName) {
     std::normal_distribution<int> distU(rMin, rMax);
     std::uniform_int_distribution<int> distN(rMin,rMax);
     std::bernoulli_distribution distBe(0.5);
+    std::binomial_distribution<int> distBi(rMin, rMax);
+    std::lognormal_distribution<int> distLo(rMin, rMax);
+    std::chi_squared_distribution<int> distCh(2.8);
     
     if (distroName == "Normal") {
         while (n--) {
@@ -41,6 +44,21 @@ void randomFill(ul n, vi &v, std::string distroName) {
     } else if(distroName == "Bernoulli") {
         while (n--) {
             int r(distBe(generator));
+            v.push_back(r);
+        }
+    } else if(distroName == "Chi_Squared") {
+        while (n--) {
+            int r(distCh(generator));
+            v.push_back(r);
+        }
+    } else if(distroName == "Lognormal") {
+        while (n--) {
+            int r(distBi(generator));
+            v.push_back(r);
+        }
+    } else if(distroName == "Binomial") {
+        while (n--) {
+            int r(distBi(generator));
             v.push_back(r);
         }
     } else {

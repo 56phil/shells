@@ -7,9 +7,12 @@
 
 #include "core.hpp"
 static void fillDistros(std::vector<std::string> &distros) {
-    distros.push_back("Uniform");
-    distros.push_back("Berniulli");
+    distros.push_back("Bernoulli");
+    distros.push_back("Binomial");
+    distros.push_back("Chi_Squared");
     distros.push_back("Normal");
+    distros.push_back("Lognormal");
+    distros.push_back("Uniform");
 }
 
 static void makeAlgorithmElements(vgs &algorithms) {
@@ -105,32 +108,60 @@ static void errorFunction(vi &wc, vi &cc) {
         << std::right << std::setw(w) << *itw++ << '\n';
 }
 
-static void makeFile(vgs &v) {
-    std::fstream fst, gst;
+static void doTimes(vgs algorithms, std::string fnBase) {
+    std::fstream fst;
+    fnBase += formatTime(true, true);
+    fnBase += "-Results.csv";
+    fst.open(fnBase, std::ios::out);
+    fst << "Algorithm" << '\n';
+    for (auto a : algorithms) {
+        fst << a.name;
+        for (auto pair : a.runData) {
+            fst << ',' << pair.first;
+            for (auto pp : pair.second) {
+                fst << ',' << pp.time;
+            }
+            fst << '\n';
+        }
+    }
+    fst << '\n';
+//    for (auto s : algorithms) {
+//        fst << s.name;
+//        for (auto rd : s.runData) {
+//            fst << rd.first << '\n';
+//            for (auto rds : rd.second) {
+//                fst << ',' << rds.time;
+//            }
+//            fst << '\n';
+//        }
+//        fst << '\n';
+//    }
+    fst.close();
+
+}
+
+static void doGaps(vgs algorithms, std::string fnBase) {
+    std::fstream gst;
     std::string fName("/Users/prh/Keepers/code/xCode/shells/");
     fName += formatTime(true, true);
-    std::string fNameResults = fName + "-Results.csv";
     std::string fNameGaps = fName + "-Gaps.csv";
-    fst.open(fNameResults, std::ios::out);
     gst.open(fNameGaps, std::ios::out);
-    fst << "Algorithm";
-    for (auto rd : v[0].runData)
-        fst << ',' << rd.sampleSize;
-    fst << '\n';
-    for (auto s : v) {
-        fst << s.name;
-        gst << s.name;
-        for (auto rd : s.runData)
-            fst << ',' << rd.time;
-        fst << '\n';
-        for (auto n : s.gaps) {
-            gst << ',';
-            gst << n;
+    gst << "Algorithm" << '\n';
+    for (auto a : algorithms) {
+        gst << a.name;
+        for (auto gap : a.gaps) {
+            gst << ',' << gap;
         }
         gst << '\n';
     }
-    fst.close();
+    gst << std::endl;
     gst.close();
+}
+
+static void makeFile(vgs algorithms) {
+    std::string fnBase("/Users/prh/Keepers/code/xCode/shells/");
+    doTimes(algorithms, fnBase);
+    doGaps(algorithms, fnBase);
 }
 
 static void summerize(vgs &algorithms) {
@@ -140,13 +171,17 @@ static void summerize(vgs &algorithms) {
         for (auto itr(a.gaps.rbegin()); n--; itr++)
             std::cout << "  " << *itr;
         std::cout << '\n';
-        for (auto d : a.runData)
-            std::cout << std::right << std::setw(12) << d.sampleSize
-            << std::right << std::setw(14) << d.time
-            << std::setw(18)<< convertMicroSeconds(d.time) << '\n';
-        std::cout << '\n';
+        for (auto pair : a.runData) {
+            std::cout << pair.first << std::endl;
+            for (auto t : pair.second) {
+                std::cout << std::right << std::setw(12) << t.sampleSize
+                << std::right << std::setw(14) << t.time
+                << std::setw(18)<< convertMicroSeconds(t.time) << '\n';
+            }
+            std::cout << '\n';
+        }
+        std::cout << std::endl;
     }
-    std::cout << std::endl;
 }
 
 static void culSlowerAlgorithms(vgs &algorithms, ul averageFuncTime) {
@@ -156,8 +191,12 @@ static void culSlowerAlgorithms(vgs &algorithms, ul averageFuncTime) {
     ul lim(averageFuncTime + (averageFuncTime >> 2));
     
     for (auto &a : algorithms) {
-        if (a.status == gapStruct::ok && a.runData.back().time > lim) {
-            a.status = gapStruct::deactivated;
+        for (auto &pair : a.runData) {
+            if (a.status == gapStruct::ok && pair.second.back().time > lim) {
+                a.status = gapStruct::deactivated;
+                std::cout << a.name << " Culled\n";
+                break;
+            }
         }
     }
 }
@@ -178,7 +217,7 @@ static void getGaps(vgs &algorithms, ul sampleSize) {
     }
 }
 
-static void traverseAlgorithmVector(ul &activeFuncCount, vgs &algorithms, vi &checkCopy, const vi &orginalCopy, ul sampleSize, ul &totalFuncTime, int wdth, vi &workCopy) {
+static void traverseAlgorithmVector(ul &activeFuncCount, vgs &algorithms, vi &checkCopy, const vi &orginalCopy, ul sampleSize, ul &totalFuncTime, int wdth, vi &workCopy, std::string distroName) {
     for (auto &a : algorithms) {
         if (a.status == gapStruct::ok) {
             workCopy = orginalCopy;
@@ -195,17 +234,17 @@ static void traverseAlgorithmVector(ul &activeFuncCount, vgs &algorithms, vi &ch
             sortMetrics.sampleSize = sampleSize;
             if (a.gapStruct::status == a.gapStruct::outOfOrder)
                 errorFunction(workCopy, checkCopy);
-            a.runData.emplace_back(sortMetrics);
+            a.runData[distroName].emplace_back(sortMetrics);
             totalFuncTime += duration;
             activeFuncCount++;
         }
     }
 }
 
-static void runActiveAlgorithms(vgs &algorithms, vi &checkCopy, const vi &orginalCopy, ul sampleSize,  int wdth, vi &workCopy) {
+static void runActiveAlgorithms(vgs &algorithms, vi &checkCopy, const vi &orginalCopy, ul sampleSize,  int wdth, vi &workCopy, std::string distroName) {
     ul totalFuncTime(0), activeFuncCount(0);
     getGaps(algorithms, sampleSize);
-    traverseAlgorithmVector(activeFuncCount, algorithms, checkCopy, orginalCopy, sampleSize, totalFuncTime, wdth, workCopy);
+    traverseAlgorithmVector(activeFuncCount, algorithms, checkCopy, orginalCopy, sampleSize, totalFuncTime, wdth, workCopy, distroName);
     culSlowerAlgorithms(algorithms, totalFuncTime / activeFuncCount);
     totalFuncTime = 0;
     activeFuncCount = 0;
@@ -226,15 +265,15 @@ static void prep4size(vi &checkCopy, vi &orginalCopy, ul sampleSize, std::string
 
 static void work(vgs &algorithms, std::vector<std::string> &distros) {
     int wdth(14);
-    ul  ssMin(10000), ssMax(1000001);
+    ul  ssMin(1000000), ssMax(5000000001);
     std::cout << "\nStart: " << ssMin << "  Max: " << ssMax << '\n';
     
     vi orginalCopy, workCopy, checkCopy;
     for (int i(0); i < 1; i++) {
-        for (ul sampleSize(ssMin); sampleSize < ssMax; sampleSize *= 10) {
+        for (ul sampleSize(ssMin); sampleSize < ssMax; sampleSize *= 20) {
             for (auto distro : distros) {
                 prep4size(checkCopy, orginalCopy, sampleSize, distro);
-                runActiveAlgorithms(algorithms, checkCopy, orginalCopy, sampleSize, wdth, workCopy);
+                runActiveAlgorithms(algorithms, checkCopy, orginalCopy, sampleSize, wdth, workCopy, distro);
             }
         }
     }

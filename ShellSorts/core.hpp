@@ -40,6 +40,7 @@ struct sortMetrics {
     ul sampleSize;
 };
 typedef std::vector<sortMetrics> vsm;
+typedef std::map<std::string, vsm> msm;
 
 struct gapStruct {
     vul gaps;
@@ -51,7 +52,7 @@ struct gapStruct {
         unknown = 1 << 31,
     } status;
     std::function<void(vul &, ul)> gapFn;
-    vsm runData;
+    msm runData;
 };
 typedef std::vector<gapStruct> vgs;
 
