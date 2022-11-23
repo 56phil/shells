@@ -35,6 +35,9 @@ void randomFill(ul n, vi &v, std::string distroName) {
     std::binomial_distribution<int> distBi(rMin, rMax);
     std::lognormal_distribution<int> distLo(rMin, rMax);
     std::chi_squared_distribution<int> distCh(2.8);
+    std::cauchy_distribution<int> distCa(rMin, rMax);
+    std::fisher_f_distribution<int> distFi(rMin, rMax);
+    std::student_t_distribution<int> distSt(42.0);
     
     if (distroName == "Normal") {
         while (n--) {
@@ -46,7 +49,22 @@ void randomFill(ul n, vi &v, std::string distroName) {
             int r(distBe(generator));
             v.push_back(r);
         }
-    } else if(distroName == "Chi_Squared") {
+    } else if(distroName == "Student T") {
+        while (n--) {
+            int r(distSt(generator));
+            v.push_back(r);
+        }
+    } else if(distroName == "Fisher F") {
+        while (n--) {
+            int r(distFi(generator));
+            v.push_back(r);
+        }
+    } else if(distroName == "Cauchy") {
+        while (n--) {
+            int r(distCa(generator));
+            v.push_back(r);
+        }
+    } else if(distroName == "Chi Squared") {
         while (n--) {
             int r(distCh(generator));
             v.push_back(r);

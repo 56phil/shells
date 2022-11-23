@@ -9,10 +9,13 @@
 static void fillDistros(std::vector<std::string> &distros) {
     distros.push_back("Bernoulli");
     distros.push_back("Binomial");
-    distros.push_back("Chi_Squared");
-    distros.push_back("Normal");
+    distros.push_back("Chi Squared");
+    distros.push_back("Cauchy");
     distros.push_back("Lognormal");
+    distros.push_back("Normal");
+    distros.push_back("Student T");
     distros.push_back("Uniform");
+    std::sort(distros.begin(), distros.end());
 }
 
 static void makeAlgorithmElements(vgs &algorithms) {
@@ -124,18 +127,7 @@ static void doTimes(vgs algorithms, std::string fnBase) {
             fst << '\n';
         }
     }
-    fst << '\n';
-//    for (auto s : algorithms) {
-//        fst << s.name;
-//        for (auto rd : s.runData) {
-//            fst << rd.first << '\n';
-//            for (auto rds : rd.second) {
-//                fst << ',' << rds.time;
-//            }
-//            fst << '\n';
-//        }
-//        fst << '\n';
-//    }
+    fst << std::endl;
     fst.close();
 
 }
@@ -265,12 +257,12 @@ static void prep4size(vi &checkCopy, vi &orginalCopy, ul sampleSize, std::string
 
 static void work(vgs &algorithms, std::vector<std::string> &distros) {
     int wdth(14);
-    ul  ssMin(1000000), ssMax(5000000001);
+    ul  ssMin(1234567), ssMax(9000000001);
     std::cout << "\nStart: " << ssMin << "  Max: " << ssMax << '\n';
     
     vi orginalCopy, workCopy, checkCopy;
     for (int i(0); i < 1; i++) {
-        for (ul sampleSize(ssMin); sampleSize < ssMax; sampleSize *= 20) {
+        for (ul sampleSize(ssMin); sampleSize < ssMax; sampleSize *= 7) {
             for (auto distro : distros) {
                 prep4size(checkCopy, orginalCopy, sampleSize, distro);
                 runActiveAlgorithms(algorithms, checkCopy, orginalCopy, sampleSize, wdth, workCopy, distro);
