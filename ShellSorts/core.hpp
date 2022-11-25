@@ -48,7 +48,6 @@ struct gapStruct {
     enum errorState {
         ok = 0,
         outOfOrder = 1,
-        deactivated = 1 << 1,
         unknown = 1 << 31,
     } status;
     std::function<void(vul &, ul)> gapFn;

@@ -9,11 +9,11 @@
 static void fillDistros(std::vector<std::string> &distros) {
     distros.push_back("Bernoulli");
     distros.push_back("Binomial");
-    distros.push_back("Chi Squared");
-    distros.push_back("Cauchy");
-    distros.push_back("Lognormal");
+//    distros.push_back("Chi Squared");
+//    distros.push_back("Cauchy");
+//    distros.push_back("Lognormal");
     distros.push_back("Normal");
-    distros.push_back("Student T");
+//    distros.push_back("Student T");
     distros.push_back("Uniform");
     std::sort(distros.begin(), distros.end());
 }
@@ -49,7 +49,7 @@ static void makeAlgorithmElements(vgs &algorithms) {
     temp.status = gapStruct::ok;
     algorithms.emplace_back(temp);
     
-    temp.name = "Kunth 1973";
+    temp.name = "Knuth 1973";
     temp.gapFn = kunth1973;
     temp.status = gapStruct::ok;
     algorithms.emplace_back(temp);
@@ -122,20 +122,17 @@ static void doTimes(vgs algorithms, std::string fnBase) {
     fst.open(fnBase, std::ios::out);
     fst << "Algorithm" << '\n';
     for (auto a : algorithms) {
-        if (a.status == gapStruct::ok) {
-            fst << a.name;
-            for (auto pair : a.runData) {
-                fst << ',' << pair.first;
-                for (auto pp : pair.second) {
-                    fst << ',' << pp.time;
-                }
-                fst << '\n';
+        fst << a.name;
+        for (auto pair : a.runData) {
+            fst << ',' << pair.first;
+            for (auto pp : pair.second) {
+                fst << ',' << pp.time;
             }
+            fst << '\n';
         }
     }
     fst << std::endl;
     fst.close();
-    
 }
 
 static void doGaps(vgs algorithms, std::string fnBase) {
@@ -146,15 +143,11 @@ static void doGaps(vgs algorithms, std::string fnBase) {
     gst.open(fnBase, std::ios::out);
     gst << "Algorithm" << '\n';
     for (auto a : algorithms) {
-        if (a.status == gapStruct::ok) {
-            gst << a.name;
-            for (auto gap : a.gaps) {
-                gst << ',' << gap;
-            }
-            gst << '\n';
-        } else {
-            alsoRans.push_back(a.name);
+        gst << a.name;
+        for (auto gap : a.gaps) {
+            gst << ',' << gap;
         }
+        gst << '\n';
     }
     gst << std::endl;
     gst.close();
@@ -186,68 +179,73 @@ static void summerize(vgs &algorithms) {
     }
 }
 
-static void culSlowerAlgorithms(vgs &algorithms, ul averageFuncTime) {
+static void eraseSlowerGaps(vgs &algorithms, ul averageFuncTime) {
     /*
-     Deactivates algorithms that had subpar sort times
+     Removes elements that had subpar sort times
      */
-    ul lim(averageFuncTime + (averageFuncTime >> 3) + (averageFuncTime >> 5) );
+    ul lim(averageFuncTime + (averageFuncTime >> 2) + (averageFuncTime >> 4)), laggardIndex(0);
+    
+    vul laggards;
     
     for (auto &a : algorithms) {
         for (auto &pair : a.runData) {
-            if (a.status == gapStruct::ok && pair.second.back().time > lim) {
-                a.status = gapStruct::deactivated;
-                std::cout << "Culled " << a.name << ".\n";
-                break;
+            if (pair.second.back().time > lim) {
+                laggards.push_back(laggardIndex);
+                std::cerr << "Removed " << a.name << '\n';
             }
+        }
+        laggardIndex++;
+    }
+    
+    if (!laggards.empty()) {
+        std::reverse(laggards.begin(), laggards.end());
+        for (auto laggard : laggards) {
+            algorithms.erase(algorithms.begin() + laggard);
         }
     }
 }
 
 static void getGaps(vgs &algorithms, ul sampleSize) {
     for (auto &a : algorithms) {
-        if (a.status == gapStruct::ok) {
-            a.gaps.clear();
-            a.gapFn(a.gaps, sampleSize);
-            if (a.gaps.front() == 1) {
-                std::reverse(a.gaps.begin(), a.gaps.end());
-            }
-            while (a.gaps.front() >= sampleSize) {
-                a.gaps.erase(a.gaps.begin());
-            }
-            a.gaps.shrink_to_fit();
+        a.gaps.clear();
+        a.gapFn(a.gaps, sampleSize);
+        if (a.gaps.front() == 1) {
+            std::reverse(a.gaps.begin(), a.gaps.end());
         }
+        while (a.gaps.front() >= sampleSize) {
+            a.gaps.erase(a.gaps.begin());
+        }
+        a.gaps.shrink_to_fit();
     }
 }
 
 static void traverseAlgorithmVector(ul &activeFuncCount, vgs &algorithms, vi &checkCopy, const vi &orginalCopy, ul sampleSize, ul &totalFuncTime, int wdth, vi &workCopy, std::string distroName) {
     for (auto &a : algorithms) {
-        if (a.status == gapStruct::ok) {
-            workCopy.clear();
-            workCopy = orginalCopy;
-            auto start = high_resolution_clock::now();
-            shellsort(workCopy, a.gaps);
-            auto stop = high_resolution_clock::now();
-            long duration = duration_cast<microseconds>(stop - start).count();
-            std::cout << formatTime(false, true) << std::right << std::setw(31)
-            << a.name << ": " <<std::setw(wdth) <<std::right << duration << " µs"
-            << convertMicroSeconds(duration) << "\n";
-            sortMetrics sortMetrics;
-            a.status = verify(workCopy, checkCopy) ? gapStruct::ok : gapStruct::outOfOrder;
-            sortMetrics.time = duration;
-            sortMetrics.sampleSize = sampleSize;
-            if (a.gapStruct::status == a.gapStruct::outOfOrder)
-                errorFunction(workCopy, checkCopy);
-            a.runData[distroName].emplace_back(sortMetrics);
-            totalFuncTime += duration;
-            activeFuncCount++;
-        }
+        workCopy.clear();
+        workCopy = orginalCopy;
+        auto start = high_resolution_clock::now();
+        shellsort(workCopy, a.gaps);
+        auto stop = high_resolution_clock::now();
+        long duration = duration_cast<microseconds>(stop - start).count();
+        std::cout << formatTime(false, true) << std::right << std::setw(31)
+        << a.name << ": " <<std::setw(wdth) <<std::right << duration << " µs"
+        << convertMicroSeconds(duration) << std::endl;
+        sortMetrics sortMetrics;
+        a.status = verify(workCopy, checkCopy) ? gapStruct::ok : gapStruct::outOfOrder;
+        sortMetrics.time = duration;
+        sortMetrics.sampleSize = sampleSize;
+        if (a.gapStruct::status == a.gapStruct::outOfOrder)
+            errorFunction(workCopy, checkCopy);
+        a.runData[distroName].emplace_back(sortMetrics);
+        totalFuncTime += duration;
+        activeFuncCount++;
     }
 }
 
 static void runActiveAlgorithms(vgs &algorithms, vi &checkCopy, const vi &orginalCopy, ul sampleSize,  int wdth, vi &workCopy, std::string distroName) {
     ul totalFuncTime(0), activeFuncCount(0);
     traverseAlgorithmVector(activeFuncCount, algorithms, checkCopy, orginalCopy, sampleSize, totalFuncTime, wdth, workCopy, distroName);
-    culSlowerAlgorithms(algorithms, totalFuncTime / activeFuncCount);
+    eraseSlowerGaps(algorithms, totalFuncTime / activeFuncCount);
     totalFuncTime = 0;
     activeFuncCount = 0;
 }
@@ -267,18 +265,17 @@ static void prep4size(vi &checkCopy, vi &orginalCopy, ul sampleSize, std::string
 
 static void work(vgs &algorithms, std::vector<std::string> &distros) {
     int wdth(14);
-    ul  ssMin(1234567), ssMax(1900900900);
+    ul  ssMin(100000), ssMax(999999999);
+    int maxRuns(5);
     std::cout << "\nStart: " << ssMin << "  Max: " << ssMax << '\n';
     
     vi orginalCopy, workCopy, checkCopy;
-    for (int i(0); i < 1; i++) {
-        for (ul sampleSize(ssMin); sampleSize < ssMax; sampleSize *= 13) {
-            sampleSize |= 3;
-            getGaps(algorithms, sampleSize);
-            for (auto distro : distros) {
-                prep4size(checkCopy, orginalCopy, sampleSize, distro);
-                runActiveAlgorithms(algorithms, checkCopy, orginalCopy, sampleSize, wdth, workCopy, distro);
-            }
+    for (ul sampleSize(ssMin); sampleSize < ssMax; sampleSize *= 19) {
+        sampleSize |= 0xf;
+        getGaps(algorithms, sampleSize);
+        for (auto distro : distros) {
+            prep4size(checkCopy, orginalCopy, sampleSize, distro);
+            runActiveAlgorithms(algorithms, checkCopy, orginalCopy, sampleSize, wdth, workCopy, distro);
         }
     }
 }
@@ -416,9 +413,14 @@ void empirical2001(vul &gaps, ul vSize) {
 }
  
 void huffman_D2022(vul &gaps, ul vSize) {
-    gaps.push_back((vSize >> 1) + (vSize >> 2) | 1);
+    ul tmp(0);
+    while (vSize) {
+        vSize >>= 2;
+        tmp += vSize;
+    }
+    gaps.push_back(tmp);
     while (gaps.back() > 1) {
-        gaps.push_back((gaps.back() >> 2) | 1);
+        gaps.push_back((gaps.back() >> 3) | 1);
     }
 }
 

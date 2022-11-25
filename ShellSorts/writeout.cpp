@@ -79,7 +79,13 @@ void randomFill(ul n, vi &v, std::string distroName) {
             int r(distBi(generator));
             v.push_back(r);
         }
+    } else if(distroName == "Uniform") {
+        while (n--) {
+            int r(distU(generator));
+            v.push_back(r);
+        }
     } else {
+        std::cerr << "Unknown distribution requested. Using uniform." << std::endl;
         while (n--) {
             int r(distU(generator));
             v.push_back(r);
