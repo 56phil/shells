@@ -8,7 +8,7 @@
 #include "core.hpp"
 static void fillDistros(std::vector<std::string> &distros) {
     distros.push_back("Bernoulli");
-    distros.push_back("Binomial");
+//    distros.push_back("Binomial");
 //    distros.push_back("Chi Squared");
 //    distros.push_back("Cauchy");
 //    distros.push_back("Lognormal");
@@ -47,7 +47,7 @@ static void makeAlgorithmElements(vgs &algorithms) {
     temp.name = "Pratt 1971";
     temp.gapFn = pratt1971;
     temp.status = gapStruct::ok;
-    algorithms.emplace_back(temp);
+//    algorithms.emplace_back(temp);
     
     temp.name = "Knuth 1973";
     temp.gapFn = kunth1973;
@@ -79,23 +79,23 @@ static void makeAlgorithmElements(vgs &algorithms) {
     temp.status = gapStruct::ok;
     algorithms.emplace_back(temp);
     
-    temp.name = "Huffman A 2022";
+    temp.name = "t1";
     temp.gapFn = huffman_A2022;
     temp.status = gapStruct::ok;
-    algorithms.emplace_back(temp);
+//    algorithms.emplace_back(temp);
     
-    temp.name = "Huffman B 2022";
+    temp.name = "t2";
     temp.gapFn = huffman_B2022;
     temp.status = gapStruct::ok;
-    algorithms.emplace_back(temp);
+//    algorithms.emplace_back(temp);
     
-    temp.name = "Huffman C 2022";
-    temp.gapFn = huffman_C2022;
+    temp.name = "A";
+    temp.gapFn = a;
     temp.status = gapStruct::ok;
     algorithms.emplace_back(temp);
     
-    temp.name = "Huffman D 2022";
-    temp.gapFn = huffman_D2022;
+    temp.name = "B";
+    temp.gapFn = b;
     temp.status = gapStruct::ok;
     algorithms.emplace_back(temp);
 }
@@ -245,7 +245,7 @@ static void traverseAlgorithmVector(ul &activeFuncCount, vgs &algorithms, vi &ch
 static void runActiveAlgorithms(vgs &algorithms, vi &checkCopy, const vi &orginalCopy, ul sampleSize,  int wdth, vi &workCopy, std::string distroName) {
     ul totalFuncTime(0), activeFuncCount(0);
     traverseAlgorithmVector(activeFuncCount, algorithms, checkCopy, orginalCopy, sampleSize, totalFuncTime, wdth, workCopy, distroName);
-    eraseSlowerGaps(algorithms, totalFuncTime / activeFuncCount);
+//    eraseSlowerGaps(algorithms, totalFuncTime / activeFuncCount);
     totalFuncTime = 0;
     activeFuncCount = 0;
 }
@@ -265,12 +265,11 @@ static void prep4size(vi &checkCopy, vi &orginalCopy, ul sampleSize, std::string
 
 static void work(vgs &algorithms, std::vector<std::string> &distros) {
     int wdth(14);
-    ul  ssMin(100000), ssMax(999999999);
-    int maxRuns(5);
+    ul  ssMin(999999), ssMax(1999999999);
     std::cout << "\nStart: " << ssMin << "  Max: " << ssMax << '\n';
     
     vi orginalCopy, workCopy, checkCopy;
-    for (ul sampleSize(ssMin); sampleSize < ssMax; sampleSize *= 19) {
+    for (ul sampleSize(ssMin); sampleSize < ssMax; sampleSize *= 23) {
         sampleSize |= 0xf;
         getGaps(algorithms, sampleSize);
         for (auto distro : distros) {
@@ -323,10 +322,10 @@ void papernov1965(vul &gaps, ul vSize) {
 }
 
 bool is3smooth(ul n) {
-    while (n % 2 == 0)
-        n /= 2;
     while (n % 3 == 0)
         n /= 3;
+    while (n % 2 == 0)
+        n /= 2;
     return n == 1;
 }
 
@@ -412,7 +411,7 @@ void empirical2001(vul &gaps, ul vSize) {
     }
 }
  
-void huffman_D2022(vul &gaps, ul vSize) {
+void b(vul &gaps, ul vSize) {
     ul tmp(0);
     while (vSize) {
         vSize >>= 2;
@@ -424,7 +423,7 @@ void huffman_D2022(vul &gaps, ul vSize) {
     }
 }
 
-void huffman_C2022(vul &gaps, ul vSize) {
+void a(vul &gaps, ul vSize) {
     gaps.push_back((vSize >> 1) + (vSize >> 3) | 1);
     while (gaps.back() > 1) {
         gaps.push_back((gaps.back() >> 3) | 1);

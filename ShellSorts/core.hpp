@@ -19,7 +19,7 @@
 #include <sstream>
 #include <vector>
 
-typedef unsigned long long ul;
+typedef unsigned long ul;
 typedef std::vector<int> vi;
 typedef std::vector<ul> vul;
 
@@ -71,8 +71,8 @@ void tokuda1992(vul &, ul);
 void empirical2001(vul &, ul);
 void huffman_A2022(vul &, ul);
 void huffman_B2022(vul &, ul);
-void huffman_C2022(vul &, ul);
-void huffman_D2022(vul &, ul);
+void a(vul &, ul);
+void b(vul &, ul);
 
 
 #endif /* core_hpp */
