@@ -253,6 +253,7 @@ static void runActiveAlgorithms(vgs &algorithms, vi &checkCopy, const vi &orgina
 static void eoj(vgs &algorithms) {
     summerize(algorithms);
     makeFile(algorithms);
+    algorithms.clear();
 }
 
 static void prep4size(vi &checkCopy, vi &orginalCopy, ul sampleSize, std::string distro) {
@@ -283,9 +284,11 @@ void setup() {
     std::vector<std::string> distros;
     vgs algorithms;
     fillDistros(distros);
-    makeAlgorithmElements(algorithms);
-    work(algorithms, distros);
-    eoj(algorithms);
+    for (int i(0); 1 < 5; i++) {
+        makeAlgorithmElements(algorithms);
+        work(algorithms, distros);
+        eoj(algorithms);
+    }
 }
 
 void shell1959(vul &gaps, ul vSize) {
