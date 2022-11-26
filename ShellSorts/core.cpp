@@ -266,7 +266,7 @@ static void prep4size(vi &checkCopy, vi &orginalCopy, ul sampleSize, std::string
 
 static void work(vgs &algorithms, std::vector<std::string> &distros) {
     int wdth(14);
-    ul  ssMin(999999), ssMax(1999999999);
+    ul  ssMin(999999), ssMax(999999999);
     std::cout << "\nStart: " << ssMin << "  Max: " << ssMax << '\n';
     
     vi orginalCopy, workCopy, checkCopy;
@@ -284,7 +284,8 @@ void setup() {
     std::vector<std::string> distros;
     vgs algorithms;
     fillDistros(distros);
-    for (int i(0); 1 < 5; i++) {
+    for (int i(0); 1 < 3; i++) {
+        std::cerr << formatTime(true, true) << " Pass " << (i + 1) << " of 3.\n";
         makeAlgorithmElements(algorithms);
         work(algorithms, distros);
         eoj(algorithms);
