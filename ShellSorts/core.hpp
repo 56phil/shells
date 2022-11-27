@@ -57,20 +57,18 @@ typedef std::vector<gapStruct> vgs;
 
 void setup();
 
-void shell1959(vul &, ul);
-void frank1960(vul &, ul);
-void hibbard1963(vul &, ul);
-void papernov1965(vul &, ul);
-void pratt1971(vul &, ul);
-void kunth1973(vul &, ul);
-void sedgewick1982(vul &, ul);
+void shell(vul &, ul);
+void frank(vul &, ul);
+void hibbard(vul &, ul);
+void papernov(vul &, ul);
+void pratt(vul &, ul);
+void kunth(vul &, ul);
+void sedgewick82(vul &, ul);
 void sedgewick1985(vul &, ul);
-void sedgewick1986(vul &, ul);
-void gonnet1991(vul &, ul);
-void tokuda1992(vul &, ul);
-void empirical2001(vul &, ul);
-void huffman_A2022(vul &, ul);
-void huffman_B2022(vul &, ul);
+void sedgewick86(vul &, ul);
+void gonnet(vul &, ul);
+void tokuda(vul &, ul);
+void ciura(vul &, ul);
 void a(vul &, ul);
 void b(vul &, ul);
 

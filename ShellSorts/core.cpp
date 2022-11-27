@@ -23,71 +23,61 @@ static void makeAlgorithmElements(vgs &algorithms) {
     
     gapStruct temp;
     temp.name = "Shell 1959";
-    temp.gapFn = shell1959;
+    temp.gapFn = shell;
     temp.status = gapStruct::ok;
     temp.runData.clear();
     algorithms.emplace_back(temp);
     
     temp.name = "Frank & Lazarus 1960";
-    temp.gapFn = frank1960;
+    temp.gapFn = frank;
     temp.runData.clear();
     temp.status = gapStruct::ok;
     algorithms.emplace_back(temp);
     
     temp.name = "Hibbard 1963";
-    temp.gapFn = hibbard1963;
+    temp.gapFn = hibbard;
     temp.status = gapStruct::ok;
     algorithms.emplace_back(temp);
     
     temp.name = "Papernov & Stasevich 1965";
-    temp.gapFn = papernov1965;
+    temp.gapFn = papernov;
     temp.status = gapStruct::ok;
     algorithms.emplace_back(temp);
     
     temp.name = "Pratt 1971";
-    temp.gapFn = pratt1971;
+    temp.gapFn = pratt;
     temp.status = gapStruct::ok;
 //    algorithms.emplace_back(temp);
     
     temp.name = "Knuth 1973";
-    temp.gapFn = kunth1973;
+    temp.gapFn = kunth;
     temp.status = gapStruct::ok;
     algorithms.emplace_back(temp);
     
     temp.name = "Sedgewick 1982";
-    temp.gapFn = sedgewick1982;
+    temp.gapFn = sedgewick82;
     temp.status = gapStruct::ok;
     algorithms.emplace_back(temp);
     
     temp.name = "Sedgewick 1986";
-    temp.gapFn = sedgewick1986;
+    temp.gapFn = sedgewick86;
     temp.status = gapStruct::ok;
     algorithms.emplace_back(temp);
     
     temp.name = "Gonnet & Baeza-Yates 1991";
-    temp.gapFn = gonnet1991;
+    temp.gapFn = gonnet;
     temp.status = gapStruct::ok;
     algorithms.emplace_back(temp);
     
     temp.name = "Tokuda 1992";
-    temp.gapFn = tokuda1992;
+    temp.gapFn = tokuda;
     temp.status = gapStruct::ok;
     algorithms.emplace_back(temp);
     
-    temp.name = "empirical 2001";
-    temp.gapFn = empirical2001;
+    temp.name = "Ciura 2001";
+    temp.gapFn = ciura;
     temp.status = gapStruct::ok;
     algorithms.emplace_back(temp);
-    
-    temp.name = "t1";
-    temp.gapFn = huffman_A2022;
-    temp.status = gapStruct::ok;
-//    algorithms.emplace_back(temp);
-    
-    temp.name = "t2";
-    temp.gapFn = huffman_B2022;
-    temp.status = gapStruct::ok;
-//    algorithms.emplace_back(temp);
     
     temp.name = "A";
     temp.gapFn = a;
@@ -97,7 +87,7 @@ static void makeAlgorithmElements(vgs &algorithms) {
     temp.name = "B";
     temp.gapFn = b;
     temp.status = gapStruct::ok;
-    algorithms.emplace_back(temp);
+//    algorithms.emplace_back(temp);
 }
 
 static void errorFunction(vi &wc, vi &cc) {
@@ -115,12 +105,20 @@ static void errorFunction(vi &wc, vi &cc) {
         << std::right << std::setw(w) << *itw++ << '\n';
 }
 
-static void doTimes(vgs algorithms, std::string fnBase) {
+static void doTimes(vgs algorithms, std::string fileName) {
     std::fstream fst;
-    fnBase += formatTime(true, true);
-    fnBase += "-Results.csv";
-    fst.open(fnBase, std::ios::out);
-    fst << "Algorithm" << '\n';
+    fileName += formatTime(true, true);
+    fileName += "-Results.csv";
+    fst.open(fileName, std::ios::out);
+    fst << "Algorithm,Distribution";
+    
+    for (auto p : algorithms.front().runData) {
+        for (auto q : p.second) {
+            fst << ',' << q.sampleSize;
+        }
+    }
+    fst << '\n';
+    
     for (auto a : algorithms) {
         fst << a.name;
         for (auto pair : a.runData) {
@@ -270,7 +268,7 @@ static void work(vgs &algorithms, std::vector<std::string> &distros) {
     std::cout << "\nStart: " << ssMin << "  Max: " << ssMax << '\n';
     
     vi orginalCopy, workCopy, checkCopy;
-    for (ul sampleSize(ssMin); sampleSize < ssMax; sampleSize *= 23) {
+    for (ul sampleSize(ssMin); sampleSize < ssMax; sampleSize *= 17) {
         sampleSize |= 0xf;
         getGaps(algorithms, sampleSize);
         for (auto distro : distros) {
@@ -292,7 +290,7 @@ void setup() {
     }
 }
 
-void shell1959(vul &gaps, ul vSize) {
+void shell(vul &gaps, ul vSize) {
     ul gap(vSize);
     while (gap > 1) {
         gap >>= 1;
@@ -300,7 +298,7 @@ void shell1959(vul &gaps, ul vSize) {
     }
 }
 
-void frank1960(vul &gaps, ul vSize) {
+void frank(vul &gaps, ul vSize) {
     ul gap(vSize >> 1);
     while (gap) {
         gaps.push_back(gap | 1);
@@ -308,7 +306,7 @@ void frank1960(vul &gaps, ul vSize) {
     }
 }
 
-void hibbard1963(vul &gaps, ul vSize) {
+void hibbard(vul &gaps, ul vSize) {
     ul gap(1);
     while (gap  < vSize) {
         gaps.push_back(gap);
@@ -317,7 +315,7 @@ void hibbard1963(vul &gaps, ul vSize) {
     }
 }
 
-void papernov1965(vul &gaps, ul vSize) {
+void papernov(vul &gaps, ul vSize) {
     ul n(1);
     gaps.push_back(n);
     while (gaps.back() < vSize)
@@ -339,7 +337,7 @@ bool is5smooth(ul n) {
     return is3smooth(n);
 }
 
-void pratt1971(vul &gaps, ul vSize) {
+void pratt(vul &gaps, ul vSize) {
     gaps.clear();
     for (ul n(1); n < vSize; n++)
         if (is3smooth(n))
@@ -347,7 +345,7 @@ void pratt1971(vul &gaps, ul vSize) {
     
 }
 
-void kunth1973(vul &gaps, ul vSize) {
+void kunth(vul &gaps, ul vSize) {
     ul k(1), lim(vSize / 3);
     do {
         k *= 3;
@@ -358,7 +356,7 @@ void kunth1973(vul &gaps, ul vSize) {
 
 bool mySeq(ul a, ul b) {return a > b;}
 
-void sedgewick1982(vul &gaps, ul vSize) {
+void sedgewick82(vul &gaps, ul vSize) {
     ul k4(4), k2(1), gap(0), lim(vSize - (vSize / 8));
     std::set<ul, std::greater<>> gSet;
     gSet.insert(1);
@@ -373,7 +371,7 @@ void sedgewick1982(vul &gaps, ul vSize) {
         gaps.push_back(g);
 }
 
-void sedgewick1986(vul &gaps, ul vSize) {
+void sedgewick86(vul &gaps, ul vSize) {
      ul k(0);
     gaps.push_back(1);
     do {
@@ -386,7 +384,7 @@ void sedgewick1986(vul &gaps, ul vSize) {
     gaps.pop_back();
 }
 
-void gonnet1991(vul &gaps, ul vSize) {
+void gonnet(vul &gaps, ul vSize) {
     ul k(vSize);
     while (k > 1) {
         k = (5 * k - 1) / 11;
@@ -395,7 +393,7 @@ void gonnet1991(vul &gaps, ul vSize) {
     }
 }
 
-void tokuda1992(vul &gaps, ul vSize) {
+void tokuda(vul &gaps, ul vSize) {
     gaps.push_back(1);
     for (ul i(1); gaps.back() < vSize; i++) {
         double a(pow(2.25, static_cast<double>(i)));
@@ -404,26 +402,11 @@ void tokuda1992(vul &gaps, ul vSize) {
     }
 }
 
-void empirical2001(vul &gaps, ul vSize) {
-    vul t {701, 301, 132, 57, 23, 10, 4, 1};
+void ciura(vul &gaps, ul vSize) {
+    vul t {1, 4, 10, 23, 57, 132, 301, 701, 1750};
     gaps = t;
-    ul nextGap((gaps.front() << 2) | 1);
-    while (nextGap < vSize) {
-        gaps.insert(gaps.begin(), nextGap);
-        nextGap = (nextGap << 3) | 1;
-        nextGap = nextGap % 5 ? nextGap : nextGap - 4;
-    }
-}
- 
-void b(vul &gaps, ul vSize) {
-    ul tmp(0);
-    while (vSize) {
-        vSize >>= 2;
-        tmp += vSize;
-    }
-    gaps.push_back(tmp);
-    while (gaps.back() > 1) {
-        gaps.push_back((gaps.back() >> 3) | 1);
+    while (gaps.back() < vSize / 3) {
+        gaps.push_back(gaps.back() << 3);
     }
 }
 
@@ -431,37 +414,5 @@ void a(vul &gaps, ul vSize) {
     gaps.push_back((vSize >> 1) + (vSize >> 3) | 1);
     while (gaps.back() > 1) {
         gaps.push_back((gaps.back() >> 3) | 1);
-    }
-}
-
-void huffman_B2022(vul &gaps, ul vSize) {
-    gaps.push_back(1);
-    gaps.push_back(5);
-    gaps.push_back(11);
-    gaps.push_back(17);
-    ul lim(vSize / 3);
-    while (gaps.back() < lim) {
-        ul k(2), gap(gaps.back() << 1), t(gaps.back());
-        while (t > 0) {
-            t = gaps.back() >> k++;
-            gap += t;
-        }
-        gaps.push_back(gap);
-    }
-}
-
-void huffman_A2022(vul &gaps, ul vSize) {
-    gaps.push_back(1);
-    gaps.push_back(5);
-    gaps.push_back(11);
-    gaps.push_back(17);
-    ul lim(vSize / 3 + (vSize >> 1));
-    while (gaps.back() < lim) {
-        ul k(2), gap(gaps.back() << 1), t(gaps.back());
-        while (t > 0) {
-            t = gaps.back() >> k++;
-            gap += t;
-        }
-        gaps.push_back(gap);
     }
 }
