@@ -15,6 +15,7 @@ static void fillDistros(std::vector<std::string> &distros) {
     distros.push_back("Normal");
 //    distros.push_back("Student T");
     distros.push_back("Uniform");
+    distros.push_back("Uniform Worst Case");
     std::sort(distros.begin(), distros.end());
 }
 
@@ -83,11 +84,6 @@ static void makeAlgorithmElements(vgs &algorithms) {
     temp.gapFn = a;
     temp.status = gapStruct::ok;
     algorithms.emplace_back(temp);
-    
-    temp.name = "B";
-    temp.gapFn = b;
-    temp.status = gapStruct::ok;
-//    algorithms.emplace_back(temp);
 }
 
 static void errorFunction(vi &wc, vi &cc) {
@@ -264,11 +260,11 @@ static void prep4size(vi &checkCopy, vi &orginalCopy, ul sampleSize, std::string
 
 static void work(vgs &algorithms, std::vector<std::string> &distros) {
     int wdth(14);
-    ul  ssMin(999999), ssMax(999999999);
+    ul  ssMin(333333), ssMax(333333333);
     std::cout << "\nStart: " << ssMin << "  Max: " << ssMax << '\n';
     
     vi orginalCopy, workCopy, checkCopy;
-    for (ul sampleSize(ssMin); sampleSize < ssMax; sampleSize *= 17) {
+    for (ul sampleSize(ssMin); sampleSize < ssMax; sampleSize *= 13) {
         sampleSize |= 0xf;
         getGaps(algorithms, sampleSize);
         for (auto distro : distros) {
@@ -282,8 +278,8 @@ void setup() {
     std::vector<std::string> distros;
     vgs algorithms;
     fillDistros(distros);
-    for (int i(0); 1 < 3; i++) {
-        std::cerr << formatTime(true, true) << " Pass " << (i + 1) << " of 3.\n";
+    for (int outer_loop_counter(0); 1 < MAX_OUTER_LOOP; outer_loop_counter++) {
+        std::cerr << formatTime(true, true) << " Pass " << (outer_loop_counter + 1) << " of " << MAX_OUTER_LOOP << ".\n";
         makeAlgorithmElements(algorithms);
         work(algorithms, distros);
         eoj(algorithms);

@@ -84,6 +84,13 @@ void randomFill(ul n, vi &v, std::string distroName) {
             int r(distU(generator));
             v.push_back(r);
         }
+    } else if(distroName == "Uniform Worst Case") {
+        while (n--) {
+            int r(distU(generator));
+            v.push_back(r);
+        }
+        std::sort(v.begin(), v.end());
+        std::reverse(v.begin(), v.end());
     } else {
         std::cerr << "Unknown distribution requested. Using uniform." << std::endl;
         while (n--) {
