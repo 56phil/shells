@@ -21,7 +21,9 @@
 
 typedef unsigned long ul;
 typedef std::vector<int> vi;
+typedef std::vector<double> vd;
 typedef std::vector<ul> vul;
+typedef std::map<std::string, vd> msvd;
 
 #include "formatTime.hpp"
 #include "formatMicroSeconds.hpp"
@@ -31,7 +33,7 @@ typedef std::vector<ul> vul;
 
 using namespace std::chrono;
 
-#define MAX_OUTER_LOOP 3
+#define MAX_OUTER_LOOP 1
 
 struct my_numpunct : std::numpunct<char> {
     std::string do_grouping() const {return "\03";}
@@ -73,6 +75,6 @@ void tokuda(vul &, ul);
 void ciura(vul &, ul);
 void a(vul &, ul);
 void b(vul &, ul);
-
+void c(vul &, ul);
 
 #endif /* core_hpp */

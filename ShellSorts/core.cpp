@@ -6,17 +6,43 @@
 //
 
 #include "core.hpp"
+static void displayDistros(std::vector<std::string> &distros) {
+    int maxLines(22), wdth(30);
+    msvd dMap;
+    
+    for (auto d : distros) {
+        vd tmp;
+        randomFill(maxLines, tmp, d);
+        dMap[d] = tmp;
+    }
+    
+    for(int indx(-1); indx < maxLines; indx++) {
+        for (auto d : dMap) {
+            if (indx < 0) {
+                std::cout << std::right << std::setw(wdth) << d.first;
+            } else {
+                std::cout << std::right << std::setw(wdth) << d.second[indx];
+            }
+        }
+        std::cout << '\n';
+    }
+    std::cout << std::endl;
+}
+
 static void fillDistros(std::vector<std::string> &distros) {
     distros.push_back("Bernoulli");
-//    distros.push_back("Binomial");
-//    distros.push_back("Chi Squared");
-//    distros.push_back("Cauchy");
-//    distros.push_back("Lognormal");
+    distros.push_back("Binomial");
+    distros.push_back("Chi Squared");
+    distros.push_back("Cauchy");
+    distros.push_back("Lognormal");
     distros.push_back("Normal");
-//    distros.push_back("Student T");
+    distros.push_back("Student T");
     distros.push_back("Uniform");
-    distros.push_back("Uniform Worst Case");
+    distros.push_back("Uniform - Sorted - Reversed");
+    distros.push_back("Uniform - Sorted");
     std::sort(distros.begin(), distros.end());
+    
+//    displayDistros(distros);
 }
 
 static void makeAlgorithmElements(vgs &algorithms) {
@@ -26,24 +52,22 @@ static void makeAlgorithmElements(vgs &algorithms) {
     temp.name = "Shell 1959";
     temp.gapFn = shell;
     temp.status = gapStruct::ok;
-    temp.runData.clear();
-    algorithms.emplace_back(temp);
+//    algorithms.emplace_back(temp);
     
     temp.name = "Frank & Lazarus 1960";
     temp.gapFn = frank;
-    temp.runData.clear();
     temp.status = gapStruct::ok;
-    algorithms.emplace_back(temp);
+//    algorithms.emplace_back(temp);
     
     temp.name = "Hibbard 1963";
     temp.gapFn = hibbard;
     temp.status = gapStruct::ok;
-    algorithms.emplace_back(temp);
+//    algorithms.emplace_back(temp);
     
     temp.name = "Papernov & Stasevich 1965";
     temp.gapFn = papernov;
     temp.status = gapStruct::ok;
-    algorithms.emplace_back(temp);
+//    algorithms.emplace_back(temp);
     
     temp.name = "Pratt 1971";
     temp.gapFn = pratt;
@@ -80,13 +104,23 @@ static void makeAlgorithmElements(vgs &algorithms) {
     temp.status = gapStruct::ok;
     algorithms.emplace_back(temp);
     
-    temp.name = "A";
+    temp.name = "a 2022";
     temp.gapFn = a;
+    temp.status = gapStruct::ok;
+    algorithms.emplace_back(temp);
+    
+    temp.name = "b 2022";
+    temp.gapFn = b;
+    temp.status = gapStruct::ok;
+    algorithms.emplace_back(temp);
+    
+    temp.name = "c 2022";
+    temp.gapFn = c;
     temp.status = gapStruct::ok;
     algorithms.emplace_back(temp);
 }
 
-static void errorFunction(vi &wc, vi &cc) {
+static void errorFunction(vd &wc, vd &cc) {
     int n(0), w(28), maxLines(24);
     
     auto itw(wc.begin());
@@ -107,17 +141,16 @@ static void doTimes(vgs algorithms, std::string fileName) {
     fileName += "-Results.csv";
     fst.open(fileName, std::ios::out);
     fst << "Algorithm,Distribution";
-    
-    for (auto p : algorithms.front().runData) {
-        for (auto q : p.second) {
-            fst << ',' << q.sampleSize;
-        }
+    auto p(algorithms.front().runData);
+    auto q(p.begin());
+    for (auto r : q->second) {
+        fst << ',' << r.sampleSize;
     }
     fst << '\n';
     
     for (auto a : algorithms) {
-        fst << a.name;
         for (auto pair : a.runData) {
+            fst << a.name;
             fst << ',' << pair.first;
             for (auto pp : pair.second) {
                 fst << ',' << pp.time;
@@ -148,7 +181,7 @@ static void doGaps(vgs algorithms, std::string fnBase) {
 }
 
 static void makeFile(vgs algorithms) {
-    std::string fnBase("/Users/prh/Keepers/code/xCode/shells/");
+    std::string fnBase("/Users/prh/Keepers/code/xCode/shells/results/");
     doTimes(algorithms, fnBase);
     doGaps(algorithms, fnBase);
 }
@@ -157,7 +190,7 @@ static void summerize(vgs &algorithms) {
     for (auto a : algorithms) {
         std::cout << '\n' << a.name;
         long n(a.gaps.size());
-        for (auto itr(a.gaps.rbegin()); n--; itr++)
+        for (auto itr(a.gaps.begin()); n--; itr++)
             std::cout << "  " << *itr;
         std::cout << '\n';
         for (auto pair : a.runData) {
@@ -213,7 +246,7 @@ static void getGaps(vgs &algorithms, ul sampleSize) {
     }
 }
 
-static void traverseAlgorithmVector(ul &activeFuncCount, vgs &algorithms, vi &checkCopy, const vi &orginalCopy, ul sampleSize, ul &totalFuncTime, int wdth, vi &workCopy, std::string distroName) {
+static void traverseAlgorithmVector(ul &activeFuncCount, vgs &algorithms, vd &checkCopy, const vd &orginalCopy, ul sampleSize, ul &totalFuncTime, int wdth, vd &workCopy, std::string distroName) {
     for (auto &a : algorithms) {
         workCopy.clear();
         workCopy = orginalCopy;
@@ -236,7 +269,7 @@ static void traverseAlgorithmVector(ul &activeFuncCount, vgs &algorithms, vi &ch
     }
 }
 
-static void runActiveAlgorithms(vgs &algorithms, vi &checkCopy, const vi &orginalCopy, ul sampleSize,  int wdth, vi &workCopy, std::string distroName) {
+static void runActiveAlgorithms(vgs &algorithms, vd &checkCopy, const vd &orginalCopy, ul sampleSize,  int wdth, vd &workCopy, std::string distroName) {
     ul totalFuncTime(0), activeFuncCount(0);
     traverseAlgorithmVector(activeFuncCount, algorithms, checkCopy, orginalCopy, sampleSize, totalFuncTime, wdth, workCopy, distroName);
 //    eraseSlowerGaps(algorithms, totalFuncTime / activeFuncCount);
@@ -250,7 +283,7 @@ static void eoj(vgs &algorithms) {
     algorithms.clear();
 }
 
-static void prep4size(vi &checkCopy, vi &orginalCopy, ul sampleSize, std::string distro) {
+static void prep4size(vd &checkCopy, vd &orginalCopy, ul sampleSize, std::string distro) {
     randomFill(sampleSize, orginalCopy, distro);
     orginalCopy.shrink_to_fit();
     checkCopy = orginalCopy;
@@ -260,11 +293,11 @@ static void prep4size(vi &checkCopy, vi &orginalCopy, ul sampleSize, std::string
 
 static void work(vgs &algorithms, std::vector<std::string> &distros) {
     int wdth(14);
-    ul  ssMin(333333), ssMax(333333333);
-    std::cout << "\nStart: " << ssMin << "  Max: " << ssMax << '\n';
     
-    vi orginalCopy, workCopy, checkCopy;
-    for (ul sampleSize(ssMin); sampleSize < ssMax; sampleSize *= 13) {
+    vi sampleSizes({933333, 944444, 9555555});
+    vd orginalCopy, workCopy, checkCopy;
+    
+    for (auto sampleSize : sampleSizes) {
         sampleSize |= 0xf;
         getGaps(algorithms, sampleSize);
         for (auto distro : distros) {
@@ -278,8 +311,8 @@ void setup() {
     std::vector<std::string> distros;
     vgs algorithms;
     fillDistros(distros);
-    for (int outer_loop_counter(0); 1 < MAX_OUTER_LOOP; outer_loop_counter++) {
-        std::cerr << formatTime(true, true) << " Pass " << (outer_loop_counter + 1) << " of " << MAX_OUTER_LOOP << ".\n";
+    for (int outerLoopCounter(0); outerLoopCounter < MAX_OUTER_LOOP; outerLoopCounter++) {
+        std::cerr << formatTime(true, true) << " Pass " << (outerLoopCounter + 1) << " of " << MAX_OUTER_LOOP << ".\n";
         makeAlgorithmElements(algorithms);
         work(algorithms, distros);
         eoj(algorithms);
@@ -407,8 +440,24 @@ void ciura(vul &gaps, ul vSize) {
 }
 
 void a(vul &gaps, ul vSize) {
-    gaps.push_back((vSize >> 1) + (vSize >> 3) | 1);
+    gaps.push_back((vSize >> 1) + (vSize >> 2) + (vSize >> 3)| 1);
     while (gaps.back() > 1) {
         gaps.push_back((gaps.back() >> 3) | 1);
     }
+}
+
+void b(vul &gaps, ul vSize) {
+    gaps.push_back((vSize >> 1) + (vSize >> 2) + (vSize >> 3)| 1);
+    while (gaps.back() > 15) {
+        gaps.push_back((gaps.back() >> 3) | 15);
+    }
+    gaps.push_back(1);
+}
+
+void c(vul &gaps, ul vSize) {
+    gaps.push_back((vSize >> 1) + (vSize >> 2) + (vSize >> 3)| 1);
+    while (gaps.back() > 7) {
+        gaps.push_back((gaps.back() >> 3) | 7);
+    }
+    gaps.push_back(1);
 }

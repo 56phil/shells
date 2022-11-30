@@ -7,7 +7,7 @@
 
 #include "shell.hpp"
 
-void shellsort(vi &v, const vul &gaps) {
+void shellsort(vd &v, const vul &gaps) {
     ul lim(v.size() - 1);
     for (auto gap : gaps) {
         if (gap < lim) {

@@ -7,10 +7,6 @@
 
 #include "verifyArray.hpp"
 
-bool verify(vi wc, vi cc) {
-    auto itw(wc.begin()), itc(cc.begin());
-    while (itw != wc.end() && itc != cc.end())
-        if (*itw++ != *itc++)
-            return false;
-    return true;
+bool verify(vd wc, vd cc) {
+    return wc == cc;
 }
