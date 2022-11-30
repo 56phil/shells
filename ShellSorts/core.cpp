@@ -6,8 +6,14 @@
 //
 
 #include "core.hpp"
-static void displayDistros(std::vector<std::string> &distros) {
-    int maxLines(22), wdth(30);
+
+static void writeDistros(std::vector<std::string> &distros) {
+    std::string fnBase("/Users/prh/Keepers/code/xCode/shells/results/");
+    std::fstream fst;
+    fnBase += formatTime(true, true);
+    fnBase += "-distros.csv";
+    fst.open(fnBase, std::ios::out);
+    int maxLines(1111);
     msvd dMap;
     
     for (auto d : distros) {
@@ -19,14 +25,14 @@ static void displayDistros(std::vector<std::string> &distros) {
     for(int indx(-1); indx < maxLines; indx++) {
         for (auto d : dMap) {
             if (indx < 0) {
-                std::cout << std::right << std::setw(wdth) << d.first;
+                fst << ',' << d.first;
             } else {
-                std::cout << std::right << std::setw(wdth) << d.second[indx];
+                fst << ',' << d.second[indx];
             }
         }
-        std::cout << '\n';
+        fst << '\n';
     }
-    std::cout << std::endl;
+    fst << std::endl;
 }
 
 static void fillDistros(std::vector<std::string> &distros) {
@@ -38,11 +44,11 @@ static void fillDistros(std::vector<std::string> &distros) {
     distros.push_back("Normal");
     distros.push_back("Student T");
     distros.push_back("Uniform");
-    distros.push_back("Uniform - Sorted - Reversed");
+    distros.push_back("Uniform - Sorted & Reversed");
     distros.push_back("Uniform - Sorted");
     std::sort(distros.begin(), distros.end());
     
-//    displayDistros(distros);
+    writeDistros(distros);
 }
 
 static void makeAlgorithmElements(vgs &algorithms) {
@@ -140,7 +146,7 @@ static void doTimes(vgs algorithms, std::string fileName) {
     fileName += formatTime(true, true);
     fileName += "-Results.csv";
     fst.open(fileName, std::ios::out);
-    fst << "Algorithm,Distribution";
+    fst << "Gap Sequence,Distribution";
     auto p(algorithms.front().runData);
     auto q(p.begin());
     for (auto r : q->second) {
@@ -294,11 +300,11 @@ static void prep4size(vd &checkCopy, vd &orginalCopy, ul sampleSize, std::string
 static void work(vgs &algorithms, std::vector<std::string> &distros) {
     int wdth(14);
     
-    vi sampleSizes({933333, 944444, 9555555});
+    vi sampleSizes({111111, 1111111});
     vd orginalCopy, workCopy, checkCopy;
     
     for (auto sampleSize : sampleSizes) {
-        sampleSize |= 0xf;
+//        sampleSize |= 0xf;
         getGaps(algorithms, sampleSize);
         for (auto distro : distros) {
             prep4size(checkCopy, orginalCopy, sampleSize, distro);
@@ -440,7 +446,7 @@ void ciura(vul &gaps, ul vSize) {
 }
 
 void a(vul &gaps, ul vSize) {
-    gaps.push_back((vSize >> 1) + (vSize >> 2) + (vSize >> 3)| 1);
+    gaps.push_back(vSize / 3);
     while (gaps.back() > 1) {
         gaps.push_back((gaps.back() >> 3) | 1);
     }
@@ -448,8 +454,8 @@ void a(vul &gaps, ul vSize) {
 
 void b(vul &gaps, ul vSize) {
     gaps.push_back((vSize >> 1) + (vSize >> 2) + (vSize >> 3)| 1);
-    while (gaps.back() > 15) {
-        gaps.push_back((gaps.back() >> 3) | 15);
+    while (gaps.back() > 5) {
+        gaps.push_back((gaps.back() >> 3) | 5);
     }
     gaps.push_back(1);
 }

@@ -91,7 +91,7 @@ void randomFill(ul n, vd &v, std::string distroName) {
     } else if(distroName == "Uniform - Sorted") {
         uniFill(v, n);
         std::sort(v.begin(), v.end());
-    } else if(distroName == "Uniform - Sorted - Reversed") {
+    } else if(distroName == "Uniform - Sorted & Reversed") {
         uniFill(v, n);
         std::sort(v.begin(), v.end());
         std::reverse(v.begin(), v.end());

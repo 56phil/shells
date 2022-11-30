@@ -33,7 +33,7 @@ typedef std::map<std::string, vd> msvd;
 
 using namespace std::chrono;
 
-#define MAX_OUTER_LOOP 1
+#define MAX_OUTER_LOOP 3
 
 struct my_numpunct : std::numpunct<char> {
     std::string do_grouping() const {return "\03";}
