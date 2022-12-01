@@ -51,7 +51,7 @@ static void fillDistros(std::vector<std::string> &distros) {
     writeDistros(distros);
 }
 
-static void makeAlgorithmElements(vgs &gapStructs) {
+static void makeGapSequenceGenerators(vgs &gapStructs) {
     gapStructs.clear();
     
     gapStruct temp;
@@ -91,25 +91,25 @@ static void makeAlgorithmElements(vgs &gapStructs) {
     temp.status = gapStruct::ok;
     gapStructs.emplace_back(temp);
     
-//    temp.name = "Sedgewick 1986";
-//    temp.gapFn = sedgewick86;
-//    temp.status = gapStruct::ok;
-//    gapStructs.emplace_back(temp);
+    temp.name = "Sedgewick 1986";
+    temp.gapFn = sedgewick86;
+    temp.status = gapStruct::ok;
+    gapStructs.emplace_back(temp);
     
-//    temp.name = "Gonnet & Baeza-Yates 1991";
-//    temp.gapFn = gonnet;
-//    temp.status = gapStruct::ok;
-//    gapStructs.emplace_back(temp);
+    temp.name = "Gonnet & Baeza-Yates 1991";
+    temp.gapFn = gonnet;
+    temp.status = gapStruct::ok;
+    gapStructs.emplace_back(temp);
     
     temp.name = "Tokuda 1992";
     temp.gapFn = tokuda;
     temp.status = gapStruct::ok;
     gapStructs.emplace_back(temp);
     
-//    temp.name = "Ciura 2001";
-//    temp.gapFn = ciura;
-//    temp.status = gapStruct::ok;
-//    gapStructs.emplace_back(temp);
+    temp.name = "Ciura 2001";
+    temp.gapFn = ciura;
+    temp.status = gapStruct::ok;
+    gapStructs.emplace_back(temp);
     
     temp.name = "a 2022";
     temp.gapFn = a;
@@ -213,28 +213,34 @@ static void summerize(vgs &gapStructs) {
     }
 }
 
-static void eraseSlowerGaps(vgs &gapStructs, ul averageFuncTime) {
+static void eraseSlowerGaps(vgs &gapStructs, ull averageFuncTime, std::string distroName) {
     /*
      Removes elements that had subpar sort times
      */
-    ul lim(averageFuncTime + (averageFuncTime >> 2) + (averageFuncTime >> 4)), laggardIndex(0);
+    ull lim(averageFuncTime + (averageFuncTime >> 2));
+    ul laggardIndex(0);
+    const ul minGapStructSize(5);
     
     vul laggards;
     
-    for (auto &gapstruct : gapStructs) {
-        for (auto &pair : gapstruct.runData) {
-            if (pair.second.back().time > lim) {
+    if (gapStructs.size() > minGapStructSize) {
+        for (auto &gapstruct : gapStructs) {
+            if (gapstruct.runData[distroName].back().time > lim) {
                 laggards.push_back(laggardIndex);
-                std::cerr << "Removed " << gapstruct.name << '\n';
+                if ((gapStructs.size() - laggards.size()) <= minGapStructSize) {
+                    break;
+                }
             }
+            laggardIndex++;
         }
-        laggardIndex++;
-    }
-    
-    if (!laggards.empty()) {
-        std::reverse(laggards.begin(), laggards.end());
-        for (auto laggard : laggards) {
-            gapStructs.erase(gapStructs.begin() + laggard);
+        
+        if (!laggards.empty()) {
+            std::reverse(laggards.begin(), laggards.end());
+            std::cerr << "Another " << laggards.size() << " bite" << (laggards.size() == 1 ? "s " : " ") << "the dust!\n";
+            for (auto laggard : laggards) {
+                std::cerr << "Removed " << gapStructs[laggard].name << '\n';
+                gapStructs.erase(gapStructs.begin() + laggard);
+            }
         }
     }
 }
@@ -253,8 +259,8 @@ static void getGaps(vgs &gapStructs, ul sampleSize) {
     }
 }
 
-static void traverseAlgorithmVector(ul &activeFuncCount, vgs &gapstricts, vd &checkCopy, const vd &orginalCopy, ul sampleSize, ul &totalFuncTime, int wdth, vd &workCopy, std::string distroName) {
-    for (auto &gapStruct : gapstricts) {
+static void traverseAlgorithmVector(ull &activeFuncCount, vgs &gapstructs, vd &checkCopy, const vd &orginalCopy, ul sampleSize, ull &totalFuncTime, int wdth, vd &workCopy, std::string distroName) {
+    for (auto &gapStruct : gapstructs) {
         workCopy.clear();
         workCopy = orginalCopy;
         auto start = high_resolution_clock::now();
@@ -277,9 +283,9 @@ static void traverseAlgorithmVector(ul &activeFuncCount, vgs &gapstricts, vd &ch
 }
 
 static void runActiveAlgorithms(vgs &gapStructs, vd &checkCopy, const vd &orginalCopy, ul sampleSize,  int wdth, vd &workCopy, std::string distroName) {
-    ul totalFuncTime(0), activeFuncCount(0);
+    ull totalFuncTime(0), activeFuncCount(0);
     traverseAlgorithmVector(activeFuncCount, gapStructs, checkCopy, orginalCopy, sampleSize, totalFuncTime, wdth, workCopy, distroName);
-//    eraseSlowerGaps(gapStructs, totalFuncTime / activeFuncCount);
+    eraseSlowerGaps(gapStructs, totalFuncTime / activeFuncCount, distroName);
     totalFuncTime = 0;
     activeFuncCount = 0;
 }
@@ -316,11 +322,11 @@ static void work(vgs &gapStructs, vs distroNames) {
 
 void setup() {
     vs distroNames;
-    vgs gapStructs;
     fillDistros(distroNames);
     for (int outerLoopCounter(0); outerLoopCounter < MAX_OUTER_LOOP; outerLoopCounter++) {
         std::cerr << formatTime(true, true) << " Pass " << (outerLoopCounter + 1) << " of " << MAX_OUTER_LOOP << ".\n";
-        makeAlgorithmElements(gapStructs);
+        vgs gapStructs;
+        makeGapSequenceGenerators(gapStructs);
         work(gapStructs, distroNames);
         eoj(gapStructs);
     }
@@ -465,7 +471,7 @@ void b(vul &gaps, ul vSize) {
 }
 
 void c(vul &gaps, ul vSize) {
-    int ladd(3), sra(3), strt(5);
+    int ladd(7), sra(3), strt(4);
     gaps.push_back((vSize - (vSize >> strt)) | 1);
     while (gaps.back() > ladd) {
         gaps.push_back((gaps.back() >> sra) | ladd);

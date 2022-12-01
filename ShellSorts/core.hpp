@@ -20,6 +20,7 @@
 #include <vector>
 
 typedef unsigned long ul;
+typedef unsigned long long ull;
 typedef std::vector<int> vi;
 typedef std::vector<double> vd;
 typedef std::vector<ul> vul;
@@ -34,9 +35,9 @@ typedef std::vector<std::string> vs;
 
 using namespace std::chrono;
 
-#define MAX_OUTER_LOOP 1
+#define MAX_OUTER_LOOP 3
 #define MAX_DISTRO_LINES 2500
-#define MAX_SAMPLE_SIZE 10000000
+#define MAX_SAMPLE_SIZE 99999999
 
 struct my_numpunct : std::numpunct<char> {
     std::string do_grouping() const {return "\03";}
