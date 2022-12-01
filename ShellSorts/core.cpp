@@ -9,11 +9,11 @@
 
 static void writeDistros(std::vector<std::string> &distros) {
     std::string fnBase("/Users/prh/Keepers/code/xCode/shells/results/");
-    std::fstream fst;
     fnBase += formatTime(true, true);
     fnBase += "-distros.csv";
+    std::fstream fst;
     fst.open(fnBase, std::ios::out);
-    int maxLines(1111);
+    int maxLines(2222);
     msvd dMap;
     
     for (auto d : distros) {
@@ -51,79 +51,80 @@ static void fillDistros(std::vector<std::string> &distros) {
     writeDistros(distros);
 }
 
-static void makeAlgorithmElements(vgs &algorithms) {
-    algorithms.clear();
+static void makeAlgorithmElements(vgs &gapStructs) {
+    gapStructs.clear();
     
     gapStruct temp;
+    
     temp.name = "Shell 1959";
     temp.gapFn = shell;
     temp.status = gapStruct::ok;
-//    algorithms.emplace_back(temp);
+    gapStructs.emplace_back(temp);
     
     temp.name = "Frank & Lazarus 1960";
     temp.gapFn = frank;
     temp.status = gapStruct::ok;
-//    algorithms.emplace_back(temp);
+    gapStructs.emplace_back(temp);
     
     temp.name = "Hibbard 1963";
     temp.gapFn = hibbard;
     temp.status = gapStruct::ok;
-//    algorithms.emplace_back(temp);
+    gapStructs.emplace_back(temp);
     
     temp.name = "Papernov & Stasevich 1965";
     temp.gapFn = papernov;
     temp.status = gapStruct::ok;
-//    algorithms.emplace_back(temp);
+    gapStructs.emplace_back(temp);
     
     temp.name = "Pratt 1971";
     temp.gapFn = pratt;
     temp.status = gapStruct::ok;
-//    algorithms.emplace_back(temp);
+    gapStructs.emplace_back(temp);
     
     temp.name = "Knuth 1973";
     temp.gapFn = kunth;
     temp.status = gapStruct::ok;
-    algorithms.emplace_back(temp);
+    gapStructs.emplace_back(temp);
     
     temp.name = "Sedgewick 1982";
     temp.gapFn = sedgewick82;
     temp.status = gapStruct::ok;
-    algorithms.emplace_back(temp);
+    gapStructs.emplace_back(temp);
     
-    temp.name = "Sedgewick 1986";
-    temp.gapFn = sedgewick86;
-    temp.status = gapStruct::ok;
-    algorithms.emplace_back(temp);
+//    temp.name = "Sedgewick 1986";
+//    temp.gapFn = sedgewick86;
+//    temp.status = gapStruct::ok;
+//    gapStructs.emplace_back(temp);
     
-    temp.name = "Gonnet & Baeza-Yates 1991";
-    temp.gapFn = gonnet;
-    temp.status = gapStruct::ok;
-    algorithms.emplace_back(temp);
+//    temp.name = "Gonnet & Baeza-Yates 1991";
+//    temp.gapFn = gonnet;
+//    temp.status = gapStruct::ok;
+//    gapStructs.emplace_back(temp);
     
     temp.name = "Tokuda 1992";
     temp.gapFn = tokuda;
     temp.status = gapStruct::ok;
-    algorithms.emplace_back(temp);
+    gapStructs.emplace_back(temp);
     
-    temp.name = "Ciura 2001";
-    temp.gapFn = ciura;
-    temp.status = gapStruct::ok;
-    algorithms.emplace_back(temp);
+//    temp.name = "Ciura 2001";
+//    temp.gapFn = ciura;
+//    temp.status = gapStruct::ok;
+//    gapStructs.emplace_back(temp);
     
     temp.name = "a 2022";
     temp.gapFn = a;
     temp.status = gapStruct::ok;
-    algorithms.emplace_back(temp);
+    gapStructs.emplace_back(temp);
     
     temp.name = "b 2022";
     temp.gapFn = b;
     temp.status = gapStruct::ok;
-    algorithms.emplace_back(temp);
+    gapStructs.emplace_back(temp);
     
     temp.name = "c 2022";
     temp.gapFn = c;
     temp.status = gapStruct::ok;
-    algorithms.emplace_back(temp);
+    gapStructs.emplace_back(temp);
 }
 
 static void errorFunction(vd &wc, vd &cc) {
@@ -141,22 +142,22 @@ static void errorFunction(vd &wc, vd &cc) {
         << std::right << std::setw(w) << *itw++ << '\n';
 }
 
-static void doTimes(vgs algorithms, std::string fileName) {
+static void doTimes(vgs gapStructs, std::string fileName) {
     std::fstream fst;
     fileName += formatTime(true, true);
     fileName += "-Results.csv";
     fst.open(fileName, std::ios::out);
     fst << "Gap Sequence,Distribution";
-    auto p(algorithms.front().runData);
+    auto p(gapStructs.front().runData);
     auto q(p.begin());
     for (auto r : q->second) {
         fst << ',' << r.sampleSize;
     }
     fst << '\n';
     
-    for (auto a : algorithms) {
-        for (auto pair : a.runData) {
-            fst << a.name;
+    for (auto gapStruct : gapStructs) {
+        for (auto pair : gapStruct.runData) {
+            fst << gapStruct.name;
             fst << ',' << pair.first;
             for (auto pp : pair.second) {
                 fst << ',' << pp.time;
@@ -168,16 +169,16 @@ static void doTimes(vgs algorithms, std::string fileName) {
     fst.close();
 }
 
-static void doGaps(vgs algorithms, std::string fnBase) {
+static void doGaps(vgs gapStruct, std::string fnBase) {
     std::vector<std::string> alsoRans;
     std::fstream gst;
     fnBase += formatTime(true, true);
     fnBase += "-Gaps.csv";
     gst.open(fnBase, std::ios::out);
     gst << "Algorithm" << '\n';
-    for (auto a : algorithms) {
-        gst << a.name;
-        for (auto gap : a.gaps) {
+    for (auto gaoStruct : gapStruct) {
+        gst << gaoStruct.name;
+        for (auto gap : gaoStruct.gaps) {
             gst << ',' << gap;
         }
         gst << '\n';
@@ -186,20 +187,20 @@ static void doGaps(vgs algorithms, std::string fnBase) {
     gst.close();
 }
 
-static void makeFile(vgs algorithms) {
+static void makeFile(vgs gapStructs) {
     std::string fnBase("/Users/prh/Keepers/code/xCode/shells/results/");
-    doTimes(algorithms, fnBase);
-    doGaps(algorithms, fnBase);
+    doTimes(gapStructs, fnBase);
+    doGaps(gapStructs, fnBase);
 }
 
-static void summerize(vgs &algorithms) {
-    for (auto a : algorithms) {
-        std::cout << '\n' << a.name;
-        long n(a.gaps.size());
-        for (auto itr(a.gaps.begin()); n--; itr++)
+static void summerize(vgs &gapStructs) {
+    for (auto gapStruct : gapStructs) {
+        std::cout << '\n' << gapStruct.name;
+        long n(gapStruct.gaps.size());
+        for (auto itr(gapStruct.gaps.begin()); n--; itr++)
             std::cout << "  " << *itr;
         std::cout << '\n';
-        for (auto pair : a.runData) {
+        for (auto pair : gapStruct.runData) {
             std::cout << pair.first << std::endl;
             for (auto t : pair.second) {
                 std::cout << std::right << std::setw(12) << t.sampleSize
@@ -212,7 +213,7 @@ static void summerize(vgs &algorithms) {
     }
 }
 
-static void eraseSlowerGaps(vgs &algorithms, ul averageFuncTime) {
+static void eraseSlowerGaps(vgs &gapStructs, ul averageFuncTime) {
     /*
      Removes elements that had subpar sort times
      */
@@ -220,11 +221,11 @@ static void eraseSlowerGaps(vgs &algorithms, ul averageFuncTime) {
     
     vul laggards;
     
-    for (auto &a : algorithms) {
-        for (auto &pair : a.runData) {
+    for (auto &gapstruct : gapStructs) {
+        for (auto &pair : gapstruct.runData) {
             if (pair.second.back().time > lim) {
                 laggards.push_back(laggardIndex);
-                std::cerr << "Removed " << a.name << '\n';
+                std::cerr << "Removed " << gapstruct.name << '\n';
             }
         }
         laggardIndex++;
@@ -233,95 +234,95 @@ static void eraseSlowerGaps(vgs &algorithms, ul averageFuncTime) {
     if (!laggards.empty()) {
         std::reverse(laggards.begin(), laggards.end());
         for (auto laggard : laggards) {
-            algorithms.erase(algorithms.begin() + laggard);
+            gapStructs.erase(gapStructs.begin() + laggard);
         }
     }
 }
 
-static void getGaps(vgs &algorithms, ul sampleSize) {
-    for (auto &a : algorithms) {
-        a.gaps.clear();
-        a.gapFn(a.gaps, sampleSize);
-        if (a.gaps.front() == 1) {
-            std::reverse(a.gaps.begin(), a.gaps.end());
+static void getGaps(vgs &gapStructs, ul sampleSize) {
+    for (auto &gapStruct : gapStructs) {
+        gapStruct.gaps.clear();
+        gapStruct.gapFn(gapStruct.gaps, sampleSize);
+        if (gapStruct.gaps.front() < gapStruct.gaps.back()) {
+            std::reverse(gapStruct.gaps.begin(), gapStruct.gaps.end());
         }
-        while (a.gaps.front() >= sampleSize) {
-            a.gaps.erase(a.gaps.begin());
+        while (gapStruct.gaps.front() >= sampleSize) {
+            gapStruct.gaps.erase(gapStruct.gaps.begin());
         }
-        a.gaps.shrink_to_fit();
+        gapStruct.gaps.shrink_to_fit();
     }
 }
 
-static void traverseAlgorithmVector(ul &activeFuncCount, vgs &algorithms, vd &checkCopy, const vd &orginalCopy, ul sampleSize, ul &totalFuncTime, int wdth, vd &workCopy, std::string distroName) {
-    for (auto &a : algorithms) {
+static void traverseAlgorithmVector(ul &activeFuncCount, vgs &gapstricts, vd &checkCopy, const vd &orginalCopy, ul sampleSize, ul &totalFuncTime, int wdth, vd &workCopy, std::string distroName) {
+    for (auto &gapStruct : gapstricts) {
         workCopy.clear();
         workCopy = orginalCopy;
         auto start = high_resolution_clock::now();
-        shellsort(workCopy, a.gaps);
+        shellsort(workCopy, gapStruct.gaps);
         auto stop = high_resolution_clock::now();
         long duration = duration_cast<microseconds>(stop - start).count();
         std::cout << formatTime(false, true) << std::right << std::setw(31)
-        << a.name << ": " <<std::setw(wdth) <<std::right << duration << " µs"
+        << gapStruct.name << ": " <<std::setw(wdth) <<std::right << duration << " µs"
         << convertMicroSeconds(duration) << std::endl;
         sortMetrics sortMetrics;
-        a.status = verify(workCopy, checkCopy) ? gapStruct::ok : gapStruct::outOfOrder;
+        gapStruct.status = verify(workCopy, checkCopy) ? gapStruct::ok : gapStruct::outOfOrder;
         sortMetrics.time = duration;
         sortMetrics.sampleSize = sampleSize;
-        if (a.gapStruct::status == a.gapStruct::outOfOrder)
+        if (gapStruct.gapStruct::status == gapStruct.gapStruct::outOfOrder)
             errorFunction(workCopy, checkCopy);
-        a.runData[distroName].emplace_back(sortMetrics);
+        gapStruct.runData[distroName].emplace_back(sortMetrics);
         totalFuncTime += duration;
         activeFuncCount++;
     }
 }
 
-static void runActiveAlgorithms(vgs &algorithms, vd &checkCopy, const vd &orginalCopy, ul sampleSize,  int wdth, vd &workCopy, std::string distroName) {
+static void runActiveAlgorithms(vgs &gapStructs, vd &checkCopy, const vd &orginalCopy, ul sampleSize,  int wdth, vd &workCopy, std::string distroName) {
     ul totalFuncTime(0), activeFuncCount(0);
-    traverseAlgorithmVector(activeFuncCount, algorithms, checkCopy, orginalCopy, sampleSize, totalFuncTime, wdth, workCopy, distroName);
-//    eraseSlowerGaps(algorithms, totalFuncTime / activeFuncCount);
+    traverseAlgorithmVector(activeFuncCount, gapStructs, checkCopy, orginalCopy, sampleSize, totalFuncTime, wdth, workCopy, distroName);
+//    eraseSlowerGaps(gapStructs, totalFuncTime / activeFuncCount);
     totalFuncTime = 0;
     activeFuncCount = 0;
 }
 
-static void eoj(vgs &algorithms) {
-    summerize(algorithms);
-    makeFile(algorithms);
-    algorithms.clear();
+static void eoj(vgs &gapStructs) {
+    summerize(gapStructs);
+    makeFile(gapStructs);
+    gapStructs.clear();
 }
 
-static void prep4size(vd &checkCopy, vd &orginalCopy, ul sampleSize, std::string distro) {
-    randomFill(sampleSize, orginalCopy, distro);
+static void prep4size(vd &checkCopy, vd &orginalCopy, ul sampleSize, std::string distroName) {
+    randomFill(sampleSize, orginalCopy, distroName);
     orginalCopy.shrink_to_fit();
     checkCopy = orginalCopy;
     std::sort(checkCopy.begin(), checkCopy.end());
-    std::cout << '\n' << formatTime(true, true) << " n: " << sampleSize << " Distribution: " << distro << std::endl;
+    std::cout << '\n' << formatTime(true, true) << " n: " << sampleSize << " Distribution: " << distroName << std::endl;
 }
 
-static void work(vgs &algorithms, std::vector<std::string> &distros) {
+static void work(vgs &gapStructs, vs distroNames) {
     int wdth(14);
     
-    vi sampleSizes({111111, 1111111});
+    vi sampleSizes({999999, 1000000, 1000001});
     vd orginalCopy, workCopy, checkCopy;
     
     for (auto sampleSize : sampleSizes) {
-//        sampleSize |= 0xf;
-        getGaps(algorithms, sampleSize);
-        for (auto distro : distros) {
-            prep4size(checkCopy, orginalCopy, sampleSize, distro);
-            runActiveAlgorithms(algorithms, checkCopy, orginalCopy, sampleSize, wdth, workCopy, distro);
+        sampleSize = sampleSize > MAX_SAMPLE_SIZE ? MAX_SAMPLE_SIZE : sampleSize;
+        getGaps(gapStructs, sampleSize);
+        for (auto distroName : distroNames) {
+            prep4size(checkCopy, orginalCopy, sampleSize, distroName);
+            runActiveAlgorithms(gapStructs, checkCopy, orginalCopy, sampleSize, wdth, workCopy, distroName);
         }
     }
 }
 
 void setup() {
-    std::vector<std::string> distros;
-    vgs algorithms;
-    fillDistros(distros);
+    vs distroNames;
+    vgs gapStructs;
+    fillDistros(distroNames);
     for (int outerLoopCounter(0); outerLoopCounter < MAX_OUTER_LOOP; outerLoopCounter++) {
         std::cerr << formatTime(true, true) << " Pass " << (outerLoopCounter + 1) << " of " << MAX_OUTER_LOOP << ".\n";
-        makeAlgorithmElements(algorithms);
-        work(algorithms, distros);
-        eoj(algorithms);
+        makeAlgorithmElements(gapStructs);
+        work(gapStructs, distroNames);
+        eoj(gapStructs);
     }
 }
 
@@ -446,24 +447,28 @@ void ciura(vul &gaps, ul vSize) {
 }
 
 void a(vul &gaps, ul vSize) {
-    gaps.push_back(vSize / 3);
-    while (gaps.back() > 1) {
-        gaps.push_back((gaps.back() >> 3) | 1);
+    int ladd(7), sra(3), strt(3);
+    gaps.push_back((vSize - (vSize >> strt)) | 1);
+    while (gaps.back() > ladd) {
+        gaps.push_back((gaps.back() >> sra) | ladd);
     }
+    gaps.push_back(1);
 }
 
 void b(vul &gaps, ul vSize) {
-    gaps.push_back((vSize >> 1) + (vSize >> 2) + (vSize >> 3)| 1);
-    while (gaps.back() > 5) {
-        gaps.push_back((gaps.back() >> 3) | 5);
+    int ladd(5), sra(3), strt(4);
+    gaps.push_back((vSize - (vSize >> strt)) | 1);
+    while (gaps.back() > ladd) {
+        gaps.push_back((gaps.back() >> sra) | ladd);
     }
     gaps.push_back(1);
 }
 
 void c(vul &gaps, ul vSize) {
-    gaps.push_back((vSize >> 1) + (vSize >> 2) + (vSize >> 3)| 1);
-    while (gaps.back() > 7) {
-        gaps.push_back((gaps.back() >> 3) | 7);
+    int ladd(3), sra(3), strt(5);
+    gaps.push_back((vSize - (vSize >> strt)) | 1);
+    while (gaps.back() > ladd) {
+        gaps.push_back((gaps.back() >> sra) | ladd);
     }
     gaps.push_back(1);
 }

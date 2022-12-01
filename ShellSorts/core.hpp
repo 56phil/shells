@@ -24,6 +24,7 @@ typedef std::vector<int> vi;
 typedef std::vector<double> vd;
 typedef std::vector<ul> vul;
 typedef std::map<std::string, vd> msvd;
+typedef std::vector<std::string> vs;
 
 #include "formatTime.hpp"
 #include "formatMicroSeconds.hpp"
@@ -33,7 +34,9 @@ typedef std::map<std::string, vd> msvd;
 
 using namespace std::chrono;
 
-#define MAX_OUTER_LOOP 3
+#define MAX_OUTER_LOOP 1
+#define MAX_DISTRO_LINES 2500
+#define MAX_SAMPLE_SIZE 10000000
 
 struct my_numpunct : std::numpunct<char> {
     std::string do_grouping() const {return "\03";}
