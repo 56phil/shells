@@ -7,17 +7,17 @@
 
 #include "core.hpp"
 
-static void writeDistros(std::vector<std::string> &distros) {
+static void writeDistros(vs &distros) {
     std::string fnBase("/Users/prh/Keepers/code/xCode/shells/results/");
     fnBase += formatTime(true, true);
     fnBase += "-distros.csv";
     std::fstream fst;
     fst.open(fnBase, std::ios::out);
     int maxLines(2222);
-    msvd dMap;
+    msvi dMap;
     
     for (auto d : distros) {
-        vd tmp;
+        vi tmp;
         randomFill(maxLines, tmp, d);
         dMap[d] = tmp;
     }
@@ -38,11 +38,11 @@ static void writeDistros(std::vector<std::string> &distros) {
 static void fillDistros(std::vector<std::string> &distros) {
     distros.push_back("Bernoulli");
     distros.push_back("Binomial");
-    distros.push_back("Chi Squared");
-    distros.push_back("Cauchy");
-    distros.push_back("Lognormal");
-    distros.push_back("Normal");
-    distros.push_back("Student T");
+//    distros.push_back("Chi Squared");
+//    distros.push_back("Cauchy");
+//    distros.push_back("Lognormal");
+//    distros.push_back("Normal");
+//    distros.push_back("Student T");
     distros.push_back("Uniform");
     distros.push_back("Uniform - Sorted & Reversed");
     distros.push_back("Uniform - Sorted");
@@ -55,70 +55,63 @@ static void makeGapSequenceGenerators(vgs &gapStructs) {
     gapStructs.clear();
     
     gapStruct temp;
+    temp.warnings = 0;
+    temp.status = gapStruct::ok;
     
     temp.name = "Shell 1959";
     temp.gapFn = shell;
-    temp.status = gapStruct::ok;
     gapStructs.emplace_back(temp);
     
     temp.name = "Frank & Lazarus 1960";
     temp.gapFn = frank;
-    temp.status = gapStruct::ok;
     gapStructs.emplace_back(temp);
     
     temp.name = "Hibbard 1963";
     temp.gapFn = hibbard;
-    temp.status = gapStruct::ok;
     gapStructs.emplace_back(temp);
     
     temp.name = "Papernov & Stasevich 1965";
     temp.gapFn = papernov;
-    temp.status = gapStruct::ok;
     gapStructs.emplace_back(temp);
     
     temp.name = "Pratt 1971";
     temp.gapFn = pratt;
-    temp.status = gapStruct::ok;
+    gapStructs.emplace_back(temp);
+    
+    temp.name = "Pratt 1971 (modified)";
+    temp.gapFn = pratt_A;
     gapStructs.emplace_back(temp);
     
     temp.name = "Knuth 1973";
     temp.gapFn = kunth;
-    temp.status = gapStruct::ok;
     gapStructs.emplace_back(temp);
     
     temp.name = "Sedgewick 1982";
     temp.gapFn = sedgewick82;
-    temp.status = gapStruct::ok;
     gapStructs.emplace_back(temp);
     
     temp.name = "Sedgewick 1986";
     temp.gapFn = sedgewick86;
-    temp.status = gapStruct::ok;
     gapStructs.emplace_back(temp);
     
     temp.name = "Gonnet & Baeza-Yates 1991";
     temp.gapFn = gonnet;
-    temp.status = gapStruct::ok;
     gapStructs.emplace_back(temp);
     
     temp.name = "Tokuda 1992";
     temp.gapFn = tokuda;
-    temp.status = gapStruct::ok;
     gapStructs.emplace_back(temp);
     
     temp.name = "Ciura 2001";
     temp.gapFn = ciura;
-    temp.status = gapStruct::ok;
     gapStructs.emplace_back(temp);
     
     temp.name = "a 2022";
     temp.gapFn = a;
-    temp.status = gapStruct::ok;
     gapStructs.emplace_back(temp);
     
     temp.name = "b 2022";
     temp.gapFn = b;
-    temp.status = gapStruct::ok;
     gapStructs.emplace_back(temp);
     
     temp.name = "c 2022";
@@ -127,7 +120,7 @@ static void makeGapSequenceGenerators(vgs &gapStructs) {
     gapStructs.emplace_back(temp);
 }
 
-static void errorFunction(vd &wc, vd &cc) {
+static void errorFunction(vi &wc, vi &cc) {
     int n(0), w(28), maxLines(24);
     
     auto itw(wc.begin());
@@ -217,28 +210,32 @@ static void eraseSlowerGaps(vgs &gapStructs, ull averageFuncTime, std::string di
     /*
      Removes elements that had subpar sort times
      */
-    ull lim(averageFuncTime + (averageFuncTime >> 2));
     ul laggardIndex(0);
-    const ul minGapStructSize(5);
-    
     vul laggards;
+    ull lim(averageFuncTime + (averageFuncTime >> 3));
     
-    if (gapStructs.size() > minGapStructSize) {
+    if (CULL_SLOWER_GAP_SEQUENCES && gapStructs.size() > MIN_ACTIVE_GAP_STRUCTS) {
         for (auto &gapstruct : gapStructs) {
             if (gapstruct.runData[distroName].back().time > lim) {
-                laggards.push_back(laggardIndex);
-                if ((gapStructs.size() - laggards.size()) <= minGapStructSize) {
-                    break;
+                gapstruct.warnings++;
+                if (gapstruct.warnings < MAX_WARNINGS) {
+                    std::cerr << "Warned " << gapstruct.name << "  (" << gapstruct.warnings << " of " << MAX_WARNINGS << ")\n";
+                } else {
+                    laggards.push_back(laggardIndex);
+                    std::cerr << "Removed " << gapstruct.name << '\n';
+                    if (gapStructs.size() - laggards.size() <= MIN_ACTIVE_GAP_STRUCTS) {
+                        break;
+                    }
                 }
             }
             laggardIndex++;
         }
         
+    
         if (!laggards.empty()) {
             std::reverse(laggards.begin(), laggards.end());
             std::cerr << "Another " << laggards.size() << " bite" << (laggards.size() == 1 ? "s " : " ") << "the dust!\n";
             for (auto laggard : laggards) {
-                std::cerr << "Removed " << gapStructs[laggard].name << '\n';
                 gapStructs.erase(gapStructs.begin() + laggard);
             }
         }
@@ -259,7 +256,7 @@ static void getGaps(vgs &gapStructs, ul sampleSize) {
     }
 }
 
-static void traverseAlgorithmVector(ull &activeFuncCount, vgs &gapstructs, vd &checkCopy, const vd &orginalCopy, ul sampleSize, ull &totalFuncTime, int wdth, vd &workCopy, std::string distroName) {
+static void traverseAlgorithmVector(ull &activeFuncCount, vgs &gapstructs, vi &checkCopy, const vi &orginalCopy, ul sampleSize, ull &totalFuncTime, int wdth, vi &workCopy, std::string distroName) {
     for (auto &gapStruct : gapstructs) {
         workCopy.clear();
         workCopy = orginalCopy;
@@ -282,7 +279,7 @@ static void traverseAlgorithmVector(ull &activeFuncCount, vgs &gapstructs, vd &c
     }
 }
 
-static void runActiveAlgorithms(vgs &gapStructs, vd &checkCopy, const vd &orginalCopy, ul sampleSize,  int wdth, vd &workCopy, std::string distroName) {
+static void runActiveAlgorithms(vgs &gapStructs, vi &checkCopy, const vi &orginalCopy, ul sampleSize,  int wdth, vi &workCopy, std::string distroName) {
     ull totalFuncTime(0), activeFuncCount(0);
     traverseAlgorithmVector(activeFuncCount, gapStructs, checkCopy, orginalCopy, sampleSize, totalFuncTime, wdth, workCopy, distroName);
     eraseSlowerGaps(gapStructs, totalFuncTime / activeFuncCount, distroName);
@@ -296,7 +293,7 @@ static void eoj(vgs &gapStructs) {
     gapStructs.clear();
 }
 
-static void prep4size(vd &checkCopy, vd &orginalCopy, ul sampleSize, std::string distroName) {
+static void prep4size(vi &checkCopy, vi &orginalCopy, ul sampleSize, std::string distroName) {
     randomFill(sampleSize, orginalCopy, distroName);
     orginalCopy.shrink_to_fit();
     checkCopy = orginalCopy;
@@ -307,15 +304,15 @@ static void prep4size(vd &checkCopy, vd &orginalCopy, ul sampleSize, std::string
 static void work(vgs &gapStructs, vs distroNames) {
     int wdth(14);
     
-    vi sampleSizes({999999, 1000000, 1000001});
-    vd orginalCopy, workCopy, checkCopy;
+    vi sampleSizes({1234567, 987654});
+    vi originalCopy, workCopy, checkCopy;
     
     for (auto sampleSize : sampleSizes) {
         sampleSize = sampleSize > MAX_SAMPLE_SIZE ? MAX_SAMPLE_SIZE : sampleSize;
         getGaps(gapStructs, sampleSize);
         for (auto distroName : distroNames) {
-            prep4size(checkCopy, orginalCopy, sampleSize, distroName);
-            runActiveAlgorithms(gapStructs, checkCopy, orginalCopy, sampleSize, wdth, workCopy, distroName);
+            prep4size(checkCopy, originalCopy, sampleSize, distroName);
+            runActiveAlgorithms(gapStructs, checkCopy, originalCopy, sampleSize, wdth, workCopy, distroName);
         }
     }
 }
@@ -373,15 +370,17 @@ bool is3smooth(ul n) {
     return n == 1;
 }
 
-bool is5smooth(ul n) {
-    while (n % 5 == 0)
-        n /= 5;
-    return is3smooth(n);
-}
-
 void pratt(vul &gaps, ul vSize) {
     gaps.clear();
     for (ul n(1); n < vSize; n++)
+        if (is3smooth(n))
+            gaps.push_back(n);
+
+}
+
+void pratt_A(vul &gaps, ul vSize) {
+    gaps.clear();
+    for (ul n(1); n < vSize / 2; n += 4)
         if (is3smooth(n))
             gaps.push_back(n);
     
@@ -462,19 +461,19 @@ void a(vul &gaps, ul vSize) {
 }
 
 void b(vul &gaps, ul vSize) {
-    int ladd(5), sra(3), strt(4);
+    int dvsr(9), ladd(7), sra(3), strt(4);
     gaps.push_back((vSize - (vSize >> strt)) | 1);
     while (gaps.back() > ladd) {
-        gaps.push_back((gaps.back() >> sra) | ladd);
+        gaps.push_back(((gaps.back() / dvsr)) | ladd);
     }
     gaps.push_back(1);
 }
 
 void c(vul &gaps, ul vSize) {
-    int ladd(7), sra(3), strt(4);
+    int dvsr(6), ladd(7), sra(3), strt(4);
     gaps.push_back((vSize - (vSize >> strt)) | 1);
     while (gaps.back() > ladd) {
-        gaps.push_back((gaps.back() >> sra) | ladd);
+        gaps.push_back(((gaps.back() - (gaps.back() / dvsr)) >> sra) | ladd);
     }
     gaps.push_back(1);
 }

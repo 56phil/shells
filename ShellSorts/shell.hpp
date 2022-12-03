@@ -10,5 +10,5 @@
 
 #include "core.hpp"
 
-void shellsort(vd &, const vul &);
+void shellsort(vi &, const vul);
 #endif /* shell_hpp */

@@ -7,6 +7,6 @@
 
 #include "verifyArray.hpp"
 
-bool verify(vd wc, vd cc) {
+bool verify(vi wc, vi cc) {
     return wc == cc;
 }

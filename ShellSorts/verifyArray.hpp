@@ -10,6 +10,6 @@
 
 #include "core.hpp"
 
-bool verify(vd, vd);
+bool verify(vi, vi);
 
 #endif /* verifyarray_hpp */

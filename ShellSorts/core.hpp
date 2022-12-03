@@ -24,7 +24,7 @@ typedef unsigned long long ull;
 typedef std::vector<int> vi;
 typedef std::vector<double> vd;
 typedef std::vector<ul> vul;
-typedef std::map<std::string, vd> msvd;
+typedef std::map<std::string, vi> msvi;
 typedef std::vector<std::string> vs;
 
 #include "formatTime.hpp"
@@ -35,9 +35,13 @@ typedef std::vector<std::string> vs;
 
 using namespace std::chrono;
 
-#define MAX_OUTER_LOOP 3
+#define MAX_OUTER_LOOP 1
+#define MAX_WARNINGS 3
 #define MAX_DISTRO_LINES 2500
-#define MAX_SAMPLE_SIZE 99999999
+#define MAX_SAMPLE_SIZE 999999991
+#define MIN_ACTIVE_GAP_STRUCTS 5
+#define CULL_SLOWER_GAP_SEQUENCES true
+#define NO_CULL_SLOWER_GAP_SEQUENCES false
 
 struct my_numpunct : std::numpunct<char> {
     std::string do_grouping() const {return "\03";}
@@ -51,6 +55,7 @@ typedef std::vector<sortMetrics> vsm;
 typedef std::map<std::string, vsm> msm;
 
 struct gapStruct {
+    int warnings;
     vul gaps;
     std::string name;
     enum errorState {
@@ -70,6 +75,7 @@ void frank(vul &, ul);
 void hibbard(vul &, ul);
 void papernov(vul &, ul);
 void pratt(vul &, ul);
+void pratt_A(vul &, ul);
 void kunth(vul &, ul);
 void sedgewick82(vul &, ul);
 void sedgewick1985(vul &, ul);
