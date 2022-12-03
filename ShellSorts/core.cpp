@@ -1,6 +1,5 @@
 //
 //  core.cpp
-//  core
 //
 //  Created by Phil Huffman on 12/21/21.
 //
@@ -214,23 +213,22 @@ static void eraseSlowerGaps(vgs &gapStructs, ull averageFuncTime, std::string di
     vul laggards;
     ull lim(averageFuncTime + (averageFuncTime >> 3));
     
-    if (CULL_SLOWER_GAP_SEQUENCES && gapStructs.size() > MIN_ACTIVE_GAP_STRUCTS) {
+    if (cullSlowerGapSequences && gapStructs.size() > MIN_ActiveGapStructs) {
         for (auto &gapstruct : gapStructs) {
             if (gapstruct.runData[distroName].back().time > lim) {
                 gapstruct.warnings++;
-                if (gapstruct.warnings < MAX_WARNINGS) {
-                    std::cerr << "Warned " << gapstruct.name << "  (" << gapstruct.warnings << " of " << MAX_WARNINGS << ")\n";
+                if (gapstruct.warnings < MAX_Warnings) {
+                    std::cerr << "Warned " << gapstruct.name << "  (" << gapstruct.warnings << " of " << MAX_Warnings << ")\n";
                 } else {
                     laggards.push_back(laggardIndex);
                     std::cerr << "Removed " << gapstruct.name << '\n';
-                    if (gapStructs.size() - laggards.size() <= MIN_ACTIVE_GAP_STRUCTS) {
+                    if (gapStructs.size() - laggards.size() <= MIN_ActiveGapStructs) {
                         break;
                     }
                 }
             }
             laggardIndex++;
         }
-        
     
         if (!laggards.empty()) {
             std::reverse(laggards.begin(), laggards.end());
@@ -304,11 +302,11 @@ static void prep4size(vi &checkCopy, vi &orginalCopy, ul sampleSize, std::string
 static void work(vgs &gapStructs, vs distroNames) {
     int wdth(14);
     
-    vi sampleSizes({1234567, 987654});
+    vi sampleSizes({999999999, 1234567, 987654});
     vi originalCopy, workCopy, checkCopy;
     
     for (auto sampleSize : sampleSizes) {
-        sampleSize = sampleSize > MAX_SAMPLE_SIZE ? MAX_SAMPLE_SIZE : sampleSize;
+        sampleSize = sampleSize > MAX_SampleSize ? MAX_SampleSize : sampleSize;
         getGaps(gapStructs, sampleSize);
         for (auto distroName : distroNames) {
             prep4size(checkCopy, originalCopy, sampleSize, distroName);
@@ -320,8 +318,8 @@ static void work(vgs &gapStructs, vs distroNames) {
 void setup() {
     vs distroNames;
     fillDistros(distroNames);
-    for (int outerLoopCounter(0); outerLoopCounter < MAX_OUTER_LOOP; outerLoopCounter++) {
-        std::cerr << formatTime(true, true) << " Pass " << (outerLoopCounter + 1) << " of " << MAX_OUTER_LOOP << ".\n";
+    for (int outerLoopCounter(0); outerLoopCounter < MAX_Passes; outerLoopCounter++) {
+        std::cerr << formatTime(true, true) << " Pass " << (outerLoopCounter + 1) << " of " << MAX_Passes << ".\n";
         vgs gapStructs;
         makeGapSequenceGenerators(gapStructs);
         work(gapStructs, distroNames);
@@ -462,7 +460,7 @@ void a(vul &gaps, ul vSize) {
 
 void b(vul &gaps, ul vSize) {
     int dvsr(9), ladd(7), sra(3), strt(4);
-    gaps.push_back((vSize - (vSize >> strt)) | 1);
+    gaps.push_back((vSize - (vSize >> strt)) | sra);
     while (gaps.back() > ladd) {
         gaps.push_back(((gaps.back() / dvsr)) | ladd);
     }
