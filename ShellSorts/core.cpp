@@ -35,8 +35,8 @@ static void writeDistros(vs &distros) {
 }
 
 static void fillDistros(std::vector<std::string> &distros) {
-    distros.push_back("Bernoulli");
-    distros.push_back("Binomial");
+//    distros.push_back("Bernoulli");
+//    distros.push_back("Binomial");
 //    distros.push_back("Chi Squared");
 //    distros.push_back("Cauchy");
 //    distros.push_back("Lognormal");
@@ -44,8 +44,9 @@ static void fillDistros(std::vector<std::string> &distros) {
 //    distros.push_back("Student T");
     distros.push_back("Uniform");
     distros.push_back("Uniform - Sorted & Reversed");
-    distros.push_back("Uniform - Sorted");
-    std::sort(distros.begin(), distros.end());
+//    distros.push_back("Uniform - Sorted");
+    
+//    std::sort(distros.begin(), distros.end());
     
     writeDistros(distros);
 }
@@ -57,53 +58,53 @@ static void makeGapSequenceGenerators(vgs &gapStructs) {
     temp.warnings = 0;
     temp.status = gapStruct::ok;
     
-    temp.name = "Shell 1959";
-    temp.gapFn = shell;
-    gapStructs.emplace_back(temp);
-    
-    temp.name = "Frank & Lazarus 1960";
-    temp.gapFn = frank;
-    gapStructs.emplace_back(temp);
-    
-    temp.name = "Hibbard 1963";
-    temp.gapFn = hibbard;
-    gapStructs.emplace_back(temp);
-    
-    temp.name = "Papernov & Stasevich 1965";
-    temp.gapFn = papernov;
-    gapStructs.emplace_back(temp);
-    
-    temp.name = "Pratt 1971";
-    temp.gapFn = pratt;
-    gapStructs.emplace_back(temp);
-    
-    temp.name = "Pratt 1971 (modified)";
-    temp.gapFn = pratt_A;
-    gapStructs.emplace_back(temp);
-    
-    temp.name = "Knuth 1973";
-    temp.gapFn = kunth;
-    gapStructs.emplace_back(temp);
+//    temp.name = "Shell 1959";
+//    temp.gapFn = shell;
+//    gapStructs.emplace_back(temp);
+//
+//    temp.name = "Frank & Lazarus 1960";
+//    temp.gapFn = frank;
+//    gapStructs.emplace_back(temp);
+//
+//    temp.name = "Hibbard 1963";
+//    temp.gapFn = hibbard;
+//    gapStructs.emplace_back(temp);
+//
+//    temp.name = "Papernov & Stasevich 1965";
+//    temp.gapFn = papernov;
+//    gapStructs.emplace_back(temp);
+//
+//    temp.name = "Pratt 1971";
+//    temp.gapFn = pratt;
+//    gapStructs.emplace_back(temp);
+//
+//    temp.name = "Pratt 1971 (modified)";
+//    temp.gapFn = pratt_A;
+//    gapStructs.emplace_back(temp);
+//
+//    temp.name = "Knuth 1973";
+//    temp.gapFn = kunth;
+//    gapStructs.emplace_back(temp);
     
     temp.name = "Sedgewick 1982";
     temp.gapFn = sedgewick82;
     gapStructs.emplace_back(temp);
     
-    temp.name = "Sedgewick 1986";
-    temp.gapFn = sedgewick86;
-    gapStructs.emplace_back(temp);
-    
-    temp.name = "Gonnet & Baeza-Yates 1991";
-    temp.gapFn = gonnet;
-    gapStructs.emplace_back(temp);
-    
-    temp.name = "Tokuda 1992";
-    temp.gapFn = tokuda;
-    gapStructs.emplace_back(temp);
-    
-    temp.name = "Ciura 2001";
-    temp.gapFn = ciura;
-    gapStructs.emplace_back(temp);
+//    temp.name = "Sedgewick 1986";
+//    temp.gapFn = sedgewick86;
+//    gapStructs.emplace_back(temp);
+//
+//    temp.name = "Gonnet & Baeza-Yates 1991";
+//    temp.gapFn = gonnet;
+//    gapStructs.emplace_back(temp);
+//
+//    temp.name = "Tokuda 1992";
+//    temp.gapFn = tokuda;
+//    gapStructs.emplace_back(temp);
+//
+//    temp.name = "Ciura 2001";
+//    temp.gapFn = ciura;
+//    gapStructs.emplace_back(temp);
     
     temp.name = "a 2022";
     temp.gapFn = a;
@@ -303,6 +304,8 @@ static void work(vgs &gapStructs, vs distroNames) {
     int wdth(14);
     
     vi sampleSizes({999999999, 1234567, 987654});
+    std::sort(sampleSizes.begin(), sampleSizes.end());
+    
     vi originalCopy, workCopy, checkCopy;
     
     for (auto sampleSize : sampleSizes) {
@@ -449,29 +452,25 @@ void ciura(vul &gaps, ul vSize) {
     }
 }
 
-void a(vul &gaps, ul vSize) {
-    int ladd(7), sra(3), strt(3);
-    gaps.push_back((vSize - (vSize >> strt)) | 1);
+static void base_22(vul &gaps, int ladd, int sra_0, int sra_1, int strt, ul vSize) {
+    gaps.push_back(((vSize >> 1) + (vSize >> strt)) | 1);
     while (gaps.back() > ladd) {
-        gaps.push_back((gaps.back() >> sra) | ladd);
+        gaps.push_back((gaps.back() >> sra_0) + (gaps.back() >> sra_1) | ladd);
     }
     gaps.push_back(1);
+}
+
+void a(vul &gaps, ul vSize) {
+    const int sra_1(3), ladd(3), sra_0(3), strt(1);
+    base_22(gaps, ladd, sra_0, sra_1, strt, vSize);
 }
 
 void b(vul &gaps, ul vSize) {
-    int dvsr(9), ladd(7), sra(3), strt(4);
-    gaps.push_back((vSize - (vSize >> strt)) | sra);
-    while (gaps.back() > ladd) {
-        gaps.push_back(((gaps.back() / dvsr)) | ladd);
-    }
-    gaps.push_back(1);
+    const int sra_1(3), ladd(7), sra_0(3), strt(1);
+    base_22(gaps, ladd, sra_0, sra_1, strt, vSize);
 }
 
 void c(vul &gaps, ul vSize) {
-    int dvsr(6), ladd(7), sra(3), strt(4);
-    gaps.push_back((vSize - (vSize >> strt)) | 1);
-    while (gaps.back() > ladd) {
-        gaps.push_back(((gaps.back() - (gaps.back() / dvsr)) >> sra) | ladd);
-    }
-    gaps.push_back(1);
+    const int sra_1(3), ladd(15), sra_0(3), strt(1);
+    base_22(gaps, ladd, sra_0, sra_1, strt, vSize);
 }

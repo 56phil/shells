@@ -35,11 +35,11 @@ typedef std::vector<std::string> vs;
 
 using namespace std::chrono;
 
-const ul MAX_SampleSize(1999999);
+const ul MAX_SampleSize(30000000);
+const ul MIN_ActiveGapStructs(5);
 const ul MAX_DistroLines(2500);
 const int MAX_Warnings(3);
-const int MAX_Passes(3);
-const ul MIN_ActiveGapStructs(5);
+const int MAX_Passes(1);
 const bool cullSlowerGapSequences(true);
 
 struct my_numpunct : std::numpunct<char> {

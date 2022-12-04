@@ -35,7 +35,6 @@ void uniFill(vi &v, ul n, std::uniform_int_distribution<int> distrib, std::mt199
 void randomFill(ul n, vi &v, std::string distroName) {
     std::random_device rd;  //Will be used to obtain a seed for the random number engine
     std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
-    std::uniform_int_distribution<> distrib(1, 6);
 
     std::random_device r;
  
@@ -48,7 +47,7 @@ void randomFill(ul n, vi &v, std::string distroName) {
     int rMin(std::numeric_limits<int>::min()), rMax(std::numeric_limits<int>::max());
     std::default_random_engine generator;
     std::normal_distribution<int> distN(0.0, 100.0);
-    std::uniform_int_distribution<int> distU(rMin,rMax);
+    std::uniform_int_distribution<int> distrib(rMin, rMax);
     std::bernoulli_distribution distBe(0.5);
     std::binomial_distribution<int> distBi(4, 0.5);
     std::lognormal_distribution<int> distLo(0.5, 0.25);
