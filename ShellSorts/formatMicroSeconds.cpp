@@ -7,7 +7,7 @@
 
 #include "formatMicroSeconds.hpp"
 
-std::string convertMicroSeconds(long tms) {
+std::string formatMicroSeconds(long tms) {
     const long ku(1000000);
     long fractional(tms % ku);
     long seconds(tms / ku);

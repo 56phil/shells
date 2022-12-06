@@ -7,21 +7,25 @@
 #include "core.hpp"
 
 static void writeDistros(vs &distros) {
+//    int maxLines(2222);
+    msvi dMap;
+    
+    for (auto d : distros) {
+        vi tmp (MAX_DistroLines);
+        randomFill(MAX_DistroLines, tmp, d);
+        if (tmp.empty()) {
+            std::cerr << "random fill failed.\n";
+            exit(1);
+        }
+        dMap[d] = tmp;
+    }
+    
     std::string fnBase("/Users/prh/Keepers/code/xCode/shells/results/");
     fnBase += formatTime(true, true);
     fnBase += "-distros.csv";
     std::fstream fst;
     fst.open(fnBase, std::ios::out);
-    int maxLines(2222);
-    msvi dMap;
-    
-    for (auto d : distros) {
-        vi tmp;
-        randomFill(maxLines, tmp, d);
-        dMap[d] = tmp;
-    }
-    
-    for(int indx(-1); indx < maxLines; indx++) {
+    for(long indx(-1); indx < MAX_DistroLines; indx++) {
         for (auto d : dMap) {
             if (indx < 0) {
                 fst << ',' << d.first;
@@ -32,21 +36,19 @@ static void writeDistros(vs &distros) {
         fst << '\n';
     }
     fst << std::endl;
+    fst.close();
 }
 
-static void fillDistros(std::vector<std::string> &distros) {
-//    distros.push_back("Bernoulli");
-//    distros.push_back("Binomial");
-//    distros.push_back("Chi Squared");
-//    distros.push_back("Cauchy");
-//    distros.push_back("Lognormal");
-//    distros.push_back("Normal");
-//    distros.push_back("Student T");
+static void fillDistros(vs &distros) {
+    distros.push_back("Bernoulli");
+    distros.push_back("Binomial");
+    distros.push_back("Normal");
+    distros.push_back("Poisson");
     distros.push_back("Uniform");
     distros.push_back("Uniform - Sorted & Reversed");
-//    distros.push_back("Uniform - Sorted");
+    distros.push_back("Uniform - Sorted");
     
-//    std::sort(distros.begin(), distros.end());
+    std::sort(distros.begin(), distros.end());
     
     writeDistros(distros);
 }
@@ -58,53 +60,53 @@ static void makeGapSequenceGenerators(vgs &gapStructs) {
     temp.warnings = 0;
     temp.status = gapStruct::ok;
     
-//    temp.name = "Shell 1959";
-//    temp.gapFn = shell;
-//    gapStructs.emplace_back(temp);
-//
-//    temp.name = "Frank & Lazarus 1960";
-//    temp.gapFn = frank;
-//    gapStructs.emplace_back(temp);
-//
-//    temp.name = "Hibbard 1963";
-//    temp.gapFn = hibbard;
-//    gapStructs.emplace_back(temp);
-//
-//    temp.name = "Papernov & Stasevich 1965";
-//    temp.gapFn = papernov;
-//    gapStructs.emplace_back(temp);
-//
-//    temp.name = "Pratt 1971";
-//    temp.gapFn = pratt;
-//    gapStructs.emplace_back(temp);
-//
-//    temp.name = "Pratt 1971 (modified)";
-//    temp.gapFn = pratt_A;
-//    gapStructs.emplace_back(temp);
-//
-//    temp.name = "Knuth 1973";
-//    temp.gapFn = kunth;
-//    gapStructs.emplace_back(temp);
+    temp.name = "Shell 1959";
+    temp.gapFn = shell;
+    gapStructs.emplace_back(temp);
+
+    temp.name = "Frank & Lazarus 1960";
+    temp.gapFn = frank;
+    gapStructs.emplace_back(temp);
+
+    temp.name = "Hibbard 1963";
+    temp.gapFn = hibbard;
+    gapStructs.emplace_back(temp);
+
+    temp.name = "Papernov & Stasevich 1965";
+    temp.gapFn = papernov;
+    gapStructs.emplace_back(temp);
+
+    temp.name = "Pratt 1971";
+    temp.gapFn = pratt;
+    gapStructs.emplace_back(temp);
+
+    temp.name = "Pratt 1971 (modified)";
+    temp.gapFn = pratt_A;
+    gapStructs.emplace_back(temp);
+
+    temp.name = "Knuth 1973";
+    temp.gapFn = kunth;
+    gapStructs.emplace_back(temp);
     
     temp.name = "Sedgewick 1982";
     temp.gapFn = sedgewick82;
     gapStructs.emplace_back(temp);
     
-//    temp.name = "Sedgewick 1986";
-//    temp.gapFn = sedgewick86;
-//    gapStructs.emplace_back(temp);
-//
-//    temp.name = "Gonnet & Baeza-Yates 1991";
-//    temp.gapFn = gonnet;
-//    gapStructs.emplace_back(temp);
-//
-//    temp.name = "Tokuda 1992";
-//    temp.gapFn = tokuda;
-//    gapStructs.emplace_back(temp);
-//
-//    temp.name = "Ciura 2001";
-//    temp.gapFn = ciura;
-//    gapStructs.emplace_back(temp);
+    temp.name = "Sedgewick 1986";
+    temp.gapFn = sedgewick86;
+    gapStructs.emplace_back(temp);
+
+    temp.name = "Gonnet & Baeza-Yates 1991";
+    temp.gapFn = gonnet;
+    gapStructs.emplace_back(temp);
+
+    temp.name = "Tokuda 1992";
+    temp.gapFn = tokuda;
+    gapStructs.emplace_back(temp);
+
+    temp.name = "Ciura 2001";
+    temp.gapFn = ciura;
+    gapStructs.emplace_back(temp);
     
     temp.name = "a 2022";
     temp.gapFn = a;
@@ -116,7 +118,10 @@ static void makeGapSequenceGenerators(vgs &gapStructs) {
     
     temp.name = "c 2022";
     temp.gapFn = c;
-    temp.status = gapStruct::ok;
+    gapStructs.emplace_back(temp);
+    
+    temp.name = "d 2022";
+    temp.gapFn = d;
     gapStructs.emplace_back(temp);
 }
 
@@ -198,7 +203,7 @@ static void summerize(vgs &gapStructs) {
             for (auto t : pair.second) {
                 std::cout << std::right << std::setw(12) << t.sampleSize
                 << std::right << std::setw(14) << t.time
-                << std::setw(18)<< convertMicroSeconds(t.time) << '\n';
+                << std::setw(18)<< formatMicroSeconds(t.time) << '\n';
             }
             std::cout << '\n';
         }
@@ -255,24 +260,35 @@ static void getGaps(vgs &gapStructs, ul sampleSize) {
     }
 }
 
-static void traverseAlgorithmVector(ull &activeFuncCount, vgs &gapstructs, vi &checkCopy, const vi &orginalCopy, ul sampleSize, ull &totalFuncTime, int wdth, vi &workCopy, std::string distroName) {
+std::string gaps2string(vul gapVect) {
+    std::stringstream sst;
+    for (auto gap : gapVect) {
+        sst << " " << gap;
+    }
+    std::string oString(sst.str());
+    return oString;
+}
+
+static void traverseVGS(ull &activeFuncCount, vgs &gapstructs, vi &chkCpy, const vi &orgCpy, ul sampleSize, ull &totalFuncTime, int wdth, vi &wrkCpy, std::string dName) {
     for (auto &gapStruct : gapstructs) {
-        workCopy.clear();
-        workCopy = orginalCopy;
+        wrkCpy.clear();
+        wrkCpy = orgCpy;
         auto start = high_resolution_clock::now();
-        shellsort(workCopy, gapStruct.gaps);
+        shellsort(wrkCpy, gapStruct.gaps);
         auto stop = high_resolution_clock::now();
         long duration = duration_cast<microseconds>(stop - start).count();
         std::cout << formatTime(false, true) << std::right << std::setw(31)
         << gapStruct.name << ": " <<std::setw(wdth) <<std::right << duration << " µs"
-        << convertMicroSeconds(duration) << std::endl;
+        << formatMicroSeconds(duration)
+        << '\n' << gaps2string(gapStruct.gaps)
+        << '\n';
         sortMetrics sortMetrics;
-        gapStruct.status = verify(workCopy, checkCopy) ? gapStruct::ok : gapStruct::outOfOrder;
+        gapStruct.status = verify(wrkCpy, chkCpy) ? gapStruct::ok : gapStruct::outOfOrder;
         sortMetrics.time = duration;
         sortMetrics.sampleSize = sampleSize;
         if (gapStruct.gapStruct::status == gapStruct.gapStruct::outOfOrder)
-            errorFunction(workCopy, checkCopy);
-        gapStruct.runData[distroName].emplace_back(sortMetrics);
+            errorFunction(wrkCpy, chkCpy);
+        gapStruct.runData[dName].emplace_back(sortMetrics);
         totalFuncTime += duration;
         activeFuncCount++;
     }
@@ -280,14 +296,14 @@ static void traverseAlgorithmVector(ull &activeFuncCount, vgs &gapstructs, vi &c
 
 static void runActiveAlgorithms(vgs &gapStructs, vi &checkCopy, const vi &orginalCopy, ul sampleSize,  int wdth, vi &workCopy, std::string distroName) {
     ull totalFuncTime(0), activeFuncCount(0);
-    traverseAlgorithmVector(activeFuncCount, gapStructs, checkCopy, orginalCopy, sampleSize, totalFuncTime, wdth, workCopy, distroName);
+    traverseVGS(activeFuncCount, gapStructs, checkCopy, orginalCopy, sampleSize, totalFuncTime, wdth, workCopy, distroName);
     eraseSlowerGaps(gapStructs, totalFuncTime / activeFuncCount, distroName);
     totalFuncTime = 0;
     activeFuncCount = 0;
 }
 
 static void eoj(vgs &gapStructs) {
-    summerize(gapStructs);
+//    summerize(gapStructs);
     makeFile(gapStructs);
     gapStructs.clear();
 }
@@ -303,13 +319,12 @@ static void prep4size(vi &checkCopy, vi &orginalCopy, ul sampleSize, std::string
 static void work(vgs &gapStructs, vs distroNames) {
     int wdth(14);
     
-    vi sampleSizes({999999999, 1234567, 987654});
+    vi sampleSizes({1234567,6543210});
     std::sort(sampleSizes.begin(), sampleSizes.end());
-    
-    vi originalCopy, workCopy, checkCopy;
     
     for (auto sampleSize : sampleSizes) {
         sampleSize = sampleSize > MAX_SampleSize ? MAX_SampleSize : sampleSize;
+        vi originalCopy(sampleSize), workCopy(sampleSize), checkCopy(sampleSize);
         getGaps(gapStructs, sampleSize);
         for (auto distroName : distroNames) {
             prep4size(checkCopy, originalCopy, sampleSize, distroName);
@@ -452,25 +467,30 @@ void ciura(vul &gaps, ul vSize) {
     }
 }
 
-static void base_22(vul &gaps, int ladd, int sra_0, int sra_1, int strt, ul vSize) {
-    gaps.push_back(((vSize >> 1) + (vSize >> strt)) | 1);
+static void base_22(vul &gaps, int ladd, int sra_0, int sra_1, int sra_2, int strt_0, int strt_1, int strt_2, ul vSize) {
+    gaps.push_back(((vSize >> strt_0) + (vSize >> strt_1) - (vSize >> strt_2)) | ladd);
     while (gaps.back() > ladd) {
-        gaps.push_back((gaps.back() >> sra_0) + (gaps.back() >> sra_1) | ladd);
+        gaps.push_back(((gaps.back() >> sra_0) + (gaps.back() >> sra_1) - (gaps.back() >> sra_2)) | ladd);
     }
     gaps.push_back(1);
 }
 
 void a(vul &gaps, ul vSize) {
-    const int sra_1(3), ladd(3), sra_0(3), strt(1);
-    base_22(gaps, ladd, sra_0, sra_1, strt, vSize);
+    const int ladd(7), sra_0(2), sra_1(10), sra_2(7), strt_0(1), strt_1(2), strt_2(5);
+    base_22(gaps, ladd, sra_0, sra_1, sra_2, strt_0, strt_1, strt_2, vSize);
 }
 
 void b(vul &gaps, ul vSize) {
-    const int sra_1(3), ladd(7), sra_0(3), strt(1);
-    base_22(gaps, ladd, sra_0, sra_1, strt, vSize);
+    const int ladd(7), sra_0(2), sra_1(9), sra_2(4), strt_0(1), strt_1(2), strt_2(5);
+    base_22(gaps, ladd, sra_0, sra_1, sra_2, strt_0, strt_1, strt_2, vSize);
 }
 
 void c(vul &gaps, ul vSize) {
-    const int sra_1(3), ladd(15), sra_0(3), strt(1);
-    base_22(gaps, ladd, sra_0, sra_1, strt, vSize);
+    const int ladd(7), sra_0(2), sra_1(8), sra_2(5), strt_0(1), strt_1(2), strt_2(5);
+    base_22(gaps, ladd, sra_0, sra_1, sra_2, strt_0, strt_1, strt_2, vSize);
+}
+
+void d(vul &gaps, ul vSize) {
+    const int ladd(7), sra_0(2), sra_1(7), sra_2(6), strt_0(1), strt_1(2), strt_2(5);
+    base_22(gaps, ladd, sra_0, sra_1, sra_2, strt_0, strt_1, strt_2, vSize);
 }

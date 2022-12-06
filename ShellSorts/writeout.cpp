@@ -26,82 +26,59 @@ void randomWrite(const std::string fn, const ul nExperiments ) {
     ofs.close();
 }
 
-void uniFill(vi &v, ul n, std::uniform_int_distribution<int> distrib, std::mt19937 gen) {
-    while (n--) {
-        v.push_back(distrib(gen));
-    }
+int getRandyBe() {
+    std::bernoulli_distribution dist(0.5);
+    std::random_device rd;
+    return dist(rd);
+}
+
+int getRandyBi() {
+    std::binomial_distribution<> dist(1000, 0.5);
+    std::random_device rd;
+    return dist(rd);
+}
+
+int getRandyN() {
+    std::normal_distribution<> dist(10.0, 5.0);
+    std::random_device rd;
+    return dist(rd);
+}
+
+int getRandyP() {
+    std::poisson_distribution<> dist(1000.0);
+    std::random_device rd;
+    return dist(rd);
+}
+
+int getRandyU() {
+    std::uniform_int_distribution<> dist(rMin, rMax);
+    std::random_device rd;
+    return dist(rd);
 }
 
 void randomFill(ul n, vi &v, std::string distroName) {
-    std::random_device rd;  //Will be used to obtain a seed for the random number engine
-    std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
-
-    std::random_device r;
- 
-    std::default_random_engine e1(r());
- 
-    std::seed_seq seed2{r(), r(), r(), r(), r(), r(), r(), r()};
-    std::mt19937 e2(seed2);
-
-    
     int rMin(std::numeric_limits<int>::min()), rMax(std::numeric_limits<int>::max());
-    std::default_random_engine generator;
-    std::normal_distribution<int> distN(0.0, 100.0);
-    std::uniform_int_distribution<int> distrib(rMin, rMax);
-    std::bernoulli_distribution distBe(0.5);
-    std::binomial_distribution<int> distBi(4, 0.5);
-    std::lognormal_distribution<int> distLo(0.5, 0.25);
-    std::chi_squared_distribution<int> distCh(2.8);
-    std::cauchy_distribution<int> distCa(rMin, 0.25);
-    std::fisher_f_distribution<int> distFi(rMin, rMax);
-    std::student_t_distribution<int> distSt(42.0);
+    std::random_device rd;  //Will be used to obtain a seed for the random number engine
     
     if (distroName == "Normal") {
-        while (n--) {
-            int r(distN(generator));
-            v.push_back(r);
-        }
+        std::generate_n(v.begin(), n, getRandyN);
+    } else if(distroName == "Poisson") {
+        std::generate_n(v.begin(), n, getRandyP);
     } else if(distroName == "Bernoulli") {
-        while (n--) {
-            int r(distBe(generator));
-            v.push_back(r);
-        }
-    } else if(distroName == "Student T") {
-        while (n--) {
-            int r(distSt(generator));
-            v.push_back(r);
-        }
-    } else if(distroName == "Fisher F") {
-        while (n--) {
-            int r(distFi(generator));
-            v.push_back(r);
-        }
-    } else if(distroName == "Cauchy") {
-        while (n--) {
-            int r(distCa(generator));
-            v.push_back(r);
-        }
-    } else if(distroName == "Chi Squared") {
-        while (n--) {
-            int r(distCh(generator));
-            v.push_back(r);
-        }
+        std::generate_n(v.begin(), n, getRandyBe);
     } else if(distroName == "Binomial") {
-        while (n--) {
-            int r(distBi(generator));
-            v.push_back(r);
-        }
+        std::generate_n(v.begin(), n, getRandyBi);
     } else if(distroName == "Uniform") {
-        uniFill(v, n, distrib, gen);
+        std::generate_n(v.begin(), n, getRandyU);
     } else if(distroName == "Uniform - Sorted") {
-        uniFill(v, n, distrib, gen);
+        std::generate_n(v.begin(), n, getRandyU);
         std::sort(v.begin(), v.end());
     } else if(distroName == "Uniform - Sorted & Reversed") {
-        uniFill(v, n, distrib, gen);
+        std::generate_n(v.begin(), n, getRandyU);
         std::sort(v.begin(), v.end());
         std::reverse(v.begin(), v.end());
     } else {
-        std::cerr << "Unknown distribution requested. Using uniform." << std::endl;
-        uniFill(v, n, distrib, gen);
+        std::cerr << "Unknown distribution requested (" << distroName << "). Using uniform." << std::endl;
+        std::generate_n(v.begin(), n, getRandyU);
     }
 }

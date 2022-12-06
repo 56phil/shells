@@ -8,6 +8,7 @@
 #ifndef core_hpp
 #define core_hpp
 
+#include <algorithm>
 #include <chrono>
 #include <iostream>
 #include <iomanip>
@@ -35,12 +36,14 @@ typedef std::vector<std::string> vs;
 
 using namespace std::chrono;
 
-const ul MAX_SampleSize(30000000);
+const ul MAX_SampleSize(0x7fffffff);
 const ul MIN_ActiveGapStructs(5);
-const ul MAX_DistroLines(2500);
+const long MAX_DistroLines(250);
 const int MAX_Warnings(3);
 const int MAX_Passes(1);
 const bool cullSlowerGapSequences(true);
+const int rMin(std::numeric_limits<int>::min());
+const int rMax(std::numeric_limits<int>::max());
 
 struct my_numpunct : std::numpunct<char> {
     std::string do_grouping() const {return "\03";}
@@ -85,5 +88,6 @@ void ciura(vul &, ul);
 void a(vul &, ul);
 void b(vul &, ul);
 void c(vul &, ul);
+void d(vul &, ul);
 
 #endif /* core_hpp */
