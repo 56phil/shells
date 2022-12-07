@@ -59,55 +59,55 @@ static void makeGapSequenceGenerators(vgs &gapStructs) {
     gapStruct temp;
     temp.warnings = 0;
     temp.status = gapStruct::ok;
-    
-    temp.name = "Shell 1959";
-    temp.gapFn = shell;
-    gapStructs.emplace_back(temp);
 
-    temp.name = "Frank & Lazarus 1960";
-    temp.gapFn = frank;
-    gapStructs.emplace_back(temp);
-
-    temp.name = "Hibbard 1963";
-    temp.gapFn = hibbard;
-    gapStructs.emplace_back(temp);
-
-    temp.name = "Papernov & Stasevich 1965";
-    temp.gapFn = papernov;
-    gapStructs.emplace_back(temp);
-
-    temp.name = "Pratt 1971";
-    temp.gapFn = pratt;
-    gapStructs.emplace_back(temp);
-
-    temp.name = "Pratt 1971 (modified)";
-    temp.gapFn = pratt_A;
-    gapStructs.emplace_back(temp);
-
-    temp.name = "Knuth 1973";
-    temp.gapFn = kunth;
-    gapStructs.emplace_back(temp);
-    
+//    temp.name = "Shell 1959";
+//    temp.gapFn = shell;
+//    gapStructs.emplace_back(temp);
+//
+//    temp.name = "Frank & Lazarus 1960";
+//    temp.gapFn = frank;
+//    gapStructs.emplace_back(temp);
+//
+//    temp.name = "Hibbard 1963";
+//    temp.gapFn = hibbard;
+//    gapStructs.emplace_back(temp);
+//
+//    temp.name = "Papernov & Stasevich 1965";
+//    temp.gapFn = papernov;
+//    gapStructs.emplace_back(temp);
+//
+//    temp.name = "Pratt 1971";
+//    temp.gapFn = pratt;
+//    gapStructs.emplace_back(temp);
+//
+//    temp.name = "Pratt 1971 (modified)";
+//    temp.gapFn = pratt_A;
+//    gapStructs.emplace_back(temp);
+//
+//    temp.name = "Knuth 1973";
+//    temp.gapFn = kunth;
+//    gapStructs.emplace_back(temp);
+//
     temp.name = "Sedgewick 1982";
     temp.gapFn = sedgewick82;
     gapStructs.emplace_back(temp);
-    
-    temp.name = "Sedgewick 1986";
-    temp.gapFn = sedgewick86;
-    gapStructs.emplace_back(temp);
-
-    temp.name = "Gonnet & Baeza-Yates 1991";
-    temp.gapFn = gonnet;
-    gapStructs.emplace_back(temp);
-
-    temp.name = "Tokuda 1992";
-    temp.gapFn = tokuda;
-    gapStructs.emplace_back(temp);
-
-    temp.name = "Ciura 2001";
-    temp.gapFn = ciura;
-    gapStructs.emplace_back(temp);
-    
+//
+//    temp.name = "Sedgewick 1986";
+//    temp.gapFn = sedgewick86;
+//    gapStructs.emplace_back(temp);
+//
+//    temp.name = "Gonnet & Baeza-Yates 1991";
+//    temp.gapFn = gonnet;
+//    gapStructs.emplace_back(temp);
+//
+//    temp.name = "Tokuda 1992";
+//    temp.gapFn = tokuda;
+//    gapStructs.emplace_back(temp);
+//
+//    temp.name = "Ciura 2001";
+//    temp.gapFn = ciura;
+//    gapStructs.emplace_back(temp);
+//
     temp.name = "a 2022";
     temp.gapFn = a;
     gapStructs.emplace_back(temp);
@@ -280,7 +280,7 @@ static void traverseVGS(ull &activeFuncCount, vgs &gapstructs, vi &chkCpy, const
         std::cout << formatTime(false, true) << std::right << std::setw(31)
         << gapStruct.name << ": " <<std::setw(wdth) <<std::right << duration << " µs"
         << formatMicroSeconds(duration)
-        << '\n' << gaps2string(gapStruct.gaps)
+//        << '\n' << gaps2string(gapStruct.gaps)
         << '\n';
         sortMetrics sortMetrics;
         gapStruct.status = verify(wrkCpy, chkCpy) ? gapStruct::ok : gapStruct::outOfOrder;
@@ -303,7 +303,7 @@ static void runActiveAlgorithms(vgs &gapStructs, vi &checkCopy, const vi &orgina
 }
 
 static void eoj(vgs &gapStructs) {
-//    summerize(gapStructs);
+    summerize(gapStructs);
     makeFile(gapStructs);
     gapStructs.clear();
 }
@@ -319,7 +319,7 @@ static void prep4size(vi &checkCopy, vi &orginalCopy, ul sampleSize, std::string
 static void work(vgs &gapStructs, vs distroNames) {
     int wdth(14);
     
-    vi sampleSizes({1234567,6543210});
+    vul sampleSizes({0xffffffff});
     std::sort(sampleSizes.begin(), sampleSizes.end());
     
     for (auto sampleSize : sampleSizes) {
@@ -476,21 +476,21 @@ static void base_22(vul &gaps, int ladd, int sra_0, int sra_1, int sra_2, int st
 }
 
 void a(vul &gaps, ul vSize) {
-    const int ladd(7), sra_0(2), sra_1(10), sra_2(7), strt_0(1), strt_1(2), strt_2(5);
+    const int ladd(7), sra_0(2), sra_1(7), sra_2(6), strt_0(1), strt_1(2), strt_2(1);
     base_22(gaps, ladd, sra_0, sra_1, sra_2, strt_0, strt_1, strt_2, vSize);
 }
 
 void b(vul &gaps, ul vSize) {
-    const int ladd(7), sra_0(2), sra_1(9), sra_2(4), strt_0(1), strt_1(2), strt_2(5);
+    const int ladd(7), sra_0(2), sra_1(7), sra_2(7), strt_0(1), strt_1(2), strt_2(1);
     base_22(gaps, ladd, sra_0, sra_1, sra_2, strt_0, strt_1, strt_2, vSize);
 }
 
 void c(vul &gaps, ul vSize) {
-    const int ladd(7), sra_0(2), sra_1(8), sra_2(5), strt_0(1), strt_1(2), strt_2(5);
+    const int ladd(7), sra_0(2), sra_1(7), sra_2(8), strt_0(1), strt_1(2), strt_2(1);
     base_22(gaps, ladd, sra_0, sra_1, sra_2, strt_0, strt_1, strt_2, vSize);
 }
 
 void d(vul &gaps, ul vSize) {
-    const int ladd(7), sra_0(2), sra_1(7), sra_2(6), strt_0(1), strt_1(2), strt_2(5);
+    const int ladd(7), sra_0(2), sra_1(7), sra_2(9), strt_0(1), strt_1(2), strt_2(1);
     base_22(gaps, ladd, sra_0, sra_1, sra_2, strt_0, strt_1, strt_2, vSize);
 }

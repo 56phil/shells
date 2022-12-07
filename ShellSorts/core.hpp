@@ -36,12 +36,12 @@ typedef std::vector<std::string> vs;
 
 using namespace std::chrono;
 
-const ul MAX_SampleSize(0x7fffffff);
+const ul MAX_SampleSize(0xffffff);
 const ul MIN_ActiveGapStructs(5);
-const long MAX_DistroLines(250);
+const long MAX_DistroLines(3250);
 const int MAX_Warnings(3);
 const int MAX_Passes(1);
-const bool cullSlowerGapSequences(true);
+const bool cullSlowerGapSequences(false);
 const int rMin(std::numeric_limits<int>::min());
 const int rMax(std::numeric_limits<int>::max());
 

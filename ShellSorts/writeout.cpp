@@ -8,77 +8,94 @@
 #include "writeout.hpp"
 #include "core.hpp"
 
-void randomWrite(const std::string fn, const ul nExperiments ) {
-    int minInt(std::numeric_limits<int>::min()), maxInt(std::numeric_limits<int>::min());
-    std::default_random_engine generator;
-    std::uniform_int_distribution<int> distribution(minInt, maxInt);
-    std::ofstream ofs;
-     
-    ofs.open (fn, std::ofstream::out);
-    
-    for (int i(0); i < nExperiments; ++i) {
-        int n(distribution(generator));
-        ofs << n << '\n';
-    }
-    
-    ofs << std::endl;
-    
-    ofs.close();
-}
+//void randomWrite(const std::string fn, const ul nExperiments ) {
+//    int minInt(std::numeric_limits<int>::min()), maxInt(std::numeric_limits<int>::min());
+//    std::default_random_engine generator;
+//    std::uniform_int_distribution<int> distribution(minInt, maxInt);
+//    std::ofstream ofs;
+//
+//    ofs.open (fn, std::ofstream::out);
+//
+//    for (int i(0); i < nExperiments; ++i) {
+//        int n(distribution(generator));
+//        ofs << n << '\n';
+//    }
+//
+//    ofs << std::endl;
+//
+//    ofs.close();
+//}
 
-int getRandyBe() {
+void getRandyBe(vi &v, ul n) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
     std::bernoulli_distribution dist(0.5);
-    std::random_device rd;
-    return dist(rd);
+    while (n--) {
+        int r(dist(rd));
+        v.push_back(r);
+    }
 }
 
-int getRandyBi() {
-    std::binomial_distribution<> dist(1000, 0.5);
+void getRandyBi(vi &v, ul n) {
     std::random_device rd;
-    return dist(rd);
+    std::mt19937 gen(rd());
+    std::binomial_distribution<int> dist(1000, 0.5);
+    while (n--) {
+        int r(dist(rd));
+        v.push_back(r);
+    }
 }
 
-int getRandyN() {
-    std::normal_distribution<> dist(10.0, 5.0);
+void getRandyN(vi &v, ul n) {
     std::random_device rd;
-    return dist(rd);
+    std::mt19937 gen(rd());
+    std::normal_distribution<double> dist(10.0, 5.0);
+    while (n--) {
+        int r(dist(rd));
+        v.push_back(r);
+    }
 }
 
-int getRandyP() {
-    std::poisson_distribution<> dist(1000.0);
+void getRandyP(vi &v, ul n) {
     std::random_device rd;
-    return dist(rd);
+    std::mt19937 gen(rd());
+    std::poisson_distribution<int> dist(1000.0);
+    while (n--) {
+        int r(dist(rd));
+        v.push_back(r);
+    }
 }
 
-int getRandyU() {
-    std::uniform_int_distribution<> dist(rMin, rMax);
+void getRandyU(vi &v, ul n) {
     std::random_device rd;
-    return dist(rd);
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<int> dist(rMin, rMax);
+    while (n--) {
+        v.push_back(dist(gen));
+    }
 }
 
 void randomFill(ul n, vi &v, std::string distroName) {
-    int rMin(std::numeric_limits<int>::min()), rMax(std::numeric_limits<int>::max());
-    std::random_device rd;  //Will be used to obtain a seed for the random number engine
-    
+    v.clear();
     if (distroName == "Normal") {
-        std::generate_n(v.begin(), n, getRandyN);
+        getRandyN(v,n);
     } else if(distroName == "Poisson") {
-        std::generate_n(v.begin(), n, getRandyP);
+        getRandyP(v,n);
     } else if(distroName == "Bernoulli") {
-        std::generate_n(v.begin(), n, getRandyBe);
+        getRandyBe(v,n);
     } else if(distroName == "Binomial") {
-        std::generate_n(v.begin(), n, getRandyBi);
+        getRandyBi(v,n);
     } else if(distroName == "Uniform") {
-        std::generate_n(v.begin(), n, getRandyU);
+        getRandyU(v,n);
     } else if(distroName == "Uniform - Sorted") {
-        std::generate_n(v.begin(), n, getRandyU);
+        getRandyU(v,n);
         std::sort(v.begin(), v.end());
     } else if(distroName == "Uniform - Sorted & Reversed") {
-        std::generate_n(v.begin(), n, getRandyU);
+        getRandyU(v,n);
         std::sort(v.begin(), v.end());
         std::reverse(v.begin(), v.end());
     } else {
         std::cerr << "Unknown distribution requested (" << distroName << "). Using uniform." << std::endl;
-        std::generate_n(v.begin(), n, getRandyU);
+        getRandyU(v,n);
     }
 }
