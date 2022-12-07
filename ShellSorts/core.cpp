@@ -88,7 +88,7 @@ static void makeGapSequenceGenerators(vgs &gapStructs) {
 //    temp.gapFn = kunth;
 //    gapStructs.emplace_back(temp);
 
-    temp.name = "Sedgewick 1982 - 0";
+    temp.name = "Sedgewick 1982";
     temp.gapFn = sedgewick82;
     gapStructs.emplace_back(temp);
 
@@ -273,7 +273,7 @@ std::string gaps2string(vul gapVect) {
     return oString;
 }
 
-ul median(std::vector<long> vl) {
+ul median(vul vl) {
     if ((vl.size() & 1) == 0 && vl.back() != 0) {
         vl.push_back(vl.front() / vl.back()); // a cheap trick to make sure size is odd
     }
@@ -282,8 +282,9 @@ ul median(std::vector<long> vl) {
 }
 
 static void traverseVGS(ull &activeFuncCount, vgs &gapstructs, vi &chkCpy, const vi &orgCpy, ul sampleSize, ull &totalFuncTime, int wdth, vi &wrkCpy, std::string dName) {
-    std::vector<long> times(MEDIAN_TrialSize);
+    vul times(MEDIAN_TrialSize);
     for (auto &gapStruct : gapstructs) {
+        times.clear();
         for (int ex(0); ex < MEDIAN_TrialSize; ex++) {
             wrkCpy.clear();
             wrkCpy = orgCpy;
@@ -336,7 +337,7 @@ static void prep4size(vi &checkCopy, vi &orginalCopy, ul sampleSize, std::string
 static void work(vgs &gapStructs, vs distroNames) {
     int wdth(14);
     
-    vul sampleSizes({0xffffffffff});
+    vul sampleSizes({1999999, 0xffffffffff});
     std::sort(sampleSizes.begin(), sampleSizes.end());
     
     for (auto sampleSize : sampleSizes) {
@@ -431,7 +432,7 @@ void kunth(vul &gaps, ul vSize) {
 bool mySeq(ul a, ul b) {return a > b;}
 
 void sedgewick82(vul &gaps, ul vSize) {
-    ul k4(4), k2(1), gap(0), lim(vSize - (vSize / 8));
+    ul k4(4), k2(1), gap(0), lim(vSize - (vSize >> 3));
     std::set<ul, std::greater<>> gSet;
     gSet.insert(1);
     do {
