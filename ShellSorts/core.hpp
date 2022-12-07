@@ -36,7 +36,8 @@ typedef std::vector<std::string> vs;
 
 using namespace std::chrono;
 
-const ul MAX_SampleSize(0xffffff);
+const ul MEDIAN_TrialSize(3);  // keep this number ODD!
+const ul MAX_SampleSize(0x7ffffff);
 const ul MIN_ActiveGapStructs(5);
 const long MAX_DistroLines(3250);
 const int MAX_Warnings(3);
@@ -89,5 +90,6 @@ void a(vul &, ul);
 void b(vul &, ul);
 void c(vul &, ul);
 void d(vul &, ul);
+void e(vul &, ul);
 
 #endif /* core_hpp */

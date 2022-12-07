@@ -87,11 +87,11 @@ static void makeGapSequenceGenerators(vgs &gapStructs) {
 //    temp.name = "Knuth 1973";
 //    temp.gapFn = kunth;
 //    gapStructs.emplace_back(temp);
-//
-    temp.name = "Sedgewick 1982";
+
+    temp.name = "Sedgewick 1982 - 0";
     temp.gapFn = sedgewick82;
     gapStructs.emplace_back(temp);
-//
+
 //    temp.name = "Sedgewick 1986";
 //    temp.gapFn = sedgewick86;
 //    gapStructs.emplace_back(temp);
@@ -111,18 +111,22 @@ static void makeGapSequenceGenerators(vgs &gapStructs) {
     temp.name = "a 2022";
     temp.gapFn = a;
     gapStructs.emplace_back(temp);
-    
-    temp.name = "b 2022";
-    temp.gapFn = b;
-    gapStructs.emplace_back(temp);
-    
-    temp.name = "c 2022";
-    temp.gapFn = c;
-    gapStructs.emplace_back(temp);
-    
-    temp.name = "d 2022";
-    temp.gapFn = d;
-    gapStructs.emplace_back(temp);
+//
+//    temp.name = "b 2022";
+//    temp.gapFn = a;
+//    gapStructs.emplace_back(temp);
+//
+//    temp.name = "c 2022";
+//    temp.gapFn = a;
+//    gapStructs.emplace_back(temp);
+//
+//    temp.name = "d 2022";
+//    temp.gapFn = d;
+//    gapStructs.emplace_back(temp);
+//
+//    temp.name = "e 2022";
+//    temp.gapFn = e;
+//    gapStructs.emplace_back(temp);
 }
 
 static void errorFunction(vi &wc, vi &cc) {
@@ -269,14 +273,27 @@ std::string gaps2string(vul gapVect) {
     return oString;
 }
 
+ul median(std::vector<long> vl) {
+    if ((vl.size() & 1) == 0 && vl.back() != 0) {
+        vl.push_back(vl.front() / vl.back()); // a cheap trick to make sure size is odd
+    }
+    std::sort(vl.begin(), vl.end());
+    return  vl[vl.size() >> 1];
+}
+
 static void traverseVGS(ull &activeFuncCount, vgs &gapstructs, vi &chkCpy, const vi &orgCpy, ul sampleSize, ull &totalFuncTime, int wdth, vi &wrkCpy, std::string dName) {
+    std::vector<long> times(MEDIAN_TrialSize);
     for (auto &gapStruct : gapstructs) {
-        wrkCpy.clear();
-        wrkCpy = orgCpy;
-        auto start = high_resolution_clock::now();
-        shellsort(wrkCpy, gapStruct.gaps);
-        auto stop = high_resolution_clock::now();
-        long duration = duration_cast<microseconds>(stop - start).count();
+        for (int ex(0); ex < MEDIAN_TrialSize; ex++) {
+            wrkCpy.clear();
+            wrkCpy = orgCpy;
+            auto start = high_resolution_clock::now();
+            shellsort(wrkCpy, gapStruct.gaps);
+            auto stop = high_resolution_clock::now();
+            ul dur = duration_cast<microseconds>(stop - start).count();
+            times.push_back(dur);
+        }
+        auto duration(median(times));
         std::cout << formatTime(false, true) << std::right << std::setw(31)
         << gapStruct.name << ": " <<std::setw(wdth) <<std::right << duration << " µs"
         << formatMicroSeconds(duration)
@@ -319,7 +336,7 @@ static void prep4size(vi &checkCopy, vi &orginalCopy, ul sampleSize, std::string
 static void work(vgs &gapStructs, vs distroNames) {
     int wdth(14);
     
-    vul sampleSizes({0xffffffff});
+    vul sampleSizes({0xffffffffff});
     std::sort(sampleSizes.begin(), sampleSizes.end());
     
     for (auto sampleSize : sampleSizes) {
@@ -476,21 +493,26 @@ static void base_22(vul &gaps, int ladd, int sra_0, int sra_1, int sra_2, int st
 }
 
 void a(vul &gaps, ul vSize) {
-    const int ladd(7), sra_0(2), sra_1(7), sra_2(6), strt_0(1), strt_1(2), strt_2(1);
+    const int ladd(7), sra_0(2), sra_1(7), sra_2(10), strt_0(1), strt_1(2), strt_2(1);
     base_22(gaps, ladd, sra_0, sra_1, sra_2, strt_0, strt_1, strt_2, vSize);
 }
 
 void b(vul &gaps, ul vSize) {
-    const int ladd(7), sra_0(2), sra_1(7), sra_2(7), strt_0(1), strt_1(2), strt_2(1);
+    const int ladd(7), sra_0(2), sra_1(7), sra_2(10), strt_0(1), strt_1(2), strt_2(1);
     base_22(gaps, ladd, sra_0, sra_1, sra_2, strt_0, strt_1, strt_2, vSize);
 }
 
 void c(vul &gaps, ul vSize) {
-    const int ladd(7), sra_0(2), sra_1(7), sra_2(8), strt_0(1), strt_1(2), strt_2(1);
+    const int ladd(7), sra_0(2), sra_1(7), sra_2(10), strt_0(1), strt_1(2), strt_2(1);
     base_22(gaps, ladd, sra_0, sra_1, sra_2, strt_0, strt_1, strt_2, vSize);
 }
 
 void d(vul &gaps, ul vSize) {
-    const int ladd(7), sra_0(2), sra_1(7), sra_2(9), strt_0(1), strt_1(2), strt_2(1);
+    const int ladd(7), sra_0(2), sra_1(7), sra_2(10), strt_0(1), strt_1(2), strt_2(1);
+    base_22(gaps, ladd, sra_0, sra_1, sra_2, strt_0, strt_1, strt_2, vSize);
+}
+
+void e(vul &gaps, ul vSize) {
+    const int ladd(7), sra_0(2), sra_1(7), sra_2(10), strt_0(1), strt_1(2), strt_2(1);
     base_22(gaps, ladd, sra_0, sra_1, sra_2, strt_0, strt_1, strt_2, vSize);
 }
