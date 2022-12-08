@@ -25,6 +25,7 @@ typedef unsigned long long ull;
 typedef std::vector<int> vi;
 typedef std::vector<double> vd;
 typedef std::vector<ul> vul;
+typedef std::vector<long> vl;
 typedef std::map<std::string, vi> msvi;
 typedef std::vector<std::string> vs;
 
@@ -42,16 +43,17 @@ const ul MIN_ActiveGapStructs(5);
 const long MAX_DistroLines(3250);
 const int MAX_Warnings(3);
 const int MAX_Passes(1);
-const bool cullSlowerGapSequences(false);
+const bool CULL_SlowerGapSequences(true);
 const int rMin(std::numeric_limits<int>::min());
 const int rMax(std::numeric_limits<int>::max());
+const std::string FN_Base("/Users/prh/Keepers/code/xCode/shells/results/");
 
 struct my_numpunct : std::numpunct<char> {
     std::string do_grouping() const {return "\03";}
 };
 
 struct sortMetrics {
-    ul time;
+    long time;
     ul sampleSize;
 };
 typedef std::vector<sortMetrics> vsm;
@@ -72,7 +74,6 @@ struct gapStruct {
 typedef std::vector<gapStruct> vgs;
 
 void setup();
-
 void shell(vul &, ul);
 void frank(vul &, ul);
 void hibbard(vul &, ul);

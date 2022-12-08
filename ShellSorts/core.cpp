@@ -111,22 +111,22 @@ static void makeGapSequenceGenerators(vgs &gapStructs) {
     temp.name = "a 2022";
     temp.gapFn = a;
     gapStructs.emplace_back(temp);
-//
-//    temp.name = "b 2022";
-//    temp.gapFn = a;
-//    gapStructs.emplace_back(temp);
-//
-//    temp.name = "c 2022";
-//    temp.gapFn = a;
-//    gapStructs.emplace_back(temp);
-//
-//    temp.name = "d 2022";
-//    temp.gapFn = d;
-//    gapStructs.emplace_back(temp);
-//
-//    temp.name = "e 2022";
-//    temp.gapFn = e;
-//    gapStructs.emplace_back(temp);
+
+    temp.name = "b 2022";
+    temp.gapFn = a;
+    gapStructs.emplace_back(temp);
+
+    temp.name = "c 2022";
+    temp.gapFn = a;
+    gapStructs.emplace_back(temp);
+
+    temp.name = "d 2022";
+    temp.gapFn = d;
+    gapStructs.emplace_back(temp);
+
+    temp.name = "e 2022";
+    temp.gapFn = e;
+    gapStructs.emplace_back(temp);
 }
 
 static void errorFunction(vi &wc, vi &cc) {
@@ -144,10 +144,10 @@ static void errorFunction(vi &wc, vi &cc) {
         << std::right << std::setw(w) << *itw++ << '\n';
 }
 
-static void doTimes(vgs gapStructs, std::string fileName) {
+static void writeTimes(vgs gapStructs) {
     std::fstream fst;
-    fileName += formatTime(true, true);
-    fileName += "-Results.csv";
+    std::string fileName(FN_Base + formatTime(true, true));
+    fileName += "-Times.csv";
     fst.open(fileName, std::ios::out);
     fst << "Gap Sequence,Distribution";
     auto p(gapStructs.front().runData);
@@ -171,10 +171,10 @@ static void doTimes(vgs gapStructs, std::string fileName) {
     fst.close();
 }
 
-static void doGaps(vgs gapStruct, std::string fnBase) {
+static void writeGaps(vgs gapStruct) {
     std::vector<std::string> alsoRans;
     std::fstream gst;
-    fnBase += formatTime(true, true);
+    std::string fnBase(FN_Base + formatTime(true, true));
     fnBase += "-Gaps.csv";
     gst.open(fnBase, std::ios::out);
     gst << "Algorithm" << '\n';
@@ -190,9 +190,8 @@ static void doGaps(vgs gapStruct, std::string fnBase) {
 }
 
 static void makeFile(vgs gapStructs) {
-    std::string fnBase("/Users/prh/Keepers/code/xCode/shells/results/");
-    doTimes(gapStructs, fnBase);
-    doGaps(gapStructs, fnBase);
+    writeTimes(gapStructs);
+    writeGaps(gapStructs);
 }
 
 static void summerize(vgs &gapStructs) {
@@ -215,37 +214,44 @@ static void summerize(vgs &gapStructs) {
     }
 }
 
+static void eraseLaggards(vgs &gapStructs, vs laggards) {
+    for (ul indx(gapStructs.size() - 1); indx > 0; indx--) {
+        for (auto laggard : laggards) {
+            if (laggard == gapStructs[indx].name) {
+                gapStructs.erase(gapStructs.begin()+indx);
+                break;
+            }
+        }
+    }
+}
+
 static void eraseSlowerGaps(vgs &gapStructs, ull averageFuncTime, std::string distroName) {
     /*
      Removes elements that had subpar sort times
      */
-    ul laggardIndex(0);
-    vul laggards;
+//    ul laggardIndex(0);
+    vs laggards;
     ull lim(averageFuncTime + (averageFuncTime >> 3));
     
-    if (cullSlowerGapSequences && gapStructs.size() > MIN_ActiveGapStructs) {
+    if (CULL_SlowerGapSequences && gapStructs.size() > MIN_ActiveGapStructs) {
         for (auto &gapstruct : gapStructs) {
             if (gapstruct.runData[distroName].back().time > lim) {
                 gapstruct.warnings++;
                 if (gapstruct.warnings < MAX_Warnings) {
                     std::cerr << "Warned " << gapstruct.name << "  (" << gapstruct.warnings << " of " << MAX_Warnings << ")\n";
                 } else {
-                    laggards.push_back(laggardIndex);
                     std::cerr << "Removed " << gapstruct.name << '\n';
+                    laggards.push_back(gapstruct.name);
                     if (gapStructs.size() - laggards.size() <= MIN_ActiveGapStructs) {
                         break;
                     }
                 }
             }
-            laggardIndex++;
         }
     
         if (!laggards.empty()) {
-            std::reverse(laggards.begin(), laggards.end());
             std::cerr << "Another " << laggards.size() << " bite" << (laggards.size() == 1 ? "s " : " ") << "the dust!\n";
-            for (auto laggard : laggards) {
-                gapStructs.erase(gapStructs.begin() + laggard);
-            }
+            eraseLaggards(gapStructs, laggards);
         }
     }
 }
@@ -262,6 +268,7 @@ static void getGaps(vgs &gapStructs, ul sampleSize) {
         }
         gapStruct.gaps.shrink_to_fit();
     }
+    writeGaps(gapStructs);
 }
 
 std::string gaps2string(vul gapVect) {
@@ -273,25 +280,32 @@ std::string gaps2string(vul gapVect) {
     return oString;
 }
 
-ul median(vul vl) {
-    if ((vl.size() & 1) == 0 && vl.back() != 0) {
-        vl.push_back(vl.front() / vl.back()); // a cheap trick to make sure size is odd
+long median(vl v) { //TODO make this a template
+    if (v.size() == 1) {
+        return v.front();
     }
-    std::sort(vl.begin(), vl.end());
-    return  vl[vl.size() >> 1];
+    if (v.empty()) {
+        return -1;
+    }
+    std::sort(v.begin(), v.end());
+    if ((v.size() & 1) == 0) {
+        return (v[v.size() / 2] + v[(v.size() / 2) + 1]) / 2;
+    }
+    return  v[v.size() / 2];
 }
 
 static void traverseVGS(ull &activeFuncCount, vgs &gapstructs, vi &chkCpy, const vi &orgCpy, ul sampleSize, ull &totalFuncTime, int wdth, vi &wrkCpy, std::string dName) {
-    vul times(MEDIAN_TrialSize);
+    auto n(MEDIAN_TrialSize | 1); //ensure size is odd
+    vl times(n);
     for (auto &gapStruct : gapstructs) {
         times.clear();
-        for (int ex(0); ex < MEDIAN_TrialSize; ex++) {
+        for (int ex(0); ex < n; ex++) {
             wrkCpy.clear();
             wrkCpy = orgCpy;
             auto start = high_resolution_clock::now();
             shellsort(wrkCpy, gapStruct.gaps);
             auto stop = high_resolution_clock::now();
-            ul dur = duration_cast<microseconds>(stop - start).count();
+            long dur = duration_cast<microseconds>(stop - start).count();
             times.push_back(dur);
         }
         auto duration(median(times));
@@ -337,7 +351,7 @@ static void prep4size(vi &checkCopy, vi &orginalCopy, ul sampleSize, std::string
 static void work(vgs &gapStructs, vs distroNames) {
     int wdth(14);
     
-    vul sampleSizes({1999999, 0xffffffffff});
+    vul sampleSizes({1999999, 5999999, 9999999, 0x3ffffffffff});
     std::sort(sampleSizes.begin(), sampleSizes.end());
     
     for (auto sampleSize : sampleSizes) {
@@ -494,26 +508,29 @@ static void base_22(vul &gaps, int ladd, int sra_0, int sra_1, int sra_2, int st
 }
 
 void a(vul &gaps, ul vSize) {
-    const int ladd(7), sra_0(2), sra_1(7), sra_2(10), strt_0(1), strt_1(2), strt_2(1);
+//  const int ladd(7), sra_0(2), sra_1(7), sra_2(10), strt_0(1), strt_1(2), strt_2(1);
+    const int ladd(15), sra_0(2), sra_1(7), sra_2(10), strt_0(1), strt_1(2), strt_2(2);
     base_22(gaps, ladd, sra_0, sra_1, sra_2, strt_0, strt_1, strt_2, vSize);
 }
 
 void b(vul &gaps, ul vSize) {
-    const int ladd(7), sra_0(2), sra_1(7), sra_2(10), strt_0(1), strt_1(2), strt_2(1);
+//  const int ladd(15), sra_0(2), sra_1(7), sra_2(11), strt_0(1), strt_1(2), strt_2(1);
+    const int ladd(15), sra_0(2), sra_1(7), sra_2(11), strt_0(1), strt_1(2), strt_2(2);
     base_22(gaps, ladd, sra_0, sra_1, sra_2, strt_0, strt_1, strt_2, vSize);
 }
 
 void c(vul &gaps, ul vSize) {
-    const int ladd(7), sra_0(2), sra_1(7), sra_2(10), strt_0(1), strt_1(2), strt_2(1);
+    const int ladd(15), sra_0(2), sra_1(7), sra_2(12), strt_0(1), strt_1(2), strt_2(1);
     base_22(gaps, ladd, sra_0, sra_1, sra_2, strt_0, strt_1, strt_2, vSize);
 }
 
 void d(vul &gaps, ul vSize) {
-    const int ladd(7), sra_0(2), sra_1(7), sra_2(10), strt_0(1), strt_1(2), strt_2(1);
+    const int ladd(15), sra_0(2), sra_1(7), sra_2(10), strt_0(1), strt_1(2), strt_2(2);
     base_22(gaps, ladd, sra_0, sra_1, sra_2, strt_0, strt_1, strt_2, vSize);
 }
 
 void e(vul &gaps, ul vSize) {
-    const int ladd(7), sra_0(2), sra_1(7), sra_2(10), strt_0(1), strt_1(2), strt_2(1);
+//  const int ladd(15), sra_0(2), sra_1(7), sra_2(10), strt_0(1), strt_1(2), strt_2(1);
+    const int ladd(15), sra_0(2), sra_1(7), sra_2(13), strt_0(1), strt_1(2), strt_2(2);
     base_22(gaps, ladd, sra_0, sra_1, sra_2, strt_0, strt_1, strt_2, vSize);
 }

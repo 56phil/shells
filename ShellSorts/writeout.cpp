@@ -31,8 +31,7 @@ void getRandyBe(vi &v, ul n) {
     std::mt19937 gen(rd());
     std::bernoulli_distribution dist(0.5);
     while (n--) {
-        int r(dist(rd));
-        v.push_back(r);
+        v.push_back(dist(rd));
     }
 }
 
@@ -41,8 +40,7 @@ void getRandyBi(vi &v, ul n) {
     std::mt19937 gen(rd());
     std::binomial_distribution<int> dist(1000, 0.5);
     while (n--) {
-        int r(dist(rd));
-        v.push_back(r);
+        v.push_back(dist(rd));
     }
 }
 
@@ -51,8 +49,7 @@ void getRandyN(vi &v, ul n) {
     std::mt19937 gen(rd());
     std::normal_distribution<double> dist(10.0, 5.0);
     while (n--) {
-        int r(dist(rd));
-        v.push_back(r);
+        v.push_back(dist(rd));
     }
 }
 
@@ -61,8 +58,7 @@ void getRandyP(vi &v, ul n) {
     std::mt19937 gen(rd());
     std::poisson_distribution<int> dist(1000.0);
     while (n--) {
-        int r(dist(rd));
-        v.push_back(r);
+        v.push_back(dist(rd));
     }
 }
 
