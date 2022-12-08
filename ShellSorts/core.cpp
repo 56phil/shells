@@ -53,28 +53,28 @@ static void fillDistros(vs &distros) {
     writeDistros(distros);
 }
 
-static void makeGapSequenceGenerators(vgs &gapStructs) {
+static void makeGapSequenceGenerators(lgs &gapStructs) {
     gapStructs.clear();
     
     gapStruct temp;
     temp.warnings = 0;
     temp.status = gapStruct::ok;
 
-//    temp.name = "Shell 1959";
-//    temp.gapFn = shell;
-//    gapStructs.emplace_back(temp);
-//
-//    temp.name = "Frank & Lazarus 1960";
-//    temp.gapFn = frank;
-//    gapStructs.emplace_back(temp);
-//
-//    temp.name = "Hibbard 1963";
-//    temp.gapFn = hibbard;
-//    gapStructs.emplace_back(temp);
-//
-//    temp.name = "Papernov & Stasevich 1965";
-//    temp.gapFn = papernov;
-//    gapStructs.emplace_back(temp);
+    temp.name = "Shell 1959";
+    temp.gapFn = shell;
+    gapStructs.emplace_back(temp);
+
+    temp.name = "Frank & Lazarus 1960";
+    temp.gapFn = frank;
+    gapStructs.emplace_back(temp);
+
+    temp.name = "Hibbard 1963";
+    temp.gapFn = hibbard;
+    gapStructs.emplace_back(temp);
+
+    temp.name = "Papernov & Stasevich 1965";
+    temp.gapFn = papernov;
+    gapStructs.emplace_back(temp);
 //
 //    temp.name = "Pratt 1971";
 //    temp.gapFn = pratt;
@@ -144,7 +144,7 @@ static void errorFunction(vi &wc, vi &cc) {
         << std::right << std::setw(w) << *itw++ << '\n';
 }
 
-static void writeTimes(vgs gapStructs) {
+static void writeTimes(lgs gapStructs) {
     std::fstream fst;
     std::string fileName(FN_Base + formatTime(true, true));
     fileName += "-Times.csv";
@@ -171,7 +171,7 @@ static void writeTimes(vgs gapStructs) {
     fst.close();
 }
 
-static void writeGaps(vgs gapStruct) {
+static void writeGaps(lgs gapStruct) {
     std::vector<std::string> alsoRans;
     std::fstream gst;
     std::string fnBase(FN_Base + formatTime(true, true));
@@ -189,12 +189,12 @@ static void writeGaps(vgs gapStruct) {
     gst.close();
 }
 
-static void makeFile(vgs gapStructs) {
+static void makeFile(lgs gapStructs) {
     writeTimes(gapStructs);
     writeGaps(gapStructs);
 }
 
-static void summerize(vgs &gapStructs) {
+static void summerize(lgs &gapStructs) {
     for (auto gapStruct : gapStructs) {
         std::cout << '\n' << gapStruct.name;
         long n(gapStruct.gaps.size());
@@ -214,22 +214,22 @@ static void summerize(vgs &gapStructs) {
     }
 }
 
-static void eraseLaggards(vgs &gapStructs, vs laggards) {
-    for (ul indx(gapStructs.size() - 1); indx > 0; indx--) {
+static void eraseLaggards(lgs &gapStructs, vs laggards) {
+    for (auto it(gapStructs.begin()); it != gapStructs.end(); it++) {
         for (auto laggard : laggards) {
-            if (laggard == gapStructs[indx].name) {
-                gapStructs.erase(gapStructs.begin()+indx);
+            if (laggard == it->name) {
+                const auto cit(it);
+                gapStructs.erase(cit);
                 break;
             }
         }
     }
 }
 
-static void eraseSlowerGaps(vgs &gapStructs, ull averageFuncTime, std::string distroName) {
+static void eraseSlowerGaps(lgs &gapStructs, ull averageFuncTime, std::string distroName) {
     /*
      Removes elements that had subpar sort times
      */
-//    ul laggardIndex(0);
     vs laggards;
     ull lim(averageFuncTime + (averageFuncTime >> 3));
     
@@ -256,7 +256,7 @@ static void eraseSlowerGaps(vgs &gapStructs, ull averageFuncTime, std::string di
     }
 }
 
-static void getGaps(vgs &gapStructs, ul sampleSize) {
+static void getGaps(lgs &gapStructs, ul sampleSize) {
     for (auto &gapStruct : gapStructs) {
         gapStruct.gaps.clear();
         gapStruct.gapFn(gapStruct.gaps, sampleSize);
@@ -294,7 +294,7 @@ long median(vl v) { //TODO make this a template
     return  v[v.size() / 2];
 }
 
-static void traverseVGS(ull &activeFuncCount, vgs &gapstructs, vi &chkCpy, const vi &orgCpy, ul sampleSize, ull &totalFuncTime, int wdth, vi &wrkCpy, std::string dName) {
+static void traverseVGS(ull &activeFuncCount, lgs &gapstructs, vi &chkCpy, const vi &orgCpy, ul sampleSize, ull &totalFuncTime, int wdth, vi &wrkCpy, std::string dName) {
     auto n(MEDIAN_TrialSize | 1); //ensure size is odd
     vl times(n);
     for (auto &gapStruct : gapstructs) {
@@ -326,7 +326,7 @@ static void traverseVGS(ull &activeFuncCount, vgs &gapstructs, vi &chkCpy, const
     }
 }
 
-static void runActiveAlgorithms(vgs &gapStructs, vi &checkCopy, const vi &orginalCopy, ul sampleSize,  int wdth, vi &workCopy, std::string distroName) {
+static void runActiveAlgorithms(lgs &gapStructs, vi &checkCopy, const vi &orginalCopy, ul sampleSize,  int wdth, vi &workCopy, std::string distroName) {
     ull totalFuncTime(0), activeFuncCount(0);
     traverseVGS(activeFuncCount, gapStructs, checkCopy, orginalCopy, sampleSize, totalFuncTime, wdth, workCopy, distroName);
     eraseSlowerGaps(gapStructs, totalFuncTime / activeFuncCount, distroName);
@@ -334,7 +334,7 @@ static void runActiveAlgorithms(vgs &gapStructs, vi &checkCopy, const vi &orgina
     activeFuncCount = 0;
 }
 
-static void eoj(vgs &gapStructs) {
+static void eoj(lgs &gapStructs) {
     summerize(gapStructs);
     makeFile(gapStructs);
     gapStructs.clear();
@@ -348,10 +348,10 @@ static void prep4size(vi &checkCopy, vi &orginalCopy, ul sampleSize, std::string
     std::cout << '\n' << formatTime(true, true) << " n: " << sampleSize << " Distribution: " << distroName << std::endl;
 }
 
-static void work(vgs &gapStructs, vs distroNames) {
+static void work(lgs &gapStructs, vs distroNames) {
     int wdth(14);
     
-    vul sampleSizes({1999999, 5999999, 9999999, 0x3ffffffffff});
+    vul sampleSizes({1999999, 5999999, 9999999, 99999999});
     std::sort(sampleSizes.begin(), sampleSizes.end());
     
     for (auto sampleSize : sampleSizes) {
@@ -370,7 +370,7 @@ void setup() {
     fillDistros(distroNames);
     for (int outerLoopCounter(0); outerLoopCounter < MAX_Passes; outerLoopCounter++) {
         std::cerr << formatTime(true, true) << " Pass " << (outerLoopCounter + 1) << " of " << MAX_Passes << ".\n";
-        vgs gapStructs;
+        lgs gapStructs;
         makeGapSequenceGenerators(gapStructs);
         work(gapStructs, distroNames);
         eoj(gapStructs);

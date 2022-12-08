@@ -14,6 +14,7 @@
 #include <iomanip>
 #include <fstream>
 #include <locale>
+#include <list>
 #include <map>
 #include <random>
 #include <set>
@@ -71,7 +72,8 @@ struct gapStruct {
     std::function<void(vul &, ul)> gapFn;
     msm runData;
 };
-typedef std::vector<gapStruct> vgs;
+//typedef std::vector<gapStruct> vgs;
+typedef std::list<gapStruct> lgs;
 
 void setup();
 void shell(vul &, ul);
