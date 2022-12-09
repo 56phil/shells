@@ -30,21 +30,23 @@ typedef std::vector<long> vl;
 typedef std::map<std::string, vi> msvi;
 typedef std::vector<std::string> vs;
 
-#include "formatTime.hpp"
 #include "formatMicroSeconds.hpp"
+#include "formatTime.hpp"
+//#include "median.hpp"
+#include "shell.hpp"
 #include "verifyArray.hpp"
 #include "writeout.hpp"
-#include "shell.hpp"
 
 using namespace std::chrono;
 
 const ul MEDIAN_TrialSize(3);  // keep this number ODD!
-const ul MAX_SampleSize(0x7ffffff);
+const ul MAX_SampleSize(250000000);
 const ul MIN_ActiveGapStructs(5);
 const long MAX_DistroLines(3250);
-const int MAX_Warnings(3);
+const int MAX_Warnings(5);
 const int MAX_Passes(1);
-const bool CULL_SlowerGapSequences(true);
+const bool CULL_SlowerGapSequences(false);
+const bool FULL_Run(true);
 const int rMin(std::numeric_limits<int>::min());
 const int rMax(std::numeric_limits<int>::max());
 const std::string FN_Base("/Users/prh/Keepers/code/xCode/shells/results/");

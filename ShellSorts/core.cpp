@@ -6,6 +6,20 @@
 
 #include "core.hpp"
 
+template<typename T>
+T median(std::vector<T> a) {
+    if (a.empty())
+        return -1;
+    
+    auto it(a.begin() + a.size() / 2);
+    std::sort(a.begin(), a.end());
+    if ((a.size() & 1) == 0) {
+        return ((*it + *(it+1)) / 2);
+    }
+    return *it;
+}
+
+
 static void writeDistros(vs &distros) {
 //    int maxLines(2222);
     msvi dMap;
@@ -40,13 +54,13 @@ static void writeDistros(vs &distros) {
 }
 
 static void fillDistros(vs &distros) {
-    distros.push_back("Bernoulli");
+//    distros.push_back("Bernoulli");
     distros.push_back("Binomial");
     distros.push_back("Normal");
     distros.push_back("Poisson");
     distros.push_back("Uniform");
-    distros.push_back("Uniform - Sorted & Reversed");
-    distros.push_back("Uniform - Sorted");
+//    distros.push_back("Uniform - Sorted & Reversed");
+//    distros.push_back("Uniform - Sorted");
     
     std::sort(distros.begin(), distros.end());
     
@@ -60,21 +74,21 @@ static void makeGapSequenceGenerators(lgs &gapStructs) {
     temp.warnings = 0;
     temp.status = gapStruct::ok;
 
-    temp.name = "Shell 1959";
-    temp.gapFn = shell;
-    gapStructs.emplace_back(temp);
-
-    temp.name = "Frank & Lazarus 1960";
-    temp.gapFn = frank;
-    gapStructs.emplace_back(temp);
-
-    temp.name = "Hibbard 1963";
-    temp.gapFn = hibbard;
-    gapStructs.emplace_back(temp);
-
-    temp.name = "Papernov & Stasevich 1965";
-    temp.gapFn = papernov;
-    gapStructs.emplace_back(temp);
+//    temp.name = "Shell 1959";
+//    temp.gapFn = shell;
+//    gapStructs.emplace_back(temp);
+//
+//    temp.name = "Frank & Lazarus 1960";
+//    temp.gapFn = frank;
+//    gapStructs.emplace_back(temp);
+//
+//    temp.name = "Hibbard 1963";
+//    temp.gapFn = hibbard;
+//    gapStructs.emplace_back(temp);
+//
+//    temp.name = "Papernov & Stasevich 1965";
+//    temp.gapFn = papernov;
+//    gapStructs.emplace_back(temp);
 //
 //    temp.name = "Pratt 1971";
 //    temp.gapFn = pratt;
@@ -145,30 +159,32 @@ static void errorFunction(vi &wc, vi &cc) {
 }
 
 static void writeTimes(lgs gapStructs) {
-    std::fstream fst;
-    std::string fileName(FN_Base + formatTime(true, true));
-    fileName += "-Times.csv";
-    fst.open(fileName, std::ios::out);
-    fst << "Gap Sequence,Distribution";
-    auto p(gapStructs.front().runData);
-    auto q(p.begin());
-    for (auto r : q->second) {
-        fst << ',' << r.sampleSize;
-    }
-    fst << '\n';
-    
-    for (auto gapStruct : gapStructs) {
-        for (auto pair : gapStruct.runData) {
-            fst << gapStruct.name;
-            fst << ',' << pair.first;
-            for (auto pp : pair.second) {
-                fst << ',' << pp.time;
-            }
-            fst << '\n';
+    if (FULL_Run) {
+        std::fstream fst;
+        std::string fileName(FN_Base + formatTime(true, true));
+        fileName += "-Times.csv";
+        fst.open(fileName, std::ios::out);
+        fst << "Gap Sequence,Distribution";
+        auto p(gapStructs.front().runData);
+        auto q(p.begin());
+        for (auto r : q->second) {
+            fst << ',' << r.sampleSize;
         }
+        fst << '\n';
+        
+        for (auto gapStruct : gapStructs) {
+            for (auto pair : gapStruct.runData) {
+                fst << gapStruct.name;
+                fst << ',' << pair.first;
+                for (auto pp : pair.second) {
+                    fst << ',' << pp.time;
+                }
+                fst << '\n';
+            }
+        }
+        fst << std::endl;
+        fst.close();
     }
-    fst << std::endl;
-    fst.close();
 }
 
 static void writeGaps(lgs gapStruct) {
@@ -215,8 +231,8 @@ static void summerize(lgs &gapStructs) {
 }
 
 static void eraseLaggards(lgs &gapStructs, vs laggards) {
-    for (auto it(gapStructs.begin()); it != gapStructs.end(); it++) {
-        for (auto laggard : laggards) {
+    for (auto laggard : laggards) {
+        for (auto it(gapStructs.begin()); it != gapStructs.end(); it++) {
             if (laggard == it->name) {
                 const auto cit(it);
                 gapStructs.erase(cit);
@@ -231,11 +247,12 @@ static void eraseSlowerGaps(lgs &gapStructs, ull averageFuncTime, std::string di
      Removes elements that had subpar sort times
      */
     vs laggards;
-    ull lim(averageFuncTime + (averageFuncTime >> 3));
+    auto uBound(averageFuncTime + (averageFuncTime >> 3));
+    auto lBound(averageFuncTime - (averageFuncTime >> 2));
     
     if (CULL_SlowerGapSequences && gapStructs.size() > MIN_ActiveGapStructs) {
         for (auto &gapstruct : gapStructs) {
-            if (gapstruct.runData[distroName].back().time > lim) {
+            if (gapstruct.runData[distroName].back().time > uBound) {
                 gapstruct.warnings++;
                 if (gapstruct.warnings < MAX_Warnings) {
                     std::cerr << "Warned " << gapstruct.name << "  (" << gapstruct.warnings << " of " << MAX_Warnings << ")\n";
@@ -246,6 +263,10 @@ static void eraseSlowerGaps(lgs &gapStructs, ull averageFuncTime, std::string di
                         break;
                     }
                 }
+            }
+            if (gapstruct.runData[distroName].back().time < lBound && gapstruct.warnings > 0) {
+                gapstruct.warnings--;
+                std::cerr << "Kudos to " << gapstruct.name << "!" << '\n';
             }
         }
     
@@ -263,6 +284,8 @@ static void getGaps(lgs &gapStructs, ul sampleSize) {
         if (gapStruct.gaps.front() < gapStruct.gaps.back()) {
             std::reverse(gapStruct.gaps.begin(), gapStruct.gaps.end());
         }
+        if (gapStruct.gaps.back() > 1)
+            gapStruct.gaps.push_back(1);
         while (gapStruct.gaps.front() >= sampleSize) {
             gapStruct.gaps.erase(gapStruct.gaps.begin());
         }
@@ -278,20 +301,6 @@ std::string gaps2string(vul gapVect) {
     }
     std::string oString(sst.str());
     return oString;
-}
-
-long median(vl v) { //TODO make this a template
-    if (v.size() == 1) {
-        return v.front();
-    }
-    if (v.empty()) {
-        return -1;
-    }
-    std::sort(v.begin(), v.end());
-    if ((v.size() & 1) == 0) {
-        return (v[v.size() / 2] + v[(v.size() / 2) + 1]) / 2;
-    }
-    return  v[v.size() / 2];
 }
 
 static void traverseVGS(ull &activeFuncCount, lgs &gapstructs, vi &chkCpy, const vi &orgCpy, ul sampleSize, ull &totalFuncTime, int wdth, vi &wrkCpy, std::string dName) {
@@ -351,16 +360,18 @@ static void prep4size(vi &checkCopy, vi &orginalCopy, ul sampleSize, std::string
 static void work(lgs &gapStructs, vs distroNames) {
     int wdth(14);
     
-    vul sampleSizes({1999999, 5999999, 9999999, 99999999});
+    vul sampleSizes({1000000, 10000000, 50000000});
     std::sort(sampleSizes.begin(), sampleSizes.end());
     
     for (auto sampleSize : sampleSizes) {
         sampleSize = sampleSize > MAX_SampleSize ? MAX_SampleSize : sampleSize;
         vi originalCopy(sampleSize), workCopy(sampleSize), checkCopy(sampleSize);
         getGaps(gapStructs, sampleSize);
-        for (auto distroName : distroNames) {
-            prep4size(checkCopy, originalCopy, sampleSize, distroName);
-            runActiveAlgorithms(gapStructs, checkCopy, originalCopy, sampleSize, wdth, workCopy, distroName);
+        if (FULL_Run) {
+            for (auto distroName : distroNames) {
+                prep4size(checkCopy, originalCopy, sampleSize, distroName);
+                runActiveAlgorithms(gapStructs, checkCopy, originalCopy, sampleSize, wdth, workCopy, distroName);
+            }
         }
     }
 }
@@ -502,35 +513,48 @@ void ciura(vul &gaps, ul vSize) {
 static void base_22(vul &gaps, int ladd, int sra_0, int sra_1, int sra_2, int strt_0, int strt_1, int strt_2, ul vSize) {
     gaps.push_back(((vSize >> strt_0) + (vSize >> strt_1) - (vSize >> strt_2)) | ladd);
     while (gaps.back() > ladd) {
-        gaps.push_back(((gaps.back() >> sra_0) + (gaps.back() >> sra_1) - (gaps.back() >> sra_2)) | ladd);
+        const auto tmp(((gaps.back() >> sra_0) + (gaps.back() >> sra_1) - (gaps.back() >> sra_2)) | ladd);
+        assert(tmp < gaps.back());
+        gaps.push_back(tmp);
     }
-    gaps.push_back(1);
 }
 
 void a(vul &gaps, ul vSize) {
-//  const int ladd(7), sra_0(2), sra_1(7), sra_2(10), strt_0(1), strt_1(2), strt_2(1);
-    const int ladd(15), sra_0(2), sra_1(7), sra_2(10), strt_0(1), strt_1(2), strt_2(2);
+    const int ladd(15), sra_0(2), sra_1(7), sra_2(13), strt_0(1), strt_1(2), strt_2(3);
     base_22(gaps, ladd, sra_0, sra_1, sra_2, strt_0, strt_1, strt_2, vSize);
 }
 
 void b(vul &gaps, ul vSize) {
-//  const int ladd(15), sra_0(2), sra_1(7), sra_2(11), strt_0(1), strt_1(2), strt_2(1);
-    const int ladd(15), sra_0(2), sra_1(7), sra_2(11), strt_0(1), strt_1(2), strt_2(2);
+    const int ladd(7), sra_0(2), sra_1(7), sra_2(13), strt_0(1), strt_1(2), strt_2(7);
     base_22(gaps, ladd, sra_0, sra_1, sra_2, strt_0, strt_1, strt_2, vSize);
 }
 
 void c(vul &gaps, ul vSize) {
-    const int ladd(15), sra_0(2), sra_1(7), sra_2(12), strt_0(1), strt_1(2), strt_2(1);
-    base_22(gaps, ladd, sra_0, sra_1, sra_2, strt_0, strt_1, strt_2, vSize);
+    const int ladd(7), sra_0(1), sra_1(3), sra_2(7), strt_0(2), strt_1(5);
+    gaps.push_back((vSize - (vSize >> strt_0) - (vSize >> strt_1)) | 1);
+    do {
+        const auto tmp(((gaps.back() >> sra_0) - (gaps.back() >> sra_1) - (gaps.back() >> sra_2)) | ladd);
+        assert(tmp < gaps.back());
+        gaps.push_back(tmp);
+    } while(gaps.back() > ladd);
 }
 
 void d(vul &gaps, ul vSize) {
-    const int ladd(15), sra_0(2), sra_1(7), sra_2(10), strt_0(1), strt_1(2), strt_2(2);
-    base_22(gaps, ladd, sra_0, sra_1, sra_2, strt_0, strt_1, strt_2, vSize);
+    const int ladd(7), sra_0(2), sra_1(23), sra_2(8), strt_0(2), strt_1(5);
+    gaps.push_back((vSize - (vSize >> strt_0) - (vSize >> strt_1)) | 1);
+    do {
+        const auto tmp(((gaps.back() >> sra_0) - (gaps.back() >> sra_1) - (gaps.back() >> sra_2)) | ladd);
+        assert(tmp < gaps.back());
+        gaps.push_back(tmp);
+    } while(gaps.back() > ladd);
 }
 
 void e(vul &gaps, ul vSize) {
-//  const int ladd(15), sra_0(2), sra_1(7), sra_2(10), strt_0(1), strt_1(2), strt_2(1);
-    const int ladd(15), sra_0(2), sra_1(7), sra_2(13), strt_0(1), strt_1(2), strt_2(2);
-    base_22(gaps, ladd, sra_0, sra_1, sra_2, strt_0, strt_1, strt_2, vSize);
+    const int ladd(15), sra_0(2), sra_1(23), sra_2(8), strt_0(2), strt_1(5);
+    gaps.push_back((vSize - (vSize >> strt_0) - (vSize >> strt_1)) | 1);
+    do {
+        const auto tmp(((gaps.back() >> sra_0) - (gaps.back() >> sra_1) - (gaps.back() >> sra_2)) | ladd);
+        assert(tmp < gaps.back());
+        gaps.push_back(tmp);
+    } while(gaps.back() > ladd);
 }
