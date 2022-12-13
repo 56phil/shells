@@ -13,7 +13,7 @@ int main(int argc, const char **argv) {
     std::locale loc (std::cout.getloc(), new my_numpunct);
     std::cout.imbue(loc);
 
-    setup();
+    init();
     
     return rtnCde;
 }

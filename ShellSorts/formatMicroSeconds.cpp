@@ -7,13 +7,13 @@
 
 #include "formatMicroSeconds.hpp"
 
-std::string formatMicroSeconds(long tms) {
-    const long ku(1000000);
-    long fractional(tms % ku);
-    long seconds(tms / ku);
-    long minutes(seconds / 60);
+std::string formatMicroSeconds(ul tms) {
+    const ul ku(1000000);
+    const ul fractional(tms % ku);
+    ul seconds(tms / ku);
+    ul minutes(seconds / 60);
     seconds -= minutes * 60;
-    long hours(minutes / 60);
+    const ul hours(minutes / 60);
     minutes -= hours * 60;
 
     std::stringstream sst;

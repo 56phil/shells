@@ -10,6 +10,6 @@
 
 #include "core.hpp"
 
-std::string formatMicroSeconds(long);
+std::string formatMicroSeconds(ul);
 
 #endif /* formatMicroSeconds_hpp */
