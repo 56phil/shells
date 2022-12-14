@@ -39,18 +39,18 @@ const bool FULL_Run(true);
 const bool WARN_Lagards(false);
 //const double dMax(std::numeric_limits<double>::max());
 //const double dMin(std::numeric_limits<double>::min());
-const int MAX_DistroLines(250);
-const int MAX_Passes(1);
+const int MAX_DistroLines(25);
+const int MAX_Passes(3);
 const int MAX_Warnings(5);
 const int iMax(std::numeric_limits<int>::max());
 const int iMin(std::numeric_limits<int>::min());
 const int GAPPER_Length(29);
 const int DISTRO_Length(27);
 const int FORMATTED_MicroSecondLength(13);
+const int MEDIAN_TrialSize(3);
 const int MICROSECOND_length(15);
-const ul MAX_SampleSize(100000000);
-const ul MIN_SampleSize(10000);
-const ul MEDIAN_TrialSize(3);
+const ul MAX_SampleSize(25000000);
+const ul MIN_SampleSize(25000);
 const ul MIN_ActiveGapStructs(5);
 const ul UL_MAX(std::numeric_limits<ul>::max());
 const vs DISTRO_NAMES({
@@ -59,16 +59,10 @@ const vs DISTRO_NAMES({
     "Normal",
     "Poisson",
     "Uniform",
-    "Uniform - Sorted",
-    "Uniform - Sorted & Reversed"
+//    "Uniform - Sorted",
+//    "Uniform - Sorted & Reversed"
 });
 const std::string FN_Base("/Users/prh/Keepers/code/xCode/shells/results/");
-
-struct topGapper {
-    std::string gapper;
-    ul time;
-};
-typedef topGapper tg;
 
 struct my_numpunct : std::numpunct<char> {
     std::string do_grouping() const {return "\03";}
@@ -97,9 +91,20 @@ struct gapStruct {
 };
 typedef std::map<std::string,gapStruct> m_s_gs;
 
+struct topGapper {
+    std::string gapper;
+    ul time;
+    topGapper(ul time, std::string gapper) {
+       this -> gapper = gapper;
+       this -> time = time;
+    }
+};
+typedef topGapper tg;
+typedef std::vector<tg> vtg;
+
 struct originalSample {
-    vul sample;
-    tg fastest;
+    vl sample;
+    vtg results;
 };
 typedef std::map<ul,originalSample> m_ul_os;
 
@@ -127,7 +132,7 @@ void b(vul &, ul);
 void c(vul &, ul);
 void d(vul &, ul);
 void e(vul &, ul);
-void shellSort(vul &, vul &);
-void randomFill(ul, vul &, std::string);
+void shellSort(vl &, vul &);
+void randomFill(ul, vl &, std::string);
 
 #endif /* core_hpp */
