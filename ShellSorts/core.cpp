@@ -71,26 +71,26 @@ static void inspectGaps(vul &gaps, const ul vSize) {
     gaps.shrink_to_fit();
 }
 
-static void writeDistros(m_s_ds dMap, vul sizes) {
+static void writeDistros(m_s_ds dMap) {
 //    for (auto &d0 : dMap) {
     if (dMap.empty()) {
         std::cerr << formatTime(true, true) << " \tdMap error. Empty.";
         exit(2);
     }
     
-    auto maxPossibleLines(dMap.begin()->second.originals.begin()->second.size());   // size of the first (smallest) sample vector
-    auto max_dl(MAX_DistroLines < maxPossibleLines ? MAX_DistroLines : maxPossibleLines);
+    long maxPossibleLines(dMap.begin()->second.originals.begin()->first);   // size of the first (smallest) sample vector
+    long maxDistroLines(MAX_DistroLines < maxPossibleLines ? MAX_DistroLines : maxPossibleLines);
     std::string fnBase("/Users/prh/Keepers/code/xCode/shells/results/");
     fnBase += formatTime(true, true);
     fnBase += "-distros.csv";
     std::fstream fst;
     fst.open(fnBase, std::ios::out);
-    for(long indx(-1); indx < max_dl; indx++) {
+    for(long indx(-1); indx < maxDistroLines; indx++) {
         for (auto d0 : dMap) {
                 if (indx < 0) {
                     fst << ',' << d0.first;
                 } else {
-                    fst << ',' << d0.second.originals[sizes[0]][indx];
+                    fst << ',' << d0.second.originals.begin()->second.sample.begin()[indx];
                 }
         }
         fst << '\n';
@@ -120,10 +120,10 @@ static void makeGapSequences(m_s_gs &gMap) {
 }
 
 static void make_gMap(m_s_gs &gMap, vul sizes) {
-    gMap["Shell 1959"].gapFn = shell;
-    gMap["Frank & Lazarus 1960"].gapFn = frank;
-    gMap["Hibbard 1963"].gapFn = hibbard;
-    gMap["Papernov & Stasevich 1965"].gapFn = papernov;
+//    gMap["Shell 1959"].gapFn = shell;
+//    gMap["Frank & Lazarus 1960"].gapFn = frank;
+//    gMap["Hibbard 1963"].gapFn = hibbard;
+//    gMap["Papernov & Stasevich 1965"].gapFn = papernov;
 //    gMap["Pratt 1971"].gapFn = pratt;
     gMap["Knuth 1973"].gapFn = knuth;
     gMap["Sedgewick 1982"].gapFn = sedgewick82;
@@ -152,15 +152,18 @@ static void make_gMap(m_s_gs &gMap, vul sizes) {
 }
 
 static void make_dMap(m_s_ds &dMap, const vul sizes) {
+    
+    originalSample tos;
+    tos.fastest.time = UL_MAX;
+    tos.fastest.gapper = "";
     for (auto dName : DISTRO_NAMES) {
         for (auto size : sizes) {
-            vul t_vul;
-            randomFill(size, t_vul, dName);
-            dMap[dName].originals[size] = t_vul;
+            randomFill(size, tos.sample, dName);
+            dMap[dName].originals[size] = tos;
         }
-        std::cerr << formatTime(true, true) << " \tdMap constructed " << dName << ".\n";
+        std::cerr << formatTime(true, true) << " \tConstructed " << dName << ".\n";
     }
-    std::cerr << formatTime(true, true) << " \tdMap constructed.\n";
+    std::cerr << formatTime(true, true) << " \tdMap build completed.\n";
 }
 
 static void errorFunction(vul &wc, vul &cc) {
@@ -215,47 +218,27 @@ static void writeGaps(m_s_gs gMap) {
     gst.close();
 }
 
-static void findFastest(m_s_gs gMap, vul sizes) {
-    typedef std::map<ul, std::string> q;
-    std::map<std::string,q> ranked;  // map of fastest for size within fastest for distro
-    std::cout << "\n;;;;;;;;;;;;;;;;;;;;;\n\n";
-    
-    for (auto dName : DISTRO_NAMES) {
-        auto bestGapperDistroName(gMap.begin()->first);
-        auto bestGapperDistro(gMap.begin()->second);
-        for (auto size : sizes) {
-            auto bestGapperSizeName(gMap.begin()->first);
-            auto bestGapperSize(gMap.begin()->second);
-            for (auto g0 : gMap) {  // evaluate each gapper for this distro
-                for (auto g1 : g0.second.results) {
-                    if (g1.second.dData[dName].time < bestGapperDistro.results[size].dData[dName].time) {
-                        bestGapperDistro = g0.second;
-                        bestGapperDistroName = g0.first;
-                    }
-                    if (g1.second.dData[dName].time < bestGapperSize.results[size].dData[dName].time) {
-                        bestGapperSize = g0.second;
-                        bestGapperSizeName = g0.first;
-                    }
-                }
-            }
-            std::cout << formatTime(true, true) << " Fastest for size: " << bestGapperSizeName << " \t" << size <<'\n';
-        }
-        std::cout << formatTime(true, true) << " Fastest for distro: " << bestGapperDistroName << " \t" << dName << '\n';
-    }
-}
-
 static void summerize(m_s_gs gMap) {
     std::cout << "\n=======================\n\n";
     for (auto g0 : gMap) {  // gapper
-        std::cout << "Gapper: " << g0.first;
         for (auto g1 : g0.second.results) {     // sample size
-            std::cout << "\nn: "<< std::right << std::setw(11) << g1.first
-            << " Gaps: " << gaps2string(g1.second.gaps, " ") << '\n';
+            std::cout << std::right << std::setw(GAPPER_Length) << "\nGapper: " << g0.first << " \tn: "<< std::right << std::setw(11) << g1.first
+            << "\nGaps: " << gaps2string(g1.second.gaps, " ") << '\n';
             for (auto g2 : g1.second.dData) {   // distro
                 std::cout << formatTime(true, true)
                 << " Distribution: " << std::setw(27) << g2.first
-                << " \tLapsed Time: " << std::right << std::setw(11) << formatMicroSeconds(g2.second.time) << '\n';
+                << " \tLapsed Time: " << std::right << std::setw(FORMATTED_MicroSecondLength) << formatMicroSeconds(g2.second.time) << '\n';
             }
+        }
+        std::cout << '\n';
+    }
+}
+
+void listWinners(m_s_ds dMap) {
+    std::cout << "\n;;;;;;;;;;;;;;;;;;;;;;;\n\n";
+    for (auto d0 : dMap) {
+        for (auto d1 : d0.second.originals) {
+            std::cout << "Quickest gapper for distro " << d0.first << " with a size of " << d1.first << " is " << d1.second.fastest.gapper << '\n';
         }
         std::cout << '\n';
     }
@@ -263,8 +246,8 @@ static void summerize(m_s_gs gMap) {
 
 static void eoj(m_s_gs gMap, m_s_ds dMap, vul sizes) {
     summerize(gMap);
-//    findFastest(gMap, sizes); this function needs a total rewrite
-    writeDistros(dMap, sizes);
+    listWinners(dMap);
+    writeDistros(dMap);
     writeGaps(gMap);
     writeTimes(gMap, dMap);
     std::cout << std::endl;
@@ -284,20 +267,10 @@ static void warnLagards(const std::pair<const std::string, distroStruct> &d0, m_
     }
 }
 
-static void testDur(long long dur, std::pair<const std::string, gapStruct> &g0, tg &tgx, std::string dName) {
-    if (dur < tgx.time) {
-        tgx.distro = dName;
-        tgx.gapper = g0.first;
-        tgx.time = dur;
-        assert(tgx.gapper.size() > 1);
-    }
-}
-
-static void printIt(const std::pair<const std::string, distroStruct> &d0, long dur, std::pair<const std::string, gapStruct> &g0, std::pair<const unsigned long, runData> &g1, vul &gTimes,
-                    tg &tgs) {
-    g1.second.dData[d0.first].time = dur;
+static void printIt(const std::pair<const std::string, distroStruct> &d0, long dur, std::pair<const std::string,gapStruct> &g0,
+                    std::pair<const unsigned long, runData> &g1, vul &gTimes) {
+    g1.second.dData[d0.first].time = dur;   //???
     gTimes.push_back(dur);
-    testDur(dur, g0, tgs, d0.first);
     std::cout << formatTime(false, true)
     << std::right << std::setw(GAPPER_Length) << g0.first
     << std::right << std::setw(MICROSECOND_length) << dur << "µs "
@@ -305,16 +278,15 @@ static void printIt(const std::pair<const std::string, distroStruct> &d0, long d
     << '\n';
 }
 
-static void doSort(const std::pair<const std::string, distroStruct> &d0, const std::pair<const unsigned long,
-                   std::vector<unsigned long>> &d1, std::pair<const std::string, gapStruct> &g0, vul &gTimes, ul size,
-                   tg &tgs) {
+static void doSort(std::pair<const std::string, distroStruct> &d0, std::pair<const unsigned long,originalSample> &d1,
+                   std::pair<const std::string, gapStruct> &g0, vul &gTimes, const ul size) {
     for (auto &g1 : g0.second.results ) {
         if (g1.first == d1.first) {
-            auto checkCopy(d1.second);
+            auto checkCopy(d1.second.sample);
             std::sort(checkCopy.begin(), checkCopy.end());
             vl times(MEDIAN_TrialSize);
             times.clear();
-            auto workCopy(d1.second);
+            auto workCopy(d1.second.sample);
             while (times.size() < MEDIAN_TrialSize) {
                 auto start = high_resolution_clock::now();
                 shellSort(workCopy, g0.second.results[d1.first].gaps);
@@ -325,39 +297,39 @@ static void doSort(const std::pair<const std::string, distroStruct> &d0, const s
                 } else {
                     std::cerr << formatTime(true, true) << d0.first << " \t" << g0.first << " \t" << g1.first << " \tSort error\n";
                     g0.second.status = gapStruct::outOfOrder;
-                    g1.second.dData[d0.first].time = ulMax;
+                    g1.second.dData[d0.first].time = UL_MAX;
                     g0.second.warnings = MAX_Warnings;
                     errorFunction(workCopy, checkCopy);
                     break;
                 }
-                workCopy = d1.second;
+                workCopy = d1.second.sample;
             }
             long dur(median(times));
-            if (dur > 0)
-                printIt(d0, dur, g0, g1, gTimes, tgs);
+            if (dur > 0) {
+                printIt(d0, dur, g0, g1, gTimes);
+                if (dur < d1.second.fastest.time) {
+                    d1.second.fastest.time = dur;
+                    d1.second.fastest.gapper = g0.first;
+                }
+            }
         }
     }
 }
 
 static void work(m_s_gs &gMap, m_s_ds &dMap, vul sizes) {
-    for (auto d0 : dMap) { // each distro
-        tg tgs;
-        tgs.time = ulMax;
-        tgs.gapper = "";
-        for (auto d1 : d0.second.originals) {   // each sample
+    for (auto &d0 : dMap) { // each distro
+        for (auto &d1 : d0.second.originals) {   // each sample
             std::cout << "\n\n" << formatTime(true, true) << " \tNew size: " << d1.first << " distro: " << d0.first << '\n';
             vul gTimes;
             for (auto &g0 : gMap) {     // each gapper
                 if (g0.second.warnings < MAX_Warnings) {    // skip slow sequences
-                    doSort(d0, d1, g0, gTimes, d1.first, tgs);
+                    doSort(d0, d1, g0, gTimes, d1.first);
                 } else {
                     std::cerr << formatTime(true, true) << " \tSkipping " << g0.first << " too slow\n";
                 }
             }
             std::cout << formatTime(true, true) << " \tBest gapper for size of " << d1.first
-            << " in distro " << d0.first << " is " << tgs.gapper << '\n';
-            tgs.time = ulMax;
-            tgs.gapper = "";
+            << " with distro " << d0.first << " is " << d1.second.fastest.gapper << '\n';
             if (WARN_Lagards)
                 warnLagards(d0, gMap, gTimes);
         }
@@ -366,7 +338,7 @@ static void work(m_s_gs &gMap, m_s_ds &dMap, vul sizes) {
 
 void init() {
     std::cerr << formatTime(true, true) << " \tInitialization begins.\n";
-    vul sizes({1234567, 123456789, 42});
+    vul sizes({7654321, 87654321, 999999999});
     for (auto &size : sizes) {
         size = size > MAX_SampleSize ? MAX_SampleSize : size < MIN_SampleSize ? MIN_SampleSize : size;
     }
@@ -377,7 +349,7 @@ void init() {
     
     make_gMap(gMap, sizes);
     make_dMap(dMap, sizes);
-    std::cerr << formatTime(true, true) << " \tInitialization ends.\n";
+    std::cerr << formatTime(true, true) << " \tInitialization complete.\n";
     
     if (FULL_Run)
         work(gMap, dMap, sizes);
@@ -507,61 +479,6 @@ void ciura(vul &gaps, ul vSize) {
     }
 }
 
-void a(vul &gaps, ul vSize) {
-    const int lac(7); // ladd candidate
-    const int ladd(vSize > lac ? lac : 1), sra_0(2), sra_1(3), sra_2(7), strt_0(2), strt_1(5), strt_2(5);
-    gaps.push_back((vSize - (vSize >> strt_0) - (vSize >> strt_1) - (vSize >> strt_2)) | ladd);
-    do {
-        auto tmp((gaps.back() - (gaps.back() >> sra_0) - (gaps.back() >> sra_1) - (gaps.back() >> sra_2)) | ladd);
-        tmp = tmp < gaps.back() ? tmp : tmp >> 1;
-        gaps.push_back(tmp);
-    } while(gaps.back() > ladd);
-}
-
-void b(vul &gaps, ul vSize) {
-    const int lac(7); // ladd candidate
-    const int ladd(vSize > lac ? lac : 1), sra_0(2), sra_1(3), sra_2(7), strt_0(1), strt_1(28), strt_2(28);
-    gaps.push_back((vSize - (vSize >> strt_0) - (vSize >> strt_1) - (vSize >> strt_2)) | ladd);
-    do {
-        auto tmp((gaps.back() - (gaps.back() >> sra_0) - (gaps.back() >> sra_1) - (gaps.back() >> sra_2)) | ladd);
-        tmp = tmp < gaps.back() ? tmp : tmp >> 1;
-        gaps.push_back(tmp);
-    } while(gaps.back() > ladd);
-}
-
-void c(vul &gaps, ul vSize) {
-    const int lac(7); // ladd candidate
-    const int ladd(vSize > lac ? lac : 1), sra_0(2), sra_1(3), sra_2(7), strt_0(1), strt_1(2), strt_2(3);
-    gaps.push_back((vSize - (vSize >> strt_0) - (vSize >> strt_1) - (vSize >> strt_2)) | ladd);
-    do {
-        auto tmp((gaps.back() - (gaps.back() >> sra_0) - (gaps.back() >> sra_1) - (gaps.back() >> sra_2)) | ladd);
-        tmp = tmp < gaps.back() ? tmp : tmp >> 1;
-        gaps.push_back(tmp);
-    } while(gaps.back() > ladd);
-}
-
-void d(vul &gaps, ul vSize) {
-    const int lac(7); // ladd candidate
-    const int ladd(vSize > lac ? lac : 1), sra_0(2), sra_1(3), sra_2(7), strt_0(2), strt_1(4), strt_2(6);
-    gaps.push_back((vSize - (vSize >> strt_0) - (vSize >> strt_1) - (vSize >> strt_2)) | ladd);
-    do {
-        auto tmp((gaps.back() - (gaps.back() >> sra_0) - (gaps.back() >> sra_1) - (gaps.back() >> sra_2)) | ladd);
-        tmp = tmp < gaps.back() ? tmp : tmp >> 1;
-        gaps.push_back(tmp);
-    } while(gaps.back() > ladd);
-}
-
-void e(vul &gaps, ul vSize) {
-    const int lac(7); // ladd candidate
-    const int ladd(vSize > lac ? lac : 1), sra_0(2), sra_1(3), sra_2(7), strt_0(2), strt_1(3), strt_2(4);
-    gaps.push_back((vSize - (vSize >> strt_0) - (vSize >> strt_1) - (vSize >> strt_2)) | ladd);
-    do {
-        auto tmp((gaps.back() - (gaps.back() >> sra_0) - (gaps.back() >> sra_1) - (gaps.back() >> sra_2)) | ladd);
-        tmp = tmp < gaps.back() ? tmp : tmp >> 1;
-        gaps.push_back(tmp);
-    } while(gaps.back() > ladd);
-}
-
 void shellSort(vul &v, vul &gaps) {
 //    inspectGaps(gaps, v.size());
     for (auto gap : gaps) {
@@ -596,7 +513,7 @@ void getRandyBi(vul &v, ul n) {
 void getRandyN(vul &v, ul n) {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::normal_distribution<double> dist(10.0, 5.0);
+    std::normal_distribution<double> dist(100.0, 5.0);
     while (n--) {
         v.push_back(dist(rd));
     }
@@ -644,4 +561,56 @@ void randomFill(ul n, vul &v, std::string distroName) {
         getRandyU(v,n);
     }
     v.shrink_to_fit();
+}
+
+static void gap22(vul &gaps, ul vSize, int lac, vi sri, vi srj) {
+    const int ladd(vSize > lac ? lac : 1);
+    auto tmp(vSize);
+    for (auto i : sri) {
+        tmp -= vSize >> i;
+    }
+    gaps.push_back(tmp < vSize ? tmp > 0 ? tmp | 1 : 1 : tmp | 1);
+    while (gaps.back() > ladd) {
+        auto tmp(gaps.back());
+        for (auto j : srj) {
+            tmp -= gaps.back() >> j;
+        }
+        gaps.push_back(tmp | ladd);
+    }
+    gaps.push_back(1);
+}
+
+void a(vul &gaps, ul vSize) {
+    int lac(15); // ladd candidate
+    vi sri({1,2,3});
+    vi srj({1,2,3});
+    gap22(gaps, vSize, lac, sri, srj);
+}
+
+void b(vul &gaps, ul vSize) {
+    int lac(7); // ladd candidate
+    vi sri({1,2,3});
+    vi srj({1,2,3});
+    gap22(gaps, vSize, lac, sri, srj);
+}
+
+void c(vul &gaps, ul vSize) {
+    int lac(7); // ladd candidate
+    vi sri({2,3});
+    vi srj({1,2,3,4});
+    gap22(gaps, vSize, lac, sri, srj);
+}
+
+void d(vul &gaps, ul vSize) {
+    int lac(3); // ladd candidate
+    vi sri({2,3});
+    vi srj({1,2,3,4});
+    gap22(gaps, vSize, lac, sri, srj);
+}
+
+void e(vul &gaps, ul vSize) {
+    int lac(3); // ladd candidate
+    vi sri({1,2,3});
+    vi srj({1,2,3,4});
+    gap22(gaps, vSize, lac, sri, srj);
 }

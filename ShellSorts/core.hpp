@@ -37,8 +37,8 @@ using namespace std::chrono;
 
 const bool FULL_Run(true);
 const bool WARN_Lagards(false);
-const double dMax(std::numeric_limits<double>::max());
-const double dMin(std::numeric_limits<double>::min());
+//const double dMax(std::numeric_limits<double>::max());
+//const double dMin(std::numeric_limits<double>::min());
 const int MAX_DistroLines(250);
 const int MAX_Passes(1);
 const int MAX_Warnings(5);
@@ -47,12 +47,12 @@ const int iMin(std::numeric_limits<int>::min());
 const int GAPPER_Length(29);
 const int DISTRO_Length(27);
 const int FORMATTED_MicroSecondLength(13);
-const int MICROSECOND_length(12);
-const ul MAX_SampleSize(30000000);
-const ul MIN_SampleSize(1000);
+const int MICROSECOND_length(15);
+const ul MAX_SampleSize(100000000);
+const ul MIN_SampleSize(10000);
 const ul MEDIAN_TrialSize(3);
 const ul MIN_ActiveGapStructs(5);
-const ul ulMax(std::numeric_limits<ul>::max());
+const ul UL_MAX(std::numeric_limits<ul>::max());
 const vs DISTRO_NAMES({
     "Bernoulli",
     "Binomial",
@@ -65,7 +65,6 @@ const vs DISTRO_NAMES({
 const std::string FN_Base("/Users/prh/Keepers/code/xCode/shells/results/");
 
 struct topGapper {
-    std::string distro;
     std::string gapper;
     ul time;
 };
@@ -98,10 +97,14 @@ struct gapStruct {
 };
 typedef std::map<std::string,gapStruct> m_s_gs;
 
-typedef std::map<ul,vul> m_ul_vul;
+struct originalSample {
+    vul sample;
+    tg fastest;
+};
+typedef std::map<ul,originalSample> m_ul_os;
 
 struct distroStruct {
-    m_ul_vul originals;
+    m_ul_os originals;
 };
 typedef std::map<std::string,distroStruct> m_s_ds;
 
