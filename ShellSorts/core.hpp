@@ -39,20 +39,19 @@ const bool FULL_Run(true);
 const bool WARN_Lagards(false);
 //const double dMax(std::numeric_limits<double>::max());
 //const double dMin(std::numeric_limits<double>::min());
-const int MAX_DistroLines(25);
-const int MAX_Passes(3);
+const int MAX_DistroLines(75);
+const int MAX_Passes(1);
 const int MAX_Warnings(5);
 const int iMax(std::numeric_limits<int>::max());
 const int iMin(std::numeric_limits<int>::min());
 const int GAPPER_Length(29);
 const int DISTRO_Length(27);
-const int FORMATTED_MicroSecondLength(13);
-const int MEDIAN_TrialSize(5);
+const int FORMATTED_MicroSecondLength(10);
+const int MEDIAN_TrialSize(1);
 const int MICROSECOND_length(15);
-const ul MAX_SampleSize(25000000);
-const ul MIN_SampleSize(25000);
+const ul MAX_SampleSize(1 << 28 );
+const ul MIN_SampleSize(1 << 16 );
 const ul MIN_ActiveGapStructs(5);
-const ul UL_MAX(std::numeric_limits<ul>::max());
 const vs DISTRO_NAMES({
     "Bernoulli",
     "Binomial",
@@ -103,7 +102,7 @@ typedef topGapper tg;
 typedef std::vector<tg> vtg;
 
 struct originalSample {
-    vl sample;
+    vi sample;
     vtg results;
 };
 typedef std::map<ul,originalSample> m_ul_os;
@@ -132,7 +131,7 @@ void b(vul &, ul);
 void c(vul &, ul);
 void d(vul &, ul);
 void e(vul &, ul);
-void shellSort(vl &, vul &);
-void randomFill(ul, vl &, std::string);
+void shellSort(vi &, vul &);
+void randomFill(ul, vi &, std::string);
 
 #endif /* core_hpp */
