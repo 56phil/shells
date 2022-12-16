@@ -80,20 +80,24 @@ static void writeDistros(m_s_ds dMap) {
         exit(2);
     }
     
+    std::map<std::string, vi> mit;
+    for (auto d0 : dMap) {
+        mit[d0.first] = d0.second.originals.begin()->second.sample;
+    }
     std::cerr << formatTime(true, true) << " \tWrite distros begins.\n";
     long maxPossibleLines(dMap.begin()->second.originals.begin()->first);   // size of the first (smallest) sample vector
     long maxDistroLines(MAX_DistroLines < maxPossibleLines ? MAX_DistroLines : maxPossibleLines);
-    std::string fnBase("/Users/prh/Keepers/code/xCode/shells/results/");
+    std::string fnBase(FN_Base);
     fnBase += formatTime(true, true);
     fnBase += "-distros.csv";
     std::fstream fst;
     fst.open(fnBase, std::ios::out);
     for(long indx(-1); indx < maxDistroLines; indx++) {
-        for (auto d0 : dMap) {
+        for (auto vit : mit) {
             if (indx < 0) {
-                fst << ',' << d0.first;     // header
+                fst << ',' << vit.first;     // header
             } else {
-                fst << ',' << d0.second.originals.begin()->second.sample.begin()[indx];     // detail
+                fst << ',' << vit.second[indx];
             }
         }
         fst << '\n';
@@ -104,7 +108,6 @@ static void writeDistros(m_s_ds dMap) {
 }
 
 static void writeGaps(m_s_gs gMap) {
-//    std::vector<std::string> alsoRans;
     std::cerr << formatTime(true, true) << " \tWrite gaps begins.\n";
     std::fstream gst;
     std::string fnBase(FN_Base + formatTime(true, true));
@@ -146,7 +149,7 @@ static void make_gMap(m_s_gs &gMap, vul sizes) {
     gMap["Frank & Lazarus 1960"].gapFn = frank;
     gMap["Hibbard 1963"].gapFn = hibbard;
     gMap["Papernov & Stasevich 1965"].gapFn = papernov;
-//    gMap["Pratt 1971"].gapFn = pratt;
+    gMap["Pratt 1971"].gapFn = pratt;
     gMap["Knuth 1973"].gapFn = knuth;
     gMap["Sedgewick 1982"].gapFn = sedgewick82;
     gMap["Sedgewick 1986"].gapFn = sedgewick86;
@@ -270,22 +273,19 @@ static void eoj(m_s_gs gMap, m_s_ds dMap) {
 }
 
 static void doSort(std::pair<const std::string, distroStruct> &d0, std::pair<const unsigned long,originalSample> &d1,
-                   std::pair<const std::string, gs> &g0, vul &gTimes, const ul size) {
+                   std::pair<const std::string, gs> &g0, vul &gTimes, const ul size, vi checkCopy) {
     for (auto &g1 : g0.second.results ) {
-        if (g1.first == d1.first && g0.second.warnings < MAX_Warnings) {
-            auto checkCopy(d1.second.sample);
-            std::sort(checkCopy.begin(), checkCopy.end());
+        if (g1.first == d1.first) {
             vl times;
             times.clear();
-            auto workCopy(d1.second.sample);
             while (times.size() < MEDIAN_TrialSize) {
+                auto workCopy(d1.second.sample);
                 auto start = high_resolution_clock::now();
                 shellSort(workCopy, g0.second.results[d1.first].gaps);
                 auto stop = high_resolution_clock::now();
                 auto durT = duration_cast<microseconds>(stop - start).count();
                 if (workCopy == checkCopy) {
                     times.push_back(durT);
-//                    d1.second.results.push_back(tg(durT, g0.first));
                 } else {
                     std::cerr << formatTime(true, true) << d0.first << " \t" << g0.first << " \t" << g1.first << " \tSort error\n";
                     g0.second.status = gs::outOfOrder;
@@ -293,7 +293,6 @@ static void doSort(std::pair<const std::string, distroStruct> &d0, std::pair<con
                     errorFunction(workCopy, checkCopy);
                     break;
                 }
-                workCopy = d1.second.sample;
             }
             auto dur(times.size() == 1 ? times.front() : median(times));
             std::cout << formatTime(false, true)
@@ -308,27 +307,41 @@ static void doSort(std::pair<const std::string, distroStruct> &d0, std::pair<con
     }
 }
 
+static void checkForLagards(vtg results, m_s_gs &gMap, const vul &gTimes, ul warnLimit) {
+    auto kudo(average(gTimes));
+    auto limt(kudo + (kudo >> 2));
+    for (auto result : results) {
+        if (gMap[result.gapper].warnings < warnLimit) {
+            if (result.time > limt) {
+                gMap[result.gapper].warnings++;
+                std::cerr << formatTime(true, true)
+                << " \tWarned " << result.gapper << " (" << gMap[result.gapper].warnings << "/" << warnLimit << ")\n";
+            } else if (result.time < kudo && gMap[result.gapper].warnings > 0) {
+                gMap[result.gapper].warnings--;
+                std::cerr << formatTime(true, true)
+                << " \tBlessed " << result.gapper << " (" << gMap[result.gapper].warnings << "/" << warnLimit << ")\n";
+            }
+        }
+    }
+}
+
 static void work(m_s_gs &gMap, m_s_ds &dMap) {
+    auto warnLimit(SIZES.size() - 1 < MAX_Warnings ? MAX_Warnings : SIZES.size() - 1);
     for (auto &d0 : dMap) { // each distro
         for (auto &d1 : d0.second.originals) {   // each sample
             std::cout << "\n\n" << formatTime(true, true) << " \tNew size: " << d1.first << " distro: " << d0.first << '\n';
+            auto checkCopy(d1.second.sample);
+            std::sort(checkCopy.begin(), checkCopy.end());
             vul gTimes;
             for (auto &g0 : gMap) {     // each gapper
-                if (g0.second.warnings < MAX_Warnings) {    // skip slow sequences
-                    doSort(d0, d1, g0, gTimes, d1.first);
+                if (g0.second.warnings < warnLimit) {    // skip slow sequences
+                    doSort(d0, d1, g0, gTimes, d1.first, checkCopy);
                 } else {
-                    std::cerr << formatTime(true, true) << " \tSkipping " << g0.first << " too slow\n";
+                    std::cerr << formatTime(false, true) << " \tSkipping " << g0.first << " (too slow)\n";
                 }
             }
             if (WARN_Lagards) {
-                auto lim(average(gTimes) + (average(gTimes) >> 2));
-                for (auto result : d1.second.results) {
-                    if (result.time > lim && gMap[result.gapper].warnings < MAX_Warnings) {
-                        gMap[result.gapper].warnings++;
-                        std::cerr << formatTime(true, true)
-                        << " \tWarned " << result.gapper << " (" << gMap[result.gapper].warnings << "/" << MAX_Warnings << ")\n";
-                    }
-                }
+                checkForLagards(d1.second.results  , gMap, gTimes, warnLimit);
             }
             sort(d1.second.results.begin(), d1.second.results.end(), [](tg &lhs, tg &rhs) {
                 return lhs.time < rhs.time;
@@ -344,7 +357,7 @@ static void work(m_s_gs &gMap, m_s_ds &dMap) {
 void init() {
     for (int passes(0); passes < MAX_Passes; passes++) {
         std::cerr << formatTime(true, true) << " \tInitialization begins.\n";
-        vul sizes({16, 123457, 123458, 123456789});
+        vul sizes(SIZES);
         for (auto &size : sizes) {
             size = size > MAX_SampleSize ? MAX_SampleSize : size < MIN_SampleSize ? MIN_SampleSize : size;
         }
@@ -612,14 +625,14 @@ static void gap22(vul &gaps, ul vSize, int bits, vi sri, vi srj) {
 
 void a(vul &gaps, ul vSize) {
     int bits(3); // ladd candidate
-    vi sri({2});
-    vi srj({1,2});
+    vi sri({3});
+    vi srj({1,2,3});
     gap22(gaps, vSize, bits, sri, srj);
 }
 
 void b(vul &gaps, ul vSize) {
     int bits(3); // ladd candidate
-    vi sri({2,3});
+    vi sri({3});
     vi srj({1,2});
     gap22(gaps, vSize, bits, sri, srj);
 }
@@ -627,20 +640,20 @@ void b(vul &gaps, ul vSize) {
 void c(vul &gaps, ul vSize) {
     int bits(3); // ladd candidate
     vi sri({3});
-    vi srj({1,2});
+    vi srj({1,2,4});
     gap22(gaps, vSize, bits, sri, srj);
 }
 
 void d(vul &gaps, ul vSize) {
     int bits(4); // ladd candidate
     vi sri({3});
-    vi srj({1,2});
+    vi srj({1,2,5});
     gap22(gaps, vSize, bits, sri, srj);
 }
 
 void e(vul &gaps, ul vSize) {
     int bits(4); // ladd candidate
-    vi sri({2});
-    vi srj({1,2});
+    vi sri({3});
+    vi srj({1,4});
     gap22(gaps, vSize, bits, sri, srj);
 }

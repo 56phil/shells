@@ -36,9 +36,7 @@ typedef std::vector<std::string> vs;
 using namespace std::chrono;
 
 const bool FULL_Run(true);
-const bool WARN_Lagards(false);
-//const double dMax(std::numeric_limits<double>::max());
-//const double dMin(std::numeric_limits<double>::min());
+const bool WARN_Lagards(true);
 const int MAX_DistroLines(75);
 const int MAX_Passes(1);
 const int MAX_Warnings(5);
@@ -49,9 +47,9 @@ const int DISTRO_Length(27);
 const int FORMATTED_MicroSecondLength(10);
 const int MEDIAN_TrialSize(1);
 const int MICROSECOND_length(15);
-const ul MAX_SampleSize(1 << 28 );
-const ul MIN_SampleSize(1 << 16 );
-const ul MIN_ActiveGapStructs(5);
+const std::string FN_Base("/Users/prh/Keepers/code/xCode/shells/results/");
+const ul MAX_SampleSize(100000000);
+const ul MIN_SampleSize(100000);
 const vs DISTRO_NAMES({
     "Bernoulli",
     "Binomial",
@@ -61,7 +59,12 @@ const vs DISTRO_NAMES({
     "Uniform - Sorted",
     "Uniform - Sorted & Reversed"
 });
-const std::string FN_Base("/Users/prh/Keepers/code/xCode/shells/results/");
+const vul SIZES({
+    100000,
+    1000000,
+    10000000,
+//    100000000
+});
 
 struct my_numpunct : std::numpunct<char> {
     std::string do_grouping() const {return "\03";}
