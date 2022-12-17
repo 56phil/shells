@@ -156,6 +156,7 @@ static void make_gMap(m_s_gs &gMap, vul sizes) {
     gMap["Gonnet & Baeza-Yates 1991"].gapFn = gonnet;
     gMap["Tokuda 1992"].gapFn = tokuda;
 //    gMap["Ciura 2001"].gapFn = ciura;
+//    gMap["System"].gapFn = sys;
     gMap["a 2022"].gapFn = a;
 //    gMap["b 2022"].gapFn = b;
 //    gMap["c 2022"].gapFn = c;
@@ -243,7 +244,7 @@ static void summerize(m_s_ds &dMap, m_s_gs gMap) {
                     << '\n';
                 }
                 std::cout
-                << " Lapsed Time: " << std::right << std::setw(FORMATTED_MicroSecondLength) << formatMicroSeconds(result.time)
+                << " Lapsed Time: " << std::right << std::setw(FORMATTED_MicroSecondLength) << formatMicroSeconds(result.time, 3)
                 << std::right << std::setw(GAPPER_Length) << result.gapper
                 << " Gaps: " << gaps2string(gMap[result.gapper].results[d1.first].gaps, " ")
                 << '\n';
@@ -298,7 +299,7 @@ static void doSort(std::pair<const std::string, distroStruct> &d0, std::pair<con
             std::cout << formatTime(false, true)
             << std::right << std::setw(GAPPER_Length) << g0.first
             << std::right << std::setw(MICROSECOND_length) << dur << "µs "
-            << std::right << std::setw(FORMATTED_MicroSecondLength) << formatMicroSeconds(dur)
+            << std::right << std::setw(FORMATTED_MicroSecondLength) << formatMicroSeconds(dur, 3)
             << '\n';
             
             d1.second.results.push_back(tg(dur, g0.first));
@@ -356,8 +357,9 @@ static void work(m_s_gs &gMap, m_s_ds &dMap) {
 
 void init() {
     for (int passes(0); passes < MAX_Passes; passes++) {
+        auto t0(system_clock::now());
         std::cerr << formatTime(true, true) << " \tInitialization begins.\n";
-        vul sizes(SIZES);
+        auto sizes(SIZES);
         for (auto &size : sizes) {
             size = size > MAX_SampleSize ? MAX_SampleSize : size < MIN_SampleSize ? MIN_SampleSize : size;
         }
@@ -371,7 +373,10 @@ void init() {
         
         make_dMap(dMap, sizes);
         make_gMap(gMap, sizes);
-        std::cerr << formatTime(true, true) << " \tInitialization complete.\n";
+        auto t1(system_clock::now());
+        auto durT = duration_cast<microseconds>(t1 - t0).count();
+        std::cerr << formatTime(true, true) << " \tInitialization complete. Required "
+        << formatMicroSeconds(durT) << ".\n";
         
         if (FULL_Run)
             work(gMap, dMap);
@@ -500,6 +505,11 @@ void ciura(vul &gaps, ul vSize) {
     }
 }
 
+void sys(vul &gaps, ul vSize) {
+    vul t({1});
+    gaps = t;
+}
+
 void shellSort(std::vector<int>::iterator start, std::vector<int>::iterator stop, vul &gaps) {
     for (auto gap : gaps) {
         for (auto iti(start + gap); iti != stop; iti++) {
@@ -542,6 +552,24 @@ void getRandyBi(vi &v, ul n) {
     }
 }
 
+void getRandyE(vi &v, ul n) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::exponential_distribution<double> dist(1000.0);
+    while (n--) {
+        v.push_back(dist(rd));
+    }
+}
+
+void getRandyG(vi &v, ul n) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::gamma_distribution<double> dist(1000.0, 5.0);
+    while (n--) {
+        v.push_back(dist(rd));
+    }
+}
+
 void getRandyN(vi &v, ul n) {
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -554,7 +582,7 @@ void getRandyN(vi &v, ul n) {
 void getRandyP(vi &v, ul n) {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::poisson_distribution<int> dist(1000.0);
+    std::poisson_distribution<int> dist(100000.0);
     while (n--) {
         v.push_back(dist(rd));
     }
@@ -579,6 +607,10 @@ void randomFill(ul n, vi &v, std::string distroName) {
         getRandyBe(v,n);
     } else if(distroName == "Binomial") {
         getRandyBi(v,n);
+    } else if(distroName == "Exponetial") {
+        getRandyE(v,n);
+    } else if(distroName == "Gamma") {
+        getRandyG(v,n);
     } else if(distroName == "Uniform") {
         getRandyU(v,n);
     } else if(distroName == "Uniform - Sorted") {

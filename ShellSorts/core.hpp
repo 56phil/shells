@@ -36,8 +36,8 @@ typedef std::vector<std::string> vs;
 using namespace std::chrono;
 
 const bool FULL_Run(true);
-const bool WARN_Lagards(true);
-const int MAX_DistroLines(75);
+const bool WARN_Lagards(false);
+const int MAX_DistroLines(50);
 const int MAX_Passes(1);
 const int MAX_Warnings(5);
 const int iMax(std::numeric_limits<int>::max());
@@ -53,17 +53,19 @@ const ul MIN_SampleSize(100000);
 const vs DISTRO_NAMES({
     "Bernoulli",
     "Binomial",
+    "Exponetial",
+    "Gamma",
     "Normal",
     "Poisson",
     "Uniform",
-//    "Uniform - Sorted",
-//    "Uniform - Sorted & Reversed"
+    "Uniform - Sorted",
+    "Uniform - Sorted & Reversed"
 });
 const vul SIZES({
     100000,
     1000000,
     10000000,
-    100000000
+//    100000000
 });
 
 struct my_numpunct : std::numpunct<char> {
@@ -134,6 +136,7 @@ void b(vul &, ul);
 void c(vul &, ul);
 void d(vul &, ul);
 void e(vul &, ul);
+void sys(vul &, ul);
 void shellSort(vi &, vul &);
 void randomFill(ul, vi &, std::string);
 

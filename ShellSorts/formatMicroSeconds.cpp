@@ -7,7 +7,7 @@
 
 #include "formatMicroSeconds.hpp"
 
-std::string formatMicroSeconds(ul tms) {
+std::string formatMicroSeconds(const ul tms, int p) {
     const ul ku(1000000);
     const ul fractional(tms % ku);
     ul seconds(tms / ku);
@@ -15,8 +15,14 @@ std::string formatMicroSeconds(ul tms) {
     seconds -= minutes * 60;
     const ul hours(minutes / 60);
     minutes -= hours * 60;
-
+    
     std::stringstream sst;
+    sst << fractional;
+    std::string frac(sst.str());
+    while (frac.size() > p) {
+        frac.pop_back();
+    }
+
     sst << std::setfill(' ');
     if (hours > 0)
         sst << (hours > 99 ? "  " : hours > 9 ? "   " : "    " ) << hours << ":";
@@ -31,8 +37,9 @@ std::string formatMicroSeconds(ul tms) {
     
     sst << (hours == 0 && minutes == 0 && seconds < 10 ? "      " : hours == 0 && minutes == 0 ? "     " : "")
     << std::fixed
-    << std::setw(hours == 0 && minutes == 0 && seconds < 10 ? 1 : 2)
-    << seconds << "." << std::setw(6) << fractional;
+    << std::setw(hours == 0 && minutes == 0 && seconds < 10 ? 1 : 2) << seconds;
+    if (p)
+        sst << "." << frac;
     
     return sst.str();
 }
