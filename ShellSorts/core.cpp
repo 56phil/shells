@@ -145,22 +145,22 @@ static void makeGapSequences(m_s_gs &gMap) {
 }
 
 static void make_gMap(m_s_gs &gMap, vul sizes) {
-    gMap["Shell 1959"].gapFn = shell;
-    gMap["Frank & Lazarus 1960"].gapFn = frank;
-    gMap["Hibbard 1963"].gapFn = hibbard;
-    gMap["Papernov & Stasevich 1965"].gapFn = papernov;
-    gMap["Pratt 1971"].gapFn = pratt;
+//    gMap["Shell 1959"].gapFn = shell;
+//    gMap["Frank & Lazarus 1960"].gapFn = frank;
+//    gMap["Hibbard 1963"].gapFn = hibbard;
+//    gMap["Papernov & Stasevich 1965"].gapFn = papernov;
+//    gMap["Pratt 1971"].gapFn = pratt;
     gMap["Knuth 1973"].gapFn = knuth;
-    gMap["Sedgewick 1982"].gapFn = sedgewick82;
+//    gMap["Sedgewick 1982"].gapFn = sedgewick82;
     gMap["Sedgewick 1986"].gapFn = sedgewick86;
     gMap["Gonnet & Baeza-Yates 1991"].gapFn = gonnet;
     gMap["Tokuda 1992"].gapFn = tokuda;
-    gMap["Ciura 2001"].gapFn = ciura;
+//    gMap["Ciura 2001"].gapFn = ciura;
     gMap["a 2022"].gapFn = a;
-    gMap["b 2022"].gapFn = b;
-    gMap["c 2022"].gapFn = c;
-    gMap["d 2022"].gapFn = d;
-    gMap["e 2022"].gapFn = e;
+//    gMap["b 2022"].gapFn = b;
+//    gMap["c 2022"].gapFn = c;
+//    gMap["d 2022"].gapFn = d;
+//    gMap["e 2022"].gapFn = e;
     
     prepG1(gMap, sizes);
     
@@ -174,7 +174,7 @@ static void make_gMap(m_s_gs &gMap, vul sizes) {
     
     makeGapSequences(gMap);
     writeGaps(gMap);
-    std::cerr << formatTime(true, true) << " \tgMap built.\n";
+    std::cerr << formatTime(true, true) << " \tgMap built " << gMap.size() << " gappers running.\n";
 }
 
 static void make_dMap(m_s_ds &dMap, const vul sizes) {
@@ -624,36 +624,36 @@ static void gap22(vul &gaps, ul vSize, int bits, vi sri, vi srj) {
 }
 
 void a(vul &gaps, ul vSize) {
-    int bits(3); // ladd candidate
+    int bits(4); // size of mask
     vi sri({3});
-    vi srj({1,2,3});
+    vi srj({1,3,12});
     gap22(gaps, vSize, bits, sri, srj);
 }
 
 void b(vul &gaps, ul vSize) {
-    int bits(3); // ladd candidate
+    int bits(4); // size of mask
     vi sri({3});
-    vi srj({1,2});
+    vi srj({1,3,12});
     gap22(gaps, vSize, bits, sri, srj);
 }
 
 void c(vul &gaps, ul vSize) {
-    int bits(3); // ladd candidate
+    int bits(4); // size of mask
     vi sri({3});
-    vi srj({1,2,4});
+    vi srj({1,3,12});
     gap22(gaps, vSize, bits, sri, srj);
 }
 
 void d(vul &gaps, ul vSize) {
-    int bits(4); // ladd candidate
+    int bits(4); // size of mask
     vi sri({3});
-    vi srj({1,2,5});
+    vi srj({1,3,12});
     gap22(gaps, vSize, bits, sri, srj);
 }
 
 void e(vul &gaps, ul vSize) {
-    int bits(4); // ladd candidate
+    int bits(4); // size of mask
     vi sri({3});
-    vi srj({1,4});
+    vi srj({1,3,12});
     gap22(gaps, vSize, bits, sri, srj);
 }

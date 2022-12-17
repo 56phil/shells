@@ -56,14 +56,14 @@ const vs DISTRO_NAMES({
     "Normal",
     "Poisson",
     "Uniform",
-    "Uniform - Sorted",
-    "Uniform - Sorted & Reversed"
+//    "Uniform - Sorted",
+//    "Uniform - Sorted & Reversed"
 });
 const vul SIZES({
     100000,
     1000000,
     10000000,
-//    100000000
+    100000000
 });
 
 struct my_numpunct : std::numpunct<char> {
