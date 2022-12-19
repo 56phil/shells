@@ -37,7 +37,7 @@ using namespace std::chrono;
 
 const bool FULL_Run(true);
 const bool WARN_Lagards(false);
-const int MAX_DistroLines(50);
+const int MAX_DistroLines(150);
 const int MAX_Passes(1);
 const int MAX_Warnings(5);
 const int iMax(std::numeric_limits<int>::max());
@@ -45,10 +45,10 @@ const int iMin(std::numeric_limits<int>::min());
 const int GAPPER_Length(29);
 const int DISTRO_Length(27);
 const int FORMATTED_MicroSecondLength(10);
-const int MEDIAN_TrialSize(1);
+const int MEDIAN_TrialSize(3);
 const int MICROSECOND_length(15);
 const std::string FN_Base("/Users/prh/Keepers/code/xCode/shells/results/");
-const ul MAX_SampleSize(100000000);
+const ul MAX_SampleSize(500000000);
 const ul MIN_SampleSize(100000);
 const vs DISTRO_NAMES({
     "Bernoulli",
@@ -58,14 +58,19 @@ const vs DISTRO_NAMES({
     "Normal",
     "Poisson",
     "Uniform",
-    "Uniform - Sorted",
-    "Uniform - Sorted & Reversed"
+//    "Uniform - Sorted",
+//    "Uniform - Sorted & Reversed"
 });
 const vul SIZES({
-    100000,
-    1000000,
-    10000000,
-//    100000000
+//    100000,
+//    1000000,
+    12500000,
+    25000000,
+    50000000,
+    100000000,
+    200000000,
+    400000000,
+//    500000000
 });
 
 struct my_numpunct : std::numpunct<char> {

@@ -8,21 +8,16 @@
 #include "formatMicroSeconds.hpp"
 
 std::string formatMicroSeconds(const ul tms, int p) {
-    const ul ku(1000000);
-    const ul fractional(tms % ku);
-    ul seconds(tms / ku);
+    const double kd(1000000);
+    double seconds(tms / kd);
     ul minutes(seconds / 60);
+    ul secs(seconds - minutes * 60);
     seconds -= minutes * 60;
     const ul hours(minutes / 60);
     minutes -= hours * 60;
     
     std::stringstream sst;
-    sst << fractional;
-    std::string frac(sst.str());
-    while (frac.size() > p) {
-        frac.pop_back();
-    }
-
+    sst.precision(p);
     sst << std::setfill(' ');
     if (hours > 0)
         sst << (hours > 99 ? "  " : hours > 9 ? "   " : "    " ) << hours << ":";
@@ -35,11 +30,11 @@ std::string formatMicroSeconds(const ul tms, int p) {
         << std::setw(minutes > 9 || hours > 0 ? 2 : 1)
         << minutes << ":";
     
-    sst << (hours == 0 && minutes == 0 && seconds < 10 ? "      " : hours == 0 && minutes == 0 ? "     " : "")
+    sst << (hours == 0 && minutes == 0 && secs < 10 ? "      " : hours == 0 && minutes == 0 ? "     " : "")
     << std::fixed
-    << std::setw(hours == 0 && minutes == 0 && seconds < 10 ? 1 : 2) << seconds;
-    if (p)
-        sst << "." << frac;
+    << std::setw((hours > 0 || minutes > 0) && secs < 10 ? 1 : 0)
+    << ((hours > 0 || minutes > 0) && secs < 10 ? "0" : "")
+    << seconds;
     
     return sst.str();
 }

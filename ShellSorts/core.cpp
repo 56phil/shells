@@ -22,14 +22,21 @@ T median(std::vector<T> a) {
 }
 
 template<typename T>
-T average(std::vector<T> a) {
+T sum(std::vector<T> a) {
     if (a.empty())
         return -1;
     T sum(0);
     for (auto tmp : a) {
         sum += tmp;
     }
-    return sum / a.size();
+    return sum;
+}
+
+template<typename T>
+T average(std::vector<T> a) {
+    if (a.empty())
+        return -1;
+    return sum(a) / a.size();
 }
 
 std::string gaps2string(vul gaps, std::string delimiter) {
@@ -113,7 +120,7 @@ static void writeGaps(m_s_gs gMap) {
     std::string fnBase(FN_Base + formatTime(true, true));
     fnBase += "-Gaps.csv";
     gst.open(fnBase, std::ios::out);
-    gst << "Gapper,Size,First,Second,etc." << '\n';
+    gst << "Sequence,Size,First,Second,etc." << '\n';
     for (auto g0 : gMap) {
         for (auto g1 : g0.second.results) {
             gst << g0.first << ',' << g1.first << gaps2string(g1.second.gaps, ",") << '\n';
@@ -145,21 +152,21 @@ static void makeGapSequences(m_s_gs &gMap) {
 }
 
 static void make_gMap(m_s_gs &gMap, vul sizes) {
-//    gMap["Shell 1959"].gapFn = shell;
-//    gMap["Frank & Lazarus 1960"].gapFn = frank;
-//    gMap["Hibbard 1963"].gapFn = hibbard;
-//    gMap["Papernov & Stasevich 1965"].gapFn = papernov;
+    gMap["Shell 1959"].gapFn = shell;
+    gMap["Frank & Lazarus 1960"].gapFn = frank;
+    gMap["Hibbard 1963"].gapFn = hibbard;
+    gMap["Papernov & Stasevich 1965"].gapFn = papernov;
 //    gMap["Pratt 1971"].gapFn = pratt;
     gMap["Knuth 1973"].gapFn = knuth;
-//    gMap["Sedgewick 1982"].gapFn = sedgewick82;
+    gMap["Sedgewick 1982"].gapFn = sedgewick82;
     gMap["Sedgewick 1986"].gapFn = sedgewick86;
     gMap["Gonnet & Baeza-Yates 1991"].gapFn = gonnet;
     gMap["Tokuda 1992"].gapFn = tokuda;
-//    gMap["Ciura 2001"].gapFn = ciura;
+    gMap["Ciura 2001"].gapFn = ciura;
 //    gMap["System"].gapFn = sys;
     gMap["a 2022"].gapFn = a;
-//    gMap["b 2022"].gapFn = b;
-//    gMap["c 2022"].gapFn = c;
+    gMap["b 2022"].gapFn = b;
+    gMap["c 2022"].gapFn = c;
 //    gMap["d 2022"].gapFn = d;
 //    gMap["e 2022"].gapFn = e;
     
@@ -179,9 +186,9 @@ static void make_gMap(m_s_gs &gMap, vul sizes) {
 }
 
 static void make_dMap(m_s_ds &dMap, const vul sizes) {
-    std::cerr << formatTime(true, true)
-    << " \tBuilding dMap for " << DISTRO_NAMES.size() << " distributions each with " << sizes.size() << " samples."
-    << "\n\t \t \t \t \t \tLarge samples using complicated distributions will take some time."
+    std::cerr // << formatTime(true, true)
+    << "\t \t \t \t \t \tBuilding dMap for " << DISTRO_NAMES.size() << " distributions each with " << sizes.size() << " samples."
+    << "\n\t \t \t \t \t \tBuilding large samples using complicated distributions will take time."
     << '\n';
     for (auto dName : DISTRO_NAMES) {
         for (auto size : sizes) {
@@ -215,7 +222,7 @@ static void writeTimes(m_s_gs gMap, m_s_ds dMap) {
         std::string fileName(FN_Base + formatTime(true, true));
         fileName += "-Times.csv";
         fst.open(fileName, std::ios::out);
-        fst << "Distro,Size,Gapper,Time\n";
+        fst << "Distro,Size,Sequence,Time\n";
         for (auto d0 : dMap) {
             for (auto d1 : d0.second.originals) {
                 sort(d1.second.results.begin(), d1.second.results.end(), [](tg &lhs, tg &rhs) {
@@ -330,11 +337,11 @@ static void work(m_s_gs &gMap, m_s_ds &dMap) {
     auto warnLimit(SIZES.size() - 1 < MAX_Warnings ? MAX_Warnings : SIZES.size() - 1);
     for (auto &d0 : dMap) { // each distro
         for (auto &d1 : d0.second.originals) {   // each sample
-            std::cout << "\n\n" << formatTime(true, true) << " \tNew size: " << d1.first << " distro: " << d0.first << '\n';
+            std::cout << "\n\n" << formatTime(true, true) << " \tn: " << d1.first << " distro: " << d0.first << '\n';
             auto checkCopy(d1.second.sample);
             std::sort(checkCopy.begin(), checkCopy.end());
             vul gTimes;
-            for (auto &g0 : gMap) {     // each gapper
+            for (auto &g0 : gMap) {     // each sequence
                 if (g0.second.warnings < warnLimit) {    // skip slow sequences
                     doSort(d0, d1, g0, gTimes, d1.first, checkCopy);
                 } else {
@@ -347,7 +354,7 @@ static void work(m_s_gs &gMap, m_s_ds &dMap) {
             sort(d1.second.results.begin(), d1.second.results.end(), [](tg &lhs, tg &rhs) {
                 return lhs.time < rhs.time;
             });
-            std::cout << formatTime(true, true) << " \tBest gapper for size of " << d1.first
+            std::cout << formatTime(true, true) << " \tBest sequence for size of " << d1.first
             << " with distro " << d0.first << " is " << d1.second.results.front().gapper << '\n';
         }
     }
@@ -376,11 +383,15 @@ void init() {
         auto t1(system_clock::now());
         auto durT = duration_cast<microseconds>(t1 - t0).count();
         std::cerr << formatTime(true, true) << " \tInitialization complete. Required "
-        << formatMicroSeconds(durT) << ".\n";
+        << formatMicroSeconds(durT,1) << " seconds.\n";
         
         if (FULL_Run)
             work(gMap, dMap);
-    }
+            auto t2(system_clock::now());
+        auto durE = duration_cast<microseconds>(t1 - t0).count();
+        std::cerr << formatTime(true, true) << " \tPass complete. Required "
+        << formatMicroSeconds(durE,1) << ".\n";
+ }
 }
 
 void shell(vul &gaps, ul vSize) {
@@ -663,14 +674,14 @@ void a(vul &gaps, ul vSize) {
 }
 
 void b(vul &gaps, ul vSize) {
-    int bits(4); // size of mask
+    int bits(5); // size of mask
     vi sri({3});
     vi srj({1,3,12});
     gap22(gaps, vSize, bits, sri, srj);
 }
 
 void c(vul &gaps, ul vSize) {
-    int bits(4); // size of mask
+    int bits(6); // size of mask
     vi sri({3});
     vi srj({1,3,12});
     gap22(gaps, vSize, bits, sri, srj);
