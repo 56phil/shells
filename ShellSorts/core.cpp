@@ -152,23 +152,25 @@ static void makeGapSequences(m_s_gs &gMap) {
 }
 
 static void make_gMap(m_s_gs &gMap, vul sizes) {
-    gMap["Shell 1959"].gapFn = shell;
-    gMap["Frank & Lazarus 1960"].gapFn = frank;
-    gMap["Hibbard 1963"].gapFn = hibbard;
-    gMap["Papernov & Stasevich 1965"].gapFn = papernov;
-//    gMap["Pratt 1971"].gapFn = pratt;
-    gMap["Knuth 1973"].gapFn = knuth;
-    gMap["Sedgewick 1982"].gapFn = sedgewick82;
-    gMap["Sedgewick 1986"].gapFn = sedgewick86;
-    gMap["Gonnet & Baeza-Yates 1991"].gapFn = gonnet;
-    gMap["Tokuda 1992"].gapFn = tokuda;
-    gMap["Ciura 2001"].gapFn = ciura;
+//    gMap["1959 Shell"].gapFn = shell;
+    gMap["1960 Frank & Lazarus"].gapFn = frank;
+    gMap["1963 Hibbard"].gapFn = hibbard;
+    gMap["1965 Papernov & Stasevich"].gapFn = papernov;
+//    gMap["1971 Pratt"].gapFn = pratt;
+    gMap["1973 Knuth"].gapFn = knuth;
+    gMap["1982 Sedgewick"].gapFn = sedgewick82;
+    gMap["1986 Sedgewick"].gapFn = sedgewick86;
+    gMap["1991 Gonnet & Baeza-Yates"].gapFn = gonnet;
+    gMap["1992 Tokuda"].gapFn = tokuda;
+//    gMap["2001 Ciura"].gapFn = ciura;
 //    gMap["System"].gapFn = sys;
-    gMap["a 2022"].gapFn = a;
-    gMap["b 2022"].gapFn = b;
-    gMap["c 2022"].gapFn = c;
-//    gMap["d 2022"].gapFn = d;
-//    gMap["e 2022"].gapFn = e;
+    gMap["2022 a"].gapFn = a;
+    gMap["2022 b"].gapFn = b;
+    gMap["2022 c"].gapFn = c;
+    gMap["2022 d"].gapFn = d;
+    gMap["2022 e"].gapFn = e;
+    gMap["2022 f"].gapFn = e;
+    gMap["2022 g"].gapFn = e;
     
     prepG1(gMap, sizes);
     
@@ -303,10 +305,10 @@ static void doSort(std::pair<const std::string, distroStruct> &d0, std::pair<con
                 }
             }
             auto dur(times.size() == 1 ? times.front() : median(times));
-            std::cout << formatTime(false, true)
-            << std::right << std::setw(GAPPER_Length) << g0.first
+            std::cout << formatTime(true, true)
             << std::right << std::setw(MICROSECOND_length) << dur << "µs "
             << std::right << std::setw(FORMATTED_MicroSecondLength) << formatMicroSeconds(dur, 3)
+            << " \t" << g0.first
             << '\n';
             
             d1.second.results.push_back(tg(dur, g0.first));
@@ -388,7 +390,7 @@ void init() {
         if (FULL_Run)
             work(gMap, dMap);
             auto t2(system_clock::now());
-        auto durE = duration_cast<microseconds>(t1 - t0).count();
+        auto durE = duration_cast<microseconds>(t2 - t1).count();
         std::cerr << formatTime(true, true) << " \tPass complete. Required "
         << formatMicroSeconds(durE,1) << ".\n";
  }
@@ -667,36 +669,50 @@ static void gap22(vul &gaps, ul vSize, int bits, vi sri, vi srj) {
 }
 
 void a(vul &gaps, ul vSize) {
-    int bits(4); // size of mask
+    int bits(2); // size of mask
     vi sri({3});
     vi srj({1,3,12});
     gap22(gaps, vSize, bits, sri, srj);
 }
 
 void b(vul &gaps, ul vSize) {
-    int bits(5); // size of mask
-    vi sri({3});
+    int bits(2); // size of mask
+    vi sri({3,4});
     vi srj({1,3,12});
     gap22(gaps, vSize, bits, sri, srj);
 }
 
 void c(vul &gaps, ul vSize) {
-    int bits(6); // size of mask
-    vi sri({3});
+    int bits(2); // size of mask
+    vi sri({3,5});
     vi srj({1,3,12});
     gap22(gaps, vSize, bits, sri, srj);
 }
 
 void d(vul &gaps, ul vSize) {
-    int bits(4); // size of mask
-    vi sri({3});
+    int bits(2); // size of mask
+    vi sri({3,6});
     vi srj({1,3,12});
     gap22(gaps, vSize, bits, sri, srj);
 }
 
 void e(vul &gaps, ul vSize) {
-    int bits(4); // size of mask
-    vi sri({3});
+    int bits(2); // size of mask
+    vi sri({3,7});
+    vi srj({1,3,12});
+    gap22(gaps, vSize, bits, sri, srj);
+}
+
+void f(vul &gaps, ul vSize) {
+    int bits(2); // size of mask
+    vi sri({3,8});
+    vi srj({1,3,12});
+    gap22(gaps, vSize, bits, sri, srj);
+}
+
+void g(vul &gaps, ul vSize) {
+    int bits(2); // size of mask
+    vi sri({3,9});
     vi srj({1,3,12});
     gap22(gaps, vSize, bits, sri, srj);
 }

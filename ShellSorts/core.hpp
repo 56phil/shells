@@ -45,19 +45,19 @@ const int iMin(std::numeric_limits<int>::min());
 const int GAPPER_Length(29);
 const int DISTRO_Length(27);
 const int FORMATTED_MicroSecondLength(10);
-const int MEDIAN_TrialSize(3);
+const int MEDIAN_TrialSize(1);
 const int MICROSECOND_length(15);
 const std::string FN_Base("/Users/prh/Keepers/code/xCode/shells/results/");
 const ul MAX_SampleSize(500000000);
 const ul MIN_SampleSize(100000);
 const vs DISTRO_NAMES({
+    "Uniform",
     "Bernoulli",
     "Binomial",
-    "Exponetial",
+//    "Exponetial",
     "Gamma",
     "Normal",
     "Poisson",
-    "Uniform",
 //    "Uniform - Sorted",
 //    "Uniform - Sorted & Reversed"
 });
@@ -68,8 +68,8 @@ const vul SIZES({
     25000000,
     50000000,
     100000000,
-    200000000,
-    400000000,
+//    200000000,
+//    400000000,
 //    500000000
 });
 
@@ -141,6 +141,8 @@ void b(vul &, ul);
 void c(vul &, ul);
 void d(vul &, ul);
 void e(vul &, ul);
+void f(vul &, ul);
+void g(vul &, ul);
 void sys(vul &, ul);
 void shellSort(vi &, vul &);
 void randomFill(ul, vi &, std::string);
